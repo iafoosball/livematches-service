@@ -1,45 +1,81 @@
 package main
 
-import "log"
-
 type Match struct {
+
 	// Registered clients.
 	clients map[*Client]bool
 
+	// Outbound messages for all users inside a match
+	matchBroadcast chan []byte
+
 	// The match ID
 	matchID string
+
+	// Register requests from the clients.
+	register chan *Client
+
+	// Unregister requests from clients.
+	unregister chan *Client
 
 	// Only admin can create new matches.
 	// Usually only the tablet on the table is admin
 	admin bool
 }
 
+var matches = make([]Match, 0)
+
 // Either return already existing match or create new one
-func match(hub *Hub, id string) Match {
-	for _, match := range hub.matches {
+func match(id string) *Match {
+	for _, match := range matches {
 		if match.matchID == id {
-			return match
+			return &match
 		}
 	}
 	match := Match{
-		clients: make(map[*Client]bool),
-		matchID: id,
+		clients:        make(map[*Client]bool),
+		register:       make(chan *Client),
+		unregister:     make(chan *Client),
+		matchBroadcast: make(chan []byte),
+		matchID:        id,
 	}
-	hub.matches = append(hub.matches, match)
-	return match
+	matches = append(matches, match)
+	go match.runMatch()
+	return &match
 }
 
-func joinMatch(matches *[]Match, client *Client, id string) bool {
-	for _, match := range *matches {
+func joinMatch(c *Client, id string) *Match {
+	for _, match := range matches {
 		if match.matchID == id {
-			match.clients[client] = true
-			log.Println("match has following clients: ", match.clients)
-			return true
+			match.clients[c] = true
+			return &match
 		}
 	}
-	return false
+	return nil
 }
 
 func leaveMatch() {
 
+}
+
+func (m *Match) runMatch() {
+	for {
+		select {
+		case client := <-m.register:
+			m.clients[client] = true
+		case client := <-m.unregister:
+			if _, ok := m.clients[client]; ok {
+				delete(m.clients, client)
+				close(client.send)
+			}
+		case message := <-m.matchBroadcast:
+			for client := range m.clients {
+				select {
+				case client.send <- message:
+				default:
+					close(client.send)
+					delete(m.clients, client)
+				}
+			}
+		}
+	}
 }

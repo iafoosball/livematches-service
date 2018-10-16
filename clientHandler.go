@@ -1,25 +1,30 @@
+// Copyright 2013 The Gorilla WebSocket Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 package main
 
 import (
 	"bytes"
-	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/gorilla/websocket"
 )
 
 const (
-	// Time allowed to write a message to the peer.
+	// Time allowed to write a broadcast to the peer.
 	writeWait = 10 * time.Second
 
-	// Time allowed to read the next pong message from the peer.
+	// Time allowed to read the next pong broadcast from the peer.
 	pongWait = 60 * time.Second
 
 	// Send pings to peer with this period. Must be less than pongWait.
 	pingPeriod = (pongWait * 9) / 10
 
-	// Maximum message size allowed from peer.
+	// Maximum broadcast size allowed from peer.
 	maxMessageSize = 512
 )
 
@@ -44,10 +49,10 @@ type Client struct {
 	send chan []byte
 
 	// The match ID
-	matchID string
+	match *Match
 }
 
-// readPump pumps messages from the websocket connection to the match.
+// readPump pumps messages from the websocket connection to the hub.
 //
 // The application runs readPump in a per-connection goroutine. The application
 // ensures that there is at most one reader on a connection by executing all
@@ -69,47 +74,37 @@ func (c *Client) readPump() {
 			break
 		}
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
+		c.hub.broadcast <- message
+
 		msg := string(string(message[:]))
 		msgs := strings.Split(msg, ":")
-		c.hub.message <- message
 		switch msgs[0] {
 		case "create":
 			//	implement create new match on matches-service
 			log.Println("create" + msgs[1])
-			c.hub.matches = append(c.hub.matches, match(c.hub, msgs[1]))
+			c.match = match(msgs[1])
 		case "join":
 			log.Println("join match: " + msgs[1])
-			joined := joinMatch(&c.hub.matches, c, msgs[1])
-			log.Println(joined)
+			c.match = joinMatch(c, msgs[1])
+			log.Println(&c.match)
 
-			if joined {
+			msg := []byte("/n hello you /n")
+			c.hub.broadcast <- msg
 
-				msg := []byte("/n hello you /n")
-				c.hub.message <- msg
+			if c.match != nil {
+
+				log.Println("the match: ")
+				log.Println(&c.match)
+
+				msg = []byte("/n hello match /n")
+				c.match.matchBroadcast <- msg
 
 			}
 		}
-		//if msgs[0] == "join" {
-		//	match(c.hub, msgs[1])
-		//c.matchID = msgs[1]
-		//if c.hub.matches == nil {
-		//	c.hub.matches = append(c.hub.matches, Match{
-		//		matchID: msgs[1],
-		//	})
-		//} else {
-		//	for _, match := range c.hub.matches {
-		//		if match.matchID == msgs[1] {
-		//			match.clients[c] = true
-		//			return
-		//		}
-		//	}
-		//	c.hub.matches = append(c.hub.matches, match) match(c.hub, msgs[1])
-		//}
-		//}
 	}
 }
 
-// writePump pumps messages from the match to the websocket connection.
+// writePump pumps messages from the hub to the websocket connection.
 //
 // A goroutine running writePump is started for each connection. The
 // application ensures that there is at most one writer to a connection by
@@ -134,9 +129,14 @@ func (c *Client) writePump() {
 			if err != nil {
 				return
 			}
+			msg := string(string(message[:]))
+			msgs := strings.Split(msg, "-")
+			if msgs[0] != "2018" {
+				log.Printf("writing: %s", message)
+			}
 			w.Write(message)
 
-			// Add queued chat messages to the current websocket message.
+			// Add queued chat messages to the current websocket broadcast.
 			n := len(c.send)
 			for i := 0; i < n; i++ {
 				w.Write(newline)
@@ -157,7 +157,6 @@ func (c *Client) writePump() {
 
 // serveWs handles websocket requests from the peer.
 func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
-	//log.Println(matchID)
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)

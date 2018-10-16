@@ -4,11 +4,8 @@ type Hub struct {
 	// Register clients.
 	clients map[*Client]bool
 
-	// map clients to a match
-	matches []Match
-
 	// Inbound messages from the clients.
-	message chan []byte
+	broadcast chan []byte
 
 	// Register requests from the clients.
 	register chan *Client
@@ -20,10 +17,9 @@ type Hub struct {
 func newHub() *Hub {
 	return &Hub{
 		clients:    make(map[*Client]bool),
-		message:    make(chan []byte),
+		broadcast:  make(chan []byte),
 		register:   make(chan *Client),
 		unregister: make(chan *Client),
-		matches:    make([]Match, 0),
 	}
 }
 
@@ -37,7 +33,7 @@ func (h *Hub) run() {
 				delete(h.clients, client)
 				close(client.send)
 			}
-		case message := <-h.message:
+		case message := <-h.broadcast:
 			for client := range h.clients {
 				select {
 				case client.send <- message:

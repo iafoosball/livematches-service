@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"os"
 	"os/signal"
+	"strings"
 	"time"
 )
 
@@ -30,9 +31,18 @@ func main() {
 	defer c.Close()
 
 	done := make(chan struct{})
+	reader := bufio.NewReader(os.Stdin)
 
 	go func() {
-		reader := bufio.NewReader(os.Stdin)
+		defer close(done)
+		for {
+			msg, _ := reader.ReadString('\n')
+			log.Println(msg)
+			c.WriteMessage(websocket.TextMessage, []byte(msg))
+		}
+	}()
+
+	go func() {
 		defer close(done)
 		for {
 			_, message, err := c.ReadMessage()
@@ -40,10 +50,11 @@ func main() {
 				log.Println("read:", err)
 				return
 			}
-			log.Printf("recv: %s", message)
-			msg, _ := reader.ReadString('\n')
-			log.Println(msg)
-			c.WriteMessage(websocket.TextMessage, []byte(msg))
+			msg := string(string(message[:]))
+			msgs := strings.Split(msg, "-")
+			if msgs[0] != "2018" {
+				log.Printf("recv: %s", message)
+			}
 		}
 	}()
 
