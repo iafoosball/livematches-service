@@ -53,8 +53,15 @@ func main() {
 			msg := string(string(message[:]))
 			msgs := strings.Split(msg, "-")
 			if msgs[0] != "2018" {
-				log.Printf("recv: %s", message)
+				log.Println(msg)
 			}
+			//switch msgs[0] {
+			//case "create:1":
+			//	msg, _ := reader.ReadString('\n')
+			//	log.Println(msg)
+			//	msg = "join:1"
+			//	c.WriteMessage(websocket.TextMessage, []byte(msg))
+			//}
 		}
 	}()
 

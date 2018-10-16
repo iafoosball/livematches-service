@@ -6,7 +6,7 @@ type Match struct {
 	clients map[*Client]bool
 
 	// Outbound messages for all users inside a match
-	matchBroadcast chan []byte
+	matchCast chan []byte
 
 	// The match ID
 	matchID string
@@ -32,11 +32,11 @@ func match(id string) *Match {
 		}
 	}
 	match := Match{
-		clients:        make(map[*Client]bool),
-		register:       make(chan *Client),
-		unregister:     make(chan *Client),
-		matchBroadcast: make(chan []byte),
-		matchID:        id,
+		clients:    make(map[*Client]bool),
+		register:   make(chan *Client),
+		unregister: make(chan *Client),
+		matchCast:  make(chan []byte),
+		matchID:    id,
 	}
 	matches = append(matches, match)
 	go match.runMatch()
@@ -67,7 +67,7 @@ func (m *Match) runMatch() {
 				delete(m.clients, client)
 				close(client.send)
 			}
-		case message := <-m.matchBroadcast:
+		case message := <-m.matchCast:
 			for client := range m.clients {
 				select {
 				case client.send <- message:

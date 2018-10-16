@@ -1,7 +1,3 @@
-// Copyright 2013 The Gorilla WebSocket Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
-
 package main
 
 import (
@@ -48,8 +44,14 @@ type Client struct {
 	// Buffered channel of outbound messages.
 	send chan []byte
 
-	// The match ID
+	// The match which the user joins
 	match *Match
+
+	// The user ID
+	userID *string
+
+	// The username
+	username *string
 }
 
 // readPump pumps messages from the websocket connection to the hub.
@@ -74,34 +76,21 @@ func (c *Client) readPump() {
 			break
 		}
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
-		c.hub.broadcast <- message
 
-		msg := string(string(message[:]))
-		msgs := strings.Split(msg, ":")
-		switch msgs[0] {
-		case "create":
-			//	implement create new match on matches-service
-			log.Println("create" + msgs[1])
-			c.match = match(msgs[1])
-		case "join":
-			log.Println("join match: " + msgs[1])
-			c.match = joinMatch(c, msgs[1])
-			log.Println(&c.match)
-
-			msg := []byte("/n hello you /n")
-			c.hub.broadcast <- msg
-
-			if c.match != nil {
-
-				log.Println("the match: ")
-				log.Println(&c.match)
-
-				msg = []byte("/n hello match /n")
-				c.match.matchBroadcast <- msg
-
-			}
-		}
+		handleCommunication(string(string(message[:])))
 	}
+}
+
+func sendAll(c *Client, msg string) {
+	c.hub.broadcast <- []byte(msg)
+}
+
+func sendMatch(c *Client, msg string) {
+	c.match.matchCast <- []byte(msg)
+}
+
+func sendPrivate(c *Client, msg string) {
+	c.send <- []byte(msg)
 }
 
 // writePump pumps messages from the hub to the websocket connection.
