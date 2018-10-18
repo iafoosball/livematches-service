@@ -22,6 +22,6 @@ func init() {
 
 func TestWS(*testing.T) {
 	//go client.Client()
-	client.Client()
+	//client.Client()
 
 }
