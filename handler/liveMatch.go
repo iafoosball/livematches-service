@@ -1,41 +1,24 @@
-package main
+package handler
 
-type Match struct {
+import (
+	"github.com/iafoosball/livematches-service/models"
+)
 
-	// Registered clients.
-	clients map[*Client]bool
+var matches = []liveMatch{}
 
-	// Outbound messages for all users inside a match
-	matchCast chan []byte
-
-	// The match ID
-	matchID string
-
-	// Register requests from the clients.
-	register chan *Client
-
-	// Unregister requests from clients.
-	unregister chan *Client
-
-	// Only admin can create new matches.
-	// Usually only the tablet on the table is admin
-	admin bool
-}
-
-var matches = make([]Match, 0)
-
-// Either return already existing match or create new one
-func match(id string) *Match {
+// Either return already existing liveMatch or create new one
+func match(id string) *liveMatch {
 	for _, match := range matches {
 		if match.matchID == id {
 			return &match
 		}
 	}
-	match := Match{
+	match := liveMatch{
 		clients:    make(map[*Client]bool),
 		register:   make(chan *Client),
 		unregister: make(chan *Client),
 		matchCast:  make(chan []byte),
+		matchData:  models.Match{},
 		matchID:    id,
 	}
 	matches = append(matches, match)
@@ -43,7 +26,7 @@ func match(id string) *Match {
 	return &match
 }
 
-func joinMatch(c *Client, id string) *Match {
+func joinMatch(c *Client, id string) *liveMatch {
 	for _, match := range matches {
 		if match.matchID == id {
 			match.clients[c] = true
@@ -57,7 +40,7 @@ func leaveMatch() {
 
 }
 
-func (m *Match) runMatch() {
+func (m *liveMatch) runMatch() {
 	for {
 		select {
 		case client := <-m.register:
@@ -78,4 +61,24 @@ func (m *Match) runMatch() {
 			}
 		}
 	}
+}
+
+type liveMatch struct {
+	// Registered clients.
+	clients map[*Client]bool
+
+	// Outbound messages for all users inside a liveMatch
+	matchCast chan []byte
+
+	// The liveMatch ID
+	matchID string
+
+	// Register requests from the clients.
+	register chan *Client
+
+	// Unregister requests from clients.
+	unregister chan *Client
+
+	// holds the data of the liveMatch
+	matchData models.Match
 }

@@ -1,13 +1,13 @@
-package main
+package handler
 
 import (
 	"bytes"
+	"github.com/gorilla/websocket"
+	"github.com/iafoosball/livematches-service/models"
 	"log"
 	"net/http"
 	"strings"
 	"time"
-
-	"github.com/gorilla/websocket"
 )
 
 const (
@@ -34,7 +34,7 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-// Client is a middleman between the websocket connection and the match.
+// Client is a middleman between the websocket connection and the liveMatch.
 type Client struct {
 	hub *Hub
 
@@ -44,14 +44,11 @@ type Client struct {
 	// Buffered channel of outbound messages.
 	send chan []byte
 
-	// The match which the user joins
-	match *Match
+	// The liveMatch which the user joins
+	liveMatch *liveMatch
 
-	// The user ID
-	userID *string
-
-	// The username
-	username *string
+	//The client data
+	user *models.User
 }
 
 // readPump pumps messages from the websocket connection to the hub.
@@ -85,7 +82,7 @@ func sendAll(c *Client, msg string) {
 }
 
 func sendMatch(c *Client, msg string) {
-	c.match.matchCast <- []byte(msg)
+	c.liveMatch.matchCast <- []byte(msg)
 }
 
 func sendPrivate(c *Client, msg string) {
@@ -144,7 +141,7 @@ func (c *Client) writePump() {
 }
 
 // serveWs handles websocket requests from the peer.
-func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
+func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)

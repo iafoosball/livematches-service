@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"github.com/iafoosball/livematches-service/handler"
 	"log"
 	"net/http"
 )
@@ -27,11 +28,11 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 func main() {
 	flag.Parse()
 	log.SetFlags(log.Ltime | log.Lshortfile)
-	hub := newHub()
-	go hub.run()
+	hub := handler.NewHub()
+	go hub.Run()
 	http.HandleFunc("/", serveHome)
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		serveWs(hub, w, r)
+		handler.ServeWs(hub, w, r)
 	})
 	err := http.ListenAndServe(*host+":"+*port, nil)
 	if err != nil {

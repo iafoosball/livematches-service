@@ -1,4 +1,4 @@
-package main
+package handler
 
 type Hub struct {
 	// Register clients.
@@ -14,7 +14,7 @@ type Hub struct {
 	unregister chan *Client
 }
 
-func newHub() *Hub {
+func NewHub() *Hub {
 	return &Hub{
 		clients:    make(map[*Client]bool),
 		broadcast:  make(chan []byte),
@@ -23,7 +23,7 @@ func newHub() *Hub {
 	}
 }
 
-func (h *Hub) run() {
+func (h *Hub) Run() {
 	for {
 		select {
 		case client := <-h.register:
