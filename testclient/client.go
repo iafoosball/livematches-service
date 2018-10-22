@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"flag"
-	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
 	"net/url"
@@ -13,9 +12,11 @@ import (
 	"time"
 )
 
+var b = true
+
 func main() {
 	log.SetFlags(log.Ltime | log.Lshortfile)
-	fmt.Println("start ws client")
+	log.Println("start ws client")
 	var addr = flag.String("addr", "localhost:9003", "http service address")
 
 	interrupt := make(chan os.Signal, 1)
@@ -46,14 +47,20 @@ func main() {
 		defer close(done)
 		for {
 			_, message, err := c.ReadMessage()
+			log.Println(message)
 			if err != nil {
 				log.Println("read:", err)
 				return
 			}
 			msg := string(string(message[:]))
 			msgs := strings.Split(msg, "-")
-			if msgs[0] != "2018" {
+			log.Println(msg)
+			if msgs[0] == "2018" {
 				log.Println(msg)
+			}
+			if b {
+				c.WriteMessage(websocket.TextMessage, []byte("{'username': 'test'"))
+				b = false
 			}
 			//switch msgs[0] {
 			//case "create:1":

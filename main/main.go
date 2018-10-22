@@ -28,6 +28,7 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 func main() {
 	flag.Parse()
 	log.SetFlags(log.Ltime | log.Lshortfile)
+	log.Println("Open for clients on: " + *host + ":" + *port)
 	hub := handler.NewHub()
 	go hub.Run()
 	http.HandleFunc("/", serveHome)

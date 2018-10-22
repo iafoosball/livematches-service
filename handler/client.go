@@ -73,7 +73,7 @@ func (c *Client) readPump() {
 			break
 		}
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
-		handleCommunication(c, string(string(message[:])))
+		handleCommunication(c, message)
 	}
 }
 
@@ -147,7 +147,12 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256)}
+	var ID string
+	var username string
+	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256), user: &models.User{
+		ID:       &ID,
+		Username: &username,
+	}}
 	client.hub.register <- client
 
 	// Allow collection of memory referenced by the caller by doing all work in
