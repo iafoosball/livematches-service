@@ -7,11 +7,14 @@ pipeline {
     stages {
         stage ("Build") {
             steps{
-                sh "docker stop livematches-service &"
-                sh "docker rm livematches-service &"
-                sh "sleep 15s"
                 sh "docker-compose build --pull"
-
+            }
+        }
+        stage ("Remove old") {
+            steps {
+               sh "docker stop livematches-service &"
+               sh "docker rm livematches-service &"
+               sh "sleep 15s"
             }
         }
         stage ("Production") {
