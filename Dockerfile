@@ -10,7 +10,6 @@ RUN chmod +x /usr/bin/dep
 RUN mkdir -p /go/src/github.com/iafoosball/livematches-service
 WORKDIR /go/src/github.com/iafoosball/livematches-service
 COPY . .
-RUN ls -al
 
 #Run dep ensure
 RUN dep ensure -vendor-only
