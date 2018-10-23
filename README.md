@@ -21,11 +21,15 @@ The first user to connect to a match/lobby is the admin (as before).
 ## API
 
 ### Normal User:
+###### joinMatch (tested)
+###### leaveMatch (tested)
+###### setUsername (tested)
 
 ### Admin User:
 
 ### Table:
-
+###### createMatch (tested)
+###### addGoal (not tested)
 
 
 

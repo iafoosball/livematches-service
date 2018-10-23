@@ -83,7 +83,7 @@ func handleTable(c *Client, m *message) {
 	case "closeMatch":
 		closeMatch(c)
 	case "addGoal":
-
+		addGoal(c, stringFromMap(m.Values, "side"), stringFromMap(m.Values, "speed"))
 		sendMatch(c, "")
 	case "removeGoal":
 	case "startLobby":
