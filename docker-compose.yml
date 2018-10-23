@@ -1,0 +1,7 @@
+version: '2'
+services:
+  livematches-service:
+    container_name: "livematches"
+    build: './'
+    ports:
+      - 9003:9003
