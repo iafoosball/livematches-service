@@ -7,8 +7,8 @@ ADD https://github.com/golang/dep/releases/download/v0.4.1/dep-linux-amd64 /usr/
 RUN chmod +x /usr/bin/dep
 
 #Copy the service
-RUN mkdir -p /go/src/github.com/iafoosball/livematches
-WORKDIR /go/src/github.com/iafoosball/livematches
+RUN mkdir -p /go/src/github.com/iafoosball/livematches-service
+WORKDIR /go/src/github.com/iafoosball/livematches-service
 COPY . .
 RUN ls -al
 
@@ -16,7 +16,7 @@ RUN ls -al
 RUN dep ensure -vendor-only
 
 #Install the service
-WORKDIR /go/src/github.com/iafoosball/livematches/main
+WORKDIR /go/src/github.com/iafoosball/livematches-service/main
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags "-s -w" -a -installsuffix cgo -o livematches .
 
 # STEP 2 build a small image
@@ -29,5 +29,5 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 
 # Copy our static executable
-COPY --from=builder /go/src/github.com/iafoosball/livematches .
+COPY --from=builder /go/src/github.com/iafoosball/livematches-service/main/livematches .
 CMD ["./livematches"]

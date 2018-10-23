@@ -81,6 +81,16 @@ func closeMatch(c *Client) {
 // Used by users to leave a Match
 func leaveMatch(c *Client) {
 	c.liveMatch.Unregister <- c
+	for i, p := range c.liveMatch.Players {
+		log.Println(c.user.ID)
+		log.Println(p.ID)
+
+		if p.ID == c.user.ID {
+			log.Println("delete user from match")
+			c.liveMatch.Players[i] = c.liveMatch.Players[len(c.liveMatch.Players)-1]
+			c.liveMatch.Players = c.liveMatch.Players[:len(c.liveMatch.Players)-1]
+		}
+	}
 }
 
 func addGoal(c *Client, side string, speed string) {
