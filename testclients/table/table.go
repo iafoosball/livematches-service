@@ -1,18 +1,19 @@
 package main
 
 import (
-	"bufio"
 	"flag"
 	"github.com/gorilla/websocket"
 	"log"
 	"net/url"
 	"os"
 	"os/signal"
-	"strings"
 	"time"
 )
 
-var b = true
+var (
+	serverMsg      = ""
+	stop      bool = false
+)
 
 func main() {
 	log.SetFlags(log.Ltime | log.Lshortfile)
@@ -22,9 +23,8 @@ func main() {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 
-	u := url.URL{Scheme: "ws", Host: *addr, Path: "/ws"}
+	u := url.URL{Scheme: "ws", Host: *addr, Path: "/ws/tables/table-2"}
 	log.Printf("connecting to %s", u.String())
-
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {
 		log.Fatal("dial:", err)
@@ -32,14 +32,30 @@ func main() {
 	defer c.Close()
 
 	done := make(chan struct{})
-	reader := bufio.NewReader(os.Stdin)
-
+	client := &client{
+		send: make(chan []byte, 256),
+	}
+	//handle input here. Is send to the server
 	go func() {
 		defer close(done)
 		for {
-			msg, _ := reader.ReadString('\n')
-			log.Println(msg)
-			c.WriteMessage(websocket.TextMessage, []byte(msg))
+			if !stop {
+				switch serverMsg {
+				case "":
+					msg := "{ \"command\": \"createMatch\", \"values\": { \"match\": \"123\", \"side\": \"blue\", \"attack\": \"true\" } }"
+					client.send <- []byte(msg)
+					serverMsg = "closeMatch"
+				case "closeMatch":
+					msg := "{ \"command\": \"closeMatch\", \"values\": { } }"
+					client.send <- []byte(msg)
+					stop = true
+
+					//case "":
+					//case "":
+					//case "":
+				}
+				time.Sleep(30 * time.Second)
+			}
 		}
 	}()
 
@@ -47,28 +63,15 @@ func main() {
 		defer close(done)
 		for {
 			_, message, err := c.ReadMessage()
-			log.Println(message)
+			// Prints the server message
+			serverMsg = string(message)
+			log.Println(serverMsg)
 			if err != nil {
 				log.Println("read:", err)
 				return
 			}
-			msg := string(string(message[:]))
-			msgs := strings.Split(msg, "-")
-			log.Println(msg)
-			if msgs[0] == "2018" {
-				log.Println(msg)
-			}
-			if b {
-				c.WriteMessage(websocket.TextMessage, []byte("{'username': 'test'"))
-				b = false
-			}
-			//switch msgs[0] {
-			//case "create:1":
-			//	msg, _ := reader.ReadString('\n')
-			//	log.Println(msg)
-			//	msg = "join:1"
-			//	c.WriteMessage(websocket.TextMessage, []byte(msg))
-			//}
+			c.WriteMessage(websocket.TextMessage, message)
+
 		}
 	}()
 
@@ -85,6 +88,12 @@ func main() {
 				log.Println("write:", err)
 				return
 			}
+		case message, ok := <-client.send:
+			if !ok {
+				c.WriteMessage(websocket.CloseMessage, []byte{})
+			}
+			log.Println(string(message))
+			c.WriteMessage(websocket.TextMessage, message)
 		case <-interrupt:
 			log.Println("interrupt")
 
@@ -103,4 +112,12 @@ func main() {
 		}
 	}
 
+}
+
+type client struct {
+	// The websocket connection.
+	conn *websocket.Conn
+
+	// Buffered channel of outbound messages.
+	send chan []byte
 }

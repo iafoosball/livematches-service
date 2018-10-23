@@ -6,7 +6,6 @@ import (
 	"github.com/iafoosball/livematches-service/models"
 	"log"
 	"net/http"
-	"strings"
 	"time"
 )
 
@@ -32,23 +31,6 @@ var (
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
-}
-
-// Client is a middleman between the websocket connection and the liveMatch.
-type Client struct {
-	hub *Hub
-
-	// The websocket connection.
-	conn *websocket.Conn
-
-	// Buffered channel of outbound messages.
-	send chan []byte
-
-	// The liveMatch which the user joins
-	liveMatch *liveMatch
-
-	//The client data
-	user *models.User
 }
 
 // readPump pumps messages from the websocket connection to the hub.
@@ -82,7 +64,7 @@ func sendAll(c *Client, msg string) {
 }
 
 func sendMatch(c *Client, msg string) {
-	c.liveMatch.matchCast <- []byte(msg)
+	c.liveMatch.MatchCast <- []byte(msg)
 }
 
 func sendPrivate(c *Client, msg string) {
@@ -91,7 +73,7 @@ func sendPrivate(c *Client, msg string) {
 
 // writePump pumps messages from the hub to the websocket connection.
 //
-// A goroutine running writePump is started for each connection. The
+// A goroutine running writePump is Started for each connection. The
 // application ensures that there is at most one writer to a connection by
 // executing all writes from this goroutine.
 func (c *Client) writePump() {
@@ -113,11 +95,6 @@ func (c *Client) writePump() {
 			w, err := c.conn.NextWriter(websocket.TextMessage)
 			if err != nil {
 				return
-			}
-			msg := string(string(message[:]))
-			msgs := strings.Split(msg, "-")
-			if msgs[0] != "2018" {
-				log.Printf("writing: %s", message)
 			}
 			w.Write(message)
 
@@ -141,22 +118,51 @@ func (c *Client) writePump() {
 }
 
 // serveWs handles websocket requests from the peer.
-func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
+func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, id string) {
+	log.Println("new Client connected with id: " + id)
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	var ID string
-	var username string
-	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256), user: &models.User{
-		ID:       &ID,
-		Username: &username,
-	}}
+	var client *Client
+	if isUser {
+		client = &Client{hub: hub, conn: conn, send: make(chan []byte, 256), isUser: true, user: &models.User{
+			ID:       id,
+			Username: "Random",
+		}}
+	} else {
+		client = &Client{hub: hub, conn: conn, send: make(chan []byte, 256), isUser: false, table: &models.Table{
+			ID: id,
+		}}
+	}
 	client.hub.register <- client
 
 	// Allow collection of memory referenced by the caller by doing all work in
 	// new goroutines.
 	go client.writePump()
 	go client.readPump()
+}
+
+// User is a middleman between the websocket connection and the LiveMatch.
+type Client struct {
+	hub *Hub
+
+	// The websocket connection.
+	conn *websocket.Conn
+
+	// Buffered channel of outbound messages.
+	send chan []byte
+
+	// The LiveMatch which the user joins
+	liveMatch *LiveMatch
+
+	// isUser is true for a user. False for a table.
+	isUser bool
+
+	//The client data. Going to be nil for a table (or empty pointer?)
+	user *models.User
+
+	// The table data. Nil for a user.
+	table *models.Table
 }

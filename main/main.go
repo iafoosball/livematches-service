@@ -1,10 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"github.com/iafoosball/livematches-service/handler"
 	"log"
 	"net/http"
+	"strings"
 )
 
 var (
@@ -25,6 +27,26 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "home.html")
 }
 
+func listMatches(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		for _, m := range handler.LiveMatches {
+			log.Printf("%+v\n", m)
+		}
+		b, err := json.Marshal(handler.LiveMatches)
+
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		var m = handler.LiveMatch{}
+		err = json.Unmarshal(b, m)
+		log.Println(err)
+		log.Println()
+		log.Printf("%+v\n", m)
+		w.Write(b)
+	}
+}
+
 func main() {
 	flag.Parse()
 	log.SetFlags(log.Ltime | log.Lshortfile)
@@ -32,8 +54,17 @@ func main() {
 	hub := handler.NewHub()
 	go hub.Run()
 	http.HandleFunc("/", serveHome)
-	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		handler.ServeWs(hub, w, r)
+	http.HandleFunc("/matches", listMatches)
+	// if request goes to table, bool isUser is set to false
+	http.HandleFunc("/ws/tables/", func(w http.ResponseWriter, r *http.Request) {
+		s := strings.Split(r.URL.Path, "/")
+		// 3 is hardedcoded so it fails, if id is not specified.
+		handler.ServeWs(hub, w, r, false, s[3])
+	})
+	http.HandleFunc("/ws/users/", func(w http.ResponseWriter, r *http.Request) {
+		log.Println("logged")
+		s := strings.Split(r.URL.Path, "/")
+		handler.ServeWs(hub, w, r, true, s[3])
 	})
 	err := http.ListenAndServe(*host+":"+*port, nil)
 	if err != nil {

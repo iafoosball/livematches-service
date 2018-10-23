@@ -15,7 +15,7 @@ import (
 // swagger:model Goal
 type Goal struct {
 
-	// The match id
+	// DO NOT USE! Only use match id
 	From string `json:"_from,omitempty"`
 
 	// The goal id, which is the collection + "/" + the key
@@ -24,20 +24,23 @@ type Goal struct {
 	// The goal key
 	Key string `json:"_key,omitempty"`
 
-	// Same as from
+	// DO NOT USE! Only use match id
 	To string `json:"_to,omitempty"`
 
 	// The datetime in nanoseconds of the goal.
 	Datetime string `json:"datetime,omitempty"`
 
-	// The unique match id.
-	GoalID string `json:"goal_id,omitempty"`
+	// the corresponding match id
+	MatchID string `json:"match_id,omitempty"`
 
 	// This could be used in a double game, if the person attacking scores.
 	PositionAttack bool `json:"position_attack,omitempty"`
 
 	// The side who scored the goal. Usually either red or blue.
 	Side string `json:"side,omitempty"`
+
+	// The speed of the goal
+	Speed string `json:"speed,omitempty"`
 }
 
 // Validate validates this goal

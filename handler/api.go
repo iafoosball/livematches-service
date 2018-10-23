@@ -13,9 +13,13 @@ var (
 
 const (
 	// Start: For Users
+	joinLobby   = "joinLobby"
+	leaveLobby  = "leaveLobby"
 	joinTable   = "joinTable"
+	leaveTable  = "leaveTable"
 	setPosition = "setPosition"
-	// Start: For Raspberry
+	// Start: For Admin
+
 	newGoal
 )
 
@@ -23,28 +27,76 @@ func handleCommunication(c *Client, message []byte) {
 	if m, b = unmarshal(message); !b {
 		return
 	}
-	log.Println(string(message))
-	sendPrivate(c, "hallo")
-	if *c.user.ID == "" {
-		if !initUser(c, *m) {
-			return
-		}
+	log.Println(m)
+	if c.isUser && c.user.Admin {
+		handleAdmin(c, m)
+	} else if c.isUser {
+		handleUsers(c, m)
+	} else {
+		handleTable(c, m)
 	}
+
+}
+
+func handleUsers(c *Client, m *message) {
 	switch m.Command {
-	case "joinTable":
+	case "setUsername":
+		c.user.Username = stringFromMap(m.Values, "username")
+	case "joinLobby":
 		log.Println("done!")
 		sendPrivate(c, "done")
+	case "joinMatch":
+		if joinMatch(c, stringFromMap(m.Values, "id"), true) {
+			sendMatch(c, "new user joined!")
+		} else {
+			sendPrivate(c, "fail")
+		}
+	case "leaveMatch":
+		leaveMatch(c)
 	}
 }
 
-// initUser sets the ID and uname. If raspberry, just set that as name.
-func initUser(c *Client, m message) bool {
-	if m.ID == "" || m.Username == "" {
-		return false
+func handleAdmin(c *Client, m *message) {
+	handleUsers(c, m)
+	switch m.Command {
+	case "startMatch":
+	case "double":
+	case "rated":
+	case "max_time":
+	case "max_goals":
+	case "switch_positions":
 	}
-	c.user.ID = &m.ID
-	c.user.Username = &m.Username
-	return true
+}
+
+func handleTable(c *Client, m *message) {
+	log.Println(c.isUser)
+	log.Println("Hanlde table " + c.table.ID + " with cmd: " + m.Command)
+	switch m.Command {
+	case "createMatch":
+		if createMatch(c) {
+			sendPrivate(c, "ok")
+		} else {
+			sendPrivate(c, "fail")
+		}
+	case "closeMatch":
+		closeMatch(c)
+	case "addGoal":
+
+		sendMatch(c, "")
+	case "removeGoal":
+	case "startLobby":
+	default:
+
+	}
+}
+
+func stringFromMap(m map[string]string, key string) string {
+	for k, v := range m {
+		if k == key {
+			return v
+		}
+	}
+	return ""
 }
 
 // unmarshal converts the byte into a message struct.
@@ -61,15 +113,6 @@ func unmarshal(msg []byte) (*message, bool) {
 }
 
 type message struct {
-	// The user key
-	ID string `json:"id"`
-
-	// The username
-	Username string `json:"username"`
-
-	// The table id
-	Table bool `json:"table"`
-
 	// Command to execute
 	Command string `json:"command"`
 

@@ -2,83 +2,154 @@ package handler
 
 import (
 	"github.com/iafoosball/livematches-service/models"
+	"log"
+	"time"
 )
 
-var matches = []liveMatch{}
+// operations for live LiveMatches
 
-// Either return already existing liveMatch or create new one
-func match(id string) *liveMatch {
-	for _, match := range matches {
-		if match.matchID == id {
-			return &match
+// All active lobbies and matches are registered here.
+var LiveMatches = []*LiveMatch{}
+
+// Creates a new match. (Either return already existing LiveMatch or create new one)
+// How to handle contradictions??? If there is an already open match what to do....
+func createMatch(c *Client) bool {
+	for i, match := range LiveMatches {
+		if match.MatchID == c.table.ID {
+			LiveMatches[i] = LiveMatches[len(LiveMatches)-1]
+			LiveMatches = LiveMatches[:len(LiveMatches)-1]
 		}
 	}
-	match := liveMatch{
-		clients:    make(map[*Client]bool),
-		register:   make(chan *Client),
-		unregister: make(chan *Client),
-		matchCast:  make(chan []byte),
-		matchData:  models.Match{},
-		matchID:    id,
+	match := &LiveMatch{
+		Clients:    make(map[*Client]bool),
+		Register:   make(chan *Client),
+		Unregister: make(chan *Client),
+		MatchCast:  make(chan []byte),
+		MatchData:  &models.Match{},
+		MatchID:    c.table.ID,
+		Started:    false,
 	}
-	matches = append(matches, match)
-	go match.runMatch()
-	return &match
+	go match.initMatch()
+	LiveMatches = append(LiveMatches, match)
+	c.liveMatch = match
+	joinMatch(c, match.MatchID, false)
+	return true
 }
 
-func joinMatch(c *Client, id string) *liveMatch {
-	for _, match := range matches {
-		if match.matchID == id {
-			match.clients[c] = true
-			return &match
+func joinMatch(c *Client, id string, isUser bool) bool {
+	log.Println(id)
+	for _, match := range LiveMatches {
+		log.Println(match)
+		if match.MatchID == id {
+			c.liveMatch = match
+			c.liveMatch.Register <- c
+			if isUser {
+				log.Println("append user")
+				c.liveMatch.Players = append(c.liveMatch.Players, c.user)
+				for _, m := range LiveMatches {
+					log.Printf("%+v\n", m.Players)
+				}
+			}
+			return true
 		}
 	}
-	return nil
+
+	return false
 }
 
-func leaveMatch() {
+// startMatch writes everything to the Match object.
+// Before users etc. is stored on the livematch
+func startMatch() {
 
 }
 
-func (m *liveMatch) runMatch() {
+// Used by pi to finish a Match
+// If match is finished it is send to matches-service and stored their
+func closeMatch(c *Client) {
+	for cl, _ := range c.liveMatch.Clients {
+		leaveMatch(cl)
+	}
+	id := c.liveMatch.MatchID
+	for i, l := range LiveMatches {
+		if l.MatchID == id {
+			LiveMatches[i] = LiveMatches[len(LiveMatches)-1]
+			LiveMatches = LiveMatches[:len(LiveMatches)-1]
+		}
+	}
+}
+
+// Used by users to leave a Match
+func leaveMatch(c *Client) {
+	c.liveMatch.Unregister <- c
+}
+
+func addGoal(c *Client, side string, speed string) {
+	c.liveMatch.Goals = append(c.liveMatch.Goals, &models.Goal{
+		Side:     side,
+		Speed:    speed,
+		Datetime: time.Now().Format(time.RFC3339),
+	})
+	if side == "red" {
+		c.liveMatch.ScoreRed++
+	} else if side == "blue" {
+		c.liveMatch.ScoreBlue++
+	}
+}
+
+type LiveMatch struct {
+	// Registered Clients.
+	Clients map[*Client]bool `json:"-"`
+
+	// Outbound messages for all users inside a LiveMatch
+	MatchCast chan []byte `json:"-"`
+
+	// The LiveMatch ID
+	MatchID string `json:"matchID"`
+
+	// Started is True if match is active
+	Started bool `json:"started"`
+
+	// Register requests from the Clients.
+	Register chan *Client `json:"-"`
+
+	// Unregister requests from Clients.
+	Unregister chan *Client `json:"-"`
+
+	// holds the data of the LiveMatch
+	MatchData *models.Match `json:"-"`
+
+	// holds the data of the Goals for a LiveMatch
+	Goals []*models.Goal `json:"-"`
+
+	// list of all Players
+	Players []*models.User `json:"users"`
+
+	// list of all Visitors
+	Visitors []*models.User `json:"Visitors"`
+
+	ScoreRed int `json:"score_red"`
+
+	ScoreBlue int `json:"score_blue"`
+}
+
+func (m *LiveMatch) initMatch() {
 	for {
 		select {
-		case client := <-m.register:
-			m.clients[client] = true
-		case client := <-m.unregister:
-			if _, ok := m.clients[client]; ok {
-				delete(m.clients, client)
-				close(client.send)
+		case client := <-m.Register:
+			m.Clients[client] = true
+		case client := <-m.Unregister:
+			if _, ok := m.Clients[client]; ok {
+
 			}
-		case message := <-m.matchCast:
-			for client := range m.clients {
+		case message := <-m.MatchCast:
+			for client := range m.Clients {
 				select {
 				case client.send <- message:
 				default:
 					close(client.send)
-					delete(m.clients, client)
+					delete(m.Clients, client)
 				}
 			}
 		}
 	}
-}
-
-type liveMatch struct {
-	// Registered clients.
-	clients map[*Client]bool
-
-	// Outbound messages for all users inside a liveMatch
-	matchCast chan []byte
-
-	// The liveMatch ID
-	matchID string
-
-	// Register requests from the clients.
-	register chan *Client
-
-	// Unregister requests from clients.
-	unregister chan *Client
-
-	// holds the data of the liveMatch
-	matchData models.Match
 }

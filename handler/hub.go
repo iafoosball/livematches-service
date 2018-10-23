@@ -1,16 +1,16 @@
 package handler
 
 type Hub struct {
-	// Register clients.
+	// Register Clients.
 	clients map[*Client]bool
 
-	// Inbound messages from the clients.
+	// Inbound messages from the Clients.
 	broadcast chan []byte
 
-	// Register requests from the clients.
+	// Register requests from the Clients.
 	register chan *Client
 
-	// Unregister requests from clients.
+	// Unregister requests from Clients.
 	unregister chan *Client
 }
 
