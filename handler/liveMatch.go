@@ -42,6 +42,9 @@ func createMatch(c *Client, tableID string) bool {
 func joinMatch(c *Client, id string) bool {
 	for _, match := range LiveMatches {
 		if match.TableID == id {
+			//if c.liveMatch.Users != nil && len(c.liveMatch.Users) > 4 {
+			//	return false
+			//}
 			c.liveMatch = match
 			c.liveMatch.Register <- c
 			c.liveMatch.Users = append(c.liveMatch.Users, c.user)
@@ -206,7 +209,6 @@ type LiveMatch struct {
 
 func (m *LiveMatch) initMatch() {
 	defer func() {
-		log.Println(*m)
 		// recover from panic if one occured. Set err to nil otherwise.
 		if recover() != nil {
 			err = errors.New("Probably connection interrupt")

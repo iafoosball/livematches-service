@@ -69,6 +69,7 @@ func sendMatch(c *Client, msg string) {
 }
 
 func sendMatchData(c *Client) {
+	log.Println("sendMatchData")
 	b, err := json.Marshal(*c.liveMatch)
 	handleErr(err)
 	c.liveMatch.MatchCast <- b
@@ -79,7 +80,7 @@ func sendPrivate(c *Client, msg string) {
 }
 
 func closeUser(c *Client) {
-	log.Println("cloooose")
+	log.Println("close User: " + c.user.ID)
 	for i, u := range c.liveMatch.Users {
 		if u.ID == c.user.ID {
 			c.liveMatch.Users[i] = c.liveMatch.Users[len(c.liveMatch.Users)-1]
@@ -176,8 +177,6 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 		client.table = &models.Table{ID: tableID}
 		createMatch(client, tableID)
 	}
-	sendMatchData(client)
-
 }
 
 // User is a middleman between the websocket connection and the LiveMatch.
