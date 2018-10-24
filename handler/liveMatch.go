@@ -29,6 +29,7 @@ func createMatch(c *Client, tableID string) bool {
 		MatchCast:  make(chan []byte),
 		MatchData:  &models.Match{},
 		Positions:  &models.MatchPositions{},
+		Users:      []*models.User{},
 		TableID:    c.table.ID,
 		Started:    false,
 	}
@@ -42,7 +43,7 @@ func createMatch(c *Client, tableID string) bool {
 func joinMatch(c *Client, id string) bool {
 	for _, match := range LiveMatches {
 		if match.TableID == id {
-			//if c.liveMatch.Users != nil && len(c.liveMatch.Users) > 4 {
+			//if len(c.liveMatch.Users) > 3  {
 			//	return false
 			//}
 			c.liveMatch = match
