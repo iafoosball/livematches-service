@@ -171,6 +171,7 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 		client.isUser = true
 		client.user = &models.User{ID: userID}
 		joinMatch(client, tableID)
+		sendMatchData(client)
 	} else {
 		client.table = &models.Table{ID: tableID}
 		createMatch(client, tableID)

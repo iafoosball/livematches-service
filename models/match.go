@@ -34,9 +34,6 @@ type Match struct {
 	// free game
 	FreeGame bool `json:"freeGame,omitempty"`
 
-	// The position of the players
-	Lobby []string `json:"lobby"`
-
 	// The maximum number of goals for this game. If a time is specified the first criteria which is true will stop the match.
 	MaxGoals *int64 `json:"maxGoals,omitempty"`
 

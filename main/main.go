@@ -1,8 +1,8 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
+	"github.com/go-openapi/swag"
 	"github.com/iafoosball/livematches-service/handler"
 	"log"
 	"net/http"
@@ -29,7 +29,12 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 
 func listMatches(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		b, err := json.Marshal(handler.LiveMatches)
+		for _, m := range handler.LiveMatches {
+			ma, _ := m.MatchData.MarshalBinary()
+			log.Printf("%+v\n", string(ma))
+		}
+		b, err := swag.WriteJSON(handler.LiveMatches)
+		log.Printf("%+v\n", string(b))
 		if err != nil {
 			log.Println(err)
 			return
