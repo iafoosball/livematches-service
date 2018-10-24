@@ -33,16 +33,10 @@ func listMatches(w http.ResponseWriter, r *http.Request) {
 			log.Printf("%+v\n", m)
 		}
 		b, err := json.Marshal(handler.LiveMatches)
-
 		if err != nil {
 			log.Println(err)
 			return
 		}
-		var m = handler.LiveMatch{}
-		err = json.Unmarshal(b, m)
-		log.Println(err)
-		log.Println()
-		log.Printf("%+v\n", m)
 		w.Write(b)
 	}
 }
@@ -59,12 +53,12 @@ func main() {
 	http.HandleFunc("/tables/", func(w http.ResponseWriter, r *http.Request) {
 		s := strings.Split(r.URL.Path, "/")
 		// 3 is hardedcoded so it fails, if id is not specified.
-		handler.ServeWs(hub, w, r, false, s[2])
+		handler.ServeWs(hub, w, r, false, "", s[2])
 	})
 	http.HandleFunc("/users/", func(w http.ResponseWriter, r *http.Request) {
-		log.Println("logged")
+		log.Println(r.URL.Path)
 		s := strings.Split(r.URL.Path, "/")
-		handler.ServeWs(hub, w, r, true, s[2])
+		handler.ServeWs(hub, w, r, true, s[2], s[3])
 	})
 	err := http.ListenAndServe(*host+":"+*port, nil)
 	if err != nil {

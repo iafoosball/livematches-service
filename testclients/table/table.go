@@ -42,9 +42,9 @@ func main() {
 			if !stop {
 				switch serverMsg {
 				case "":
-					msg := "{ \"command\": \"createMatch\", \"values\": { \"match\": \"123\", \"side\": \"blue\", \"attack\": \"true\" } }"
-					client.send <- []byte(msg)
-					serverMsg = "closeMatch"
+					//msg := "{ \"command\": \"createMatch\", \"values\": { \"match\": \"123\", \"side\": \"blue\", \"attack\": \"true\" } }"
+					//client.send <- []byte(msg)
+					//serverMsg = "closeMatch"
 				case "closeMatch":
 					msg := "{ \"command\": \"closeMatch\", \"values\": { } }"
 					client.send <- []byte(msg)

@@ -118,30 +118,31 @@ func (c *Client) writePump() {
 }
 
 // serveWs handles websocket requests from the peer.
-func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, id string) {
-	log.Println("new Client connected with id: " + id)
+func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, userID string, tableID string) {
+	log.Println("new Client connected with id: " + userID)
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	var client *Client
-	if isUser {
-		client = &Client{hub: hub, conn: conn, send: make(chan []byte, 256), isUser: true, user: &models.User{
-			ID:       id,
-			Username: "Random",
-		}}
-	} else {
-		client = &Client{hub: hub, conn: conn, send: make(chan []byte, 256), isUser: false, table: &models.Table{
-			ID: id,
-		}}
-	}
+	client = &Client{hub: hub, conn: conn, send: make(chan []byte, 256), isUser: false}
 	client.hub.register <- client
 
 	// Allow collection of memory referenced by the caller by doing all work in
 	// new goroutines.
 	go client.writePump()
 	go client.readPump()
+
+	if isUser {
+		client.isUser = true
+		client.user = &models.User{ID: userID}
+		joinMatch(client, tableID)
+	} else {
+		client.table = &models.Table{ID: tableID}
+		createMatch(client, tableID)
+	}
+
 }
 
 // User is a middleman between the websocket connection and the LiveMatch.
@@ -165,4 +166,10 @@ type Client struct {
 
 	// The table data. Nil for a user.
 	table *models.Table
+}
+
+func handleErr(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
 }

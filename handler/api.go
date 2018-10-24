@@ -40,18 +40,6 @@ func handleCommunication(c *Client, message []byte) {
 
 func handleUsers(c *Client, m *message) {
 	switch m.Command {
-	case "setUsername":
-		c.user.Username = stringFromMap(m.Values, "username")
-	//case "joinLobby": Visitors are out for the moment
-	//	log.Println("done!")
-	//	sendPrivate(c, "done")
-	case "joinMatch":
-		// tested for joining.
-		if joinMatch(c, stringFromMap(m.Values, "id"), true) {
-			sendMatch(c, "new user joined!")
-		} else {
-			sendPrivate(c, "fail")
-		}
 	case "leaveMatch":
 		// Tested for normal user.
 		leaveMatch(c)
@@ -74,12 +62,6 @@ func handleTable(c *Client, m *message) {
 	log.Println(c.isUser)
 	log.Println("Hanlde table " + c.table.ID + " with cmd: " + m.Command)
 	switch m.Command {
-	case "createMatch":
-		if createMatch(c) {
-			sendPrivate(c, "ok")
-		} else {
-			sendPrivate(c, "fail")
-		}
 	case "closeMatch":
 		closeMatch(c)
 	case "addGoal":

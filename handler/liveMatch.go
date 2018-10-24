@@ -13,7 +13,8 @@ var LiveMatches = []*LiveMatch{}
 
 // Creates a new match. (Either return already existing LiveMatch or create new one)
 // How to handle contradictions??? If there is an already open match what to do....
-func createMatch(c *Client) bool {
+func createMatch(c *Client, tableID string) bool {
+	c.table.ID = tableID
 	for i, match := range LiveMatches {
 		if match.MatchID == c.table.ID {
 			LiveMatches[i] = LiveMatches[len(LiveMatches)-1]
@@ -32,28 +33,23 @@ func createMatch(c *Client) bool {
 	go match.initMatch()
 	LiveMatches = append(LiveMatches, match)
 	c.liveMatch = match
-	joinMatch(c, match.MatchID, false)
+	c.liveMatch.Register <- c
 	return true
 }
 
-func joinMatch(c *Client, id string, isUser bool) bool {
+func joinMatch(c *Client, id string) bool {
 	log.Println(id)
 	for _, match := range LiveMatches {
 		log.Println(match)
 		if match.MatchID == id {
 			c.liveMatch = match
 			c.liveMatch.Register <- c
-			if isUser {
-				log.Println("append user")
-				c.liveMatch.Players = append(c.liveMatch.Players, c.user)
-				for _, m := range LiveMatches {
-					log.Printf("%+v\n", m.Players)
-				}
-			}
-			return true
-		}
-	}
+			c.liveMatch.Players = append(c.liveMatch.Players, c.user)
 
+		}
+		return true
+	}
+	handleErr(err)
 	return false
 }
 
