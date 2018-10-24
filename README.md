@@ -28,6 +28,50 @@ The first user to connect to a match/lobby is the admin (as before).
 ### Table:
 ###### addGoal (not tested)
 
+### JSON
+[
+  {
+    "tableID": "table-2",
+    "started": false,
+    "users": {
+      "user-1": {
+        "username": "",
+        "admin": false,
+        "position": "attack",
+        "bet": 100,
+        "color": "#ffffff"
+      },
+      "user-2": {
+        "username": "",
+        "admin": false,
+        "position": "attack",
+        "bet": 0,
+        "color": "#ffffff"
+      }
+    },
+    "positions": {
+      "blueDefense": "uid",
+      "blueAttack": "uid",
+      "redDefense": "uid",
+      "redAttack": "uid"
+    },
+    "scoreRed": 0,
+    "scoreBlue": 0,
+    "settings": {
+      "2v2": true,
+      "1v1": true,
+      "switchPositions": true,
+      "2v1": true,
+      "bet": true,
+      "maxGoals": true,
+      "tournament": true,
+      "drunk": true,
+      "freeGame": true,
+      "payed": true,
+      "maxTime": ""
+    }
+  }
+]
 
 
 
