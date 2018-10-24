@@ -70,7 +70,11 @@ The first user to connect to a match/lobby is the admin (as before).
       "freeGame": true,
       "payed": true,
       "maxTime": ""
-    }
+    },
+    "goals" :[
+      {"speed":20.0,"position":"attack/defense","side":"blue/red"},
+      {"speed":20.0,"position":"attack/defense","side":"blue/red"}
+    ]
   }
 ]
 ```
