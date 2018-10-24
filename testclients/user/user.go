@@ -19,12 +19,12 @@ var (
 func main() {
 	log.SetFlags(log.Ltime | log.Lshortfile)
 	log.Println("start ws client")
-	var addr = flag.String("addr", "0.0.0.0:9003", "http service address")
+	var addr = flag.String("addr", "iafoosball.aau.dk:9003", "http service address")
 
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 
-	u := url.URL{Scheme: "ws", Host: *addr, Path: "/users/table-2/user-1"}
+	u := url.URL{Scheme: "ws", Host: *addr, Path: "/users/table-1/user-2"}
 	log.Printf("connecting to %s", u.String())
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {
