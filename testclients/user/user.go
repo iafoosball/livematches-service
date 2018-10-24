@@ -43,8 +43,8 @@ func main() {
 			if !stop {
 				switch next {
 				case "":
-					msg := "{ \"command\": \"setPosition\", \"values\": { \"side\": \"red\",\"position\": \"defense\" } }"
-					client.send <- []byte(msg)
+					//msg := "{ \"command\": \"setPosition\", \"values\": { \"side\": \"red\",\"position\": \"defense\" } }"
+					//client.send <- []byte(msg)
 					//next = "joinMatch"
 				case "joinMatch":
 					msg := "{ \"command\": \"joinMatch\", \"values\": { \"id\": \"table-1\", \"side\": \"blue\", \"attack\": \"true\" } }"
@@ -58,8 +58,7 @@ func main() {
 					//case "":
 					//case "":
 				}
-				log.Println(serverMsg)
-				time.Sleep(5 * time.Second)
+				time.Sleep(500 * time.Second)
 			}
 		}
 	}()
