@@ -59,10 +59,10 @@ The first user to connect to a match/lobby is the admin (as before).
     "scoreRed": 0,
     "scoreBlue": 0,
     "settings": {
-      "twoVtwo": true,
-      "oneVone": true,
+      "twoOnTwo": true,
+      "oneOnOne": true,
       "switchPositions": true,
-      "twoVone": true,
+      "twoOnOne": true,
       "bet": true,
       "maxGoals": true,
       "tournament": true,
