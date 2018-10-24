@@ -40,6 +40,8 @@ func handleCommunication(c *Client, message []byte) {
 
 func handleUsers(c *Client, m *message) {
 	switch m.Command {
+	case "setPosition":
+		sendMatchData(c)
 	case "leaveMatch":
 		// Tested for normal user.
 		leaveMatch(c)

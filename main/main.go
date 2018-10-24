@@ -29,9 +29,6 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 
 func listMatches(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		for _, m := range handler.LiveMatches {
-			log.Printf("%+v\n", m)
-		}
 		b, err := json.Marshal(handler.LiveMatches)
 		if err != nil {
 			log.Println(err)

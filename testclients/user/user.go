@@ -43,9 +43,9 @@ func main() {
 			if !stop {
 				switch next {
 				case "":
-					msg := "{ \"command\": \"setUsername\", \"values\": { \"username\": \"hallo\" } }"
-					client.send <- []byte(msg)
-					next = "joinMatch"
+					//msg := "{ \"command\": \"setPosition\", \"values\": { \"username\": \"hallo\" } }"
+					//client.send <- []byte(msg)
+					//next = "joinMatch"
 				case "joinMatch":
 					msg := "{ \"command\": \"joinMatch\", \"values\": { \"id\": \"table-1\", \"side\": \"blue\", \"attack\": \"true\" } }"
 					client.send <- []byte(msg)

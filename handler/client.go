@@ -2,6 +2,7 @@ package handler
 
 import (
 	"bytes"
+	"encoding/json"
 	"github.com/gorilla/websocket"
 	"github.com/iafoosball/livematches-service/models"
 	"log"
@@ -65,6 +66,12 @@ func sendAll(c *Client, msg string) {
 
 func sendMatch(c *Client, msg string) {
 	c.liveMatch.MatchCast <- []byte(msg)
+}
+
+func sendMatchData(c *Client) {
+	b, err := json.Marshal(*c.liveMatch)
+	handleErr(err)
+	c.liveMatch.MatchCast <- b
 }
 
 func sendPrivate(c *Client, msg string) {
@@ -136,11 +143,11 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 
 	if isUser {
 		client.isUser = true
-		client.user = &models.User{ID: tableID}
-		joinMatch(client, userID)
+		client.user = &models.User{ID: userID}
+		joinMatch(client, tableID)
 	} else {
-		client.table = &models.Table{ID: userID}
-		createMatch(client, userID)
+		client.table = &models.Table{ID: tableID}
+		createMatch(client, tableID)
 	}
 
 }

@@ -45,7 +45,7 @@ func joinMatch(c *Client, id string) bool {
 			c.liveMatch = match
 			c.liveMatch.Register <- c
 			c.liveMatch.Players = append(c.liveMatch.Players, c.user)
-
+			log.Println(c.liveMatch)
 		}
 		return true
 	}
