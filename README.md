@@ -29,6 +29,7 @@ The first user to connect to a match/lobby is the admin (as before).
 ###### addGoal (not tested)
 
 ### JSON
+```json
 [
   {
     "tableID": "table-2",
@@ -72,6 +73,6 @@ The first user to connect to a match/lobby is the admin (as before).
     }
   }
 ]
-
+```
 
 
