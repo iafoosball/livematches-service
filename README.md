@@ -22,6 +22,7 @@ The first user to connect to a match/lobby is the admin (as before).
 
 ### Normal User:
 ###### joinMatch (tested)
+
 ###### leaveMatch (tested)
 ###### setUsername (tested)
 

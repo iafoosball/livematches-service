@@ -56,15 +56,15 @@ func main() {
 	http.HandleFunc("/", serveHome)
 	http.HandleFunc("/matches", listMatches)
 	// if request goes to table, bool isUser is set to false
-	http.HandleFunc("/ws/tables/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/tables/", func(w http.ResponseWriter, r *http.Request) {
 		s := strings.Split(r.URL.Path, "/")
 		// 3 is hardedcoded so it fails, if id is not specified.
-		handler.ServeWs(hub, w, r, false, s[3])
+		handler.ServeWs(hub, w, r, false, s[2])
 	})
-	http.HandleFunc("/ws/users/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/users/", func(w http.ResponseWriter, r *http.Request) {
 		log.Println("logged")
 		s := strings.Split(r.URL.Path, "/")
-		handler.ServeWs(hub, w, r, true, s[3])
+		handler.ServeWs(hub, w, r, true, s[2])
 	})
 	err := http.ListenAndServe(*host+":"+*port, nil)
 	if err != nil {

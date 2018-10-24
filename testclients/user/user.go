@@ -19,12 +19,12 @@ var (
 func main() {
 	log.SetFlags(log.Ltime | log.Lshortfile)
 	log.Println("start ws client")
-	var addr = flag.String("addr", "localhost:9003", "http service address")
+	var addr = flag.String("addr", "0.0.0.0:9003", "http service address")
 
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 
-	u := url.URL{Scheme: "ws", Host: *addr, Path: "/ws/users/user-1"}
+	u := url.URL{Scheme: "ws", Host: *addr, Path: "/users/user-1"}
 	log.Printf("connecting to %s", u.String())
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {
@@ -43,11 +43,11 @@ func main() {
 			if !stop {
 				switch next {
 				case "":
-					msg := "{ \"command\": \"setUsername\", \"values\": { \"username\": \"joe\" } }"
+					msg := "{ \"command\": \"setUsername\", \"values\": { \"username\": \"hallo\" } }"
 					client.send <- []byte(msg)
 					next = "joinMatch"
 				case "joinMatch":
-					msg := "{ \"command\": \"joinMatch\", \"values\": { \"id\": \"table-2\", \"side\": \"blue\", \"attack\": \"true\" } }"
+					msg := "{ \"command\": \"joinMatch\", \"values\": { \"id\": \"table-1\", \"side\": \"blue\", \"attack\": \"true\" } }"
 					client.send <- []byte(msg)
 					next = "leaveMatch"
 				case "leaveMatch":
