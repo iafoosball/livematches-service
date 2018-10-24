@@ -8,6 +8,7 @@ package models
 import (
 	strfmt "github.com/go-openapi/strfmt"
 
+	"github.com/go-openapi/errors"
 	"github.com/go-openapi/swag"
 )
 
@@ -21,44 +22,65 @@ type Match struct {
 	// The match key
 	Key string `json:"_key,omitempty"`
 
-	// The position of the blue users.Not used in 1:1.
-	BlueAttack []string `json:"blue_attack"`
-
-	// The position of the blue user playing in defense. This is used when playing 1:1.
-	BlueDefense []string `json:"blue_defense"`
+	// Is this game with bets
+	Bet bool `json:"bet,omitempty"`
 
 	// Was the game completed.
 	Completed bool `json:"completed,omitempty"`
 
 	// the datetime when the match ends
-	EndTime string `json:"end_time,omitempty"`
+	EndTime string `json:"endTime,omitempty"`
+
+	// free game
+	FreeGame bool `json:"freeGame,omitempty"`
 
 	// The position of the players
 	Lobby []string `json:"lobby"`
 
 	// The maximum number of goals for this game. If a time is specified the first criteria which is true will stop the match.
-	MaxGoals *int64 `json:"max_goals,omitempty"`
+	MaxGoals *int64 `json:"maxGoals,omitempty"`
 
 	// The maximum tim in sec for this game. If a max goals is specified the first criteria which is true will stop the match.
-	MaxTime int64 `json:"max_time,omitempty"`
+	MaxTime int64 `json:"maxTime,omitempty"`
+
+	// one on one
+	OneOnOne bool `json:"oneOnOne,omitempty"`
+
+	// payed
+	Payed bool `json:"payed,omitempty"`
+
+	// positions
+	Positions *MatchPositions `json:"positions,omitempty"`
 
 	// A match can be rated, ie a ranked game with points, or without.
-	RatedMatch bool `json:"rated_match,omitempty"`
+	RatedMatch bool `json:"ratedMatch,omitempty"`
 
-	// The position of the red users. Not used in 1:1.
-	RedAttack []string `json:"red_attack"`
+	// score blue
+	ScoreBlue int64 `json:"scoreBlue,omitempty"`
 
-	// The position of the red user playing in defense. This is used when playing 1:1.
-	RedDefense []string `json:"red_defense"`
+	// score red
+	ScoreRed int64 `json:"scoreRed,omitempty"`
 
 	// the datetime when the game ends
-	StartTime string `json:"start_time,omitempty"`
+	StartTime string `json:"startTime,omitempty"`
+
+	// started
+	Started bool `json:"started,omitempty"`
 
 	// Switch the position after 50% of the goal (time or goals) is reached.
-	SwitchPosition bool `json:"switch_position,omitempty"`
+	SwitchPosition bool `json:"switchPosition,omitempty"`
 
 	// the id of table
-	TableID string `json:"table_id,omitempty"`
+	TableID string `json:"tableID,omitempty"`
+
+	// tournament
+	Tournament bool `json:"tournament,omitempty"`
+
+	// two on one
+	TwoOnOne bool `json:"twoOnOne,omitempty"`
+
+	// two on two
+	TwoOnTwo bool `json:"twoOnTwo,omitempty"`
 
 	// Can be either "red" or "blue"
 	Winner string `json:"winner,omitempty"`
@@ -66,6 +88,33 @@ type Match struct {
 
 // Validate validates this match
 func (m *Match) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.validatePositions(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *Match) validatePositions(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.Positions) { // not required
+		return nil
+	}
+
+	if m.Positions != nil {
+		if err := m.Positions.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("positions")
+			}
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -80,6 +129,46 @@ func (m *Match) MarshalBinary() ([]byte, error) {
 // UnmarshalBinary interface implementation
 func (m *Match) UnmarshalBinary(b []byte) error {
 	var res Match
+	if err := swag.ReadJSON(b, &res); err != nil {
+		return err
+	}
+	*m = res
+	return nil
+}
+
+// MatchPositions match positions
+// swagger:model MatchPositions
+type MatchPositions struct {
+
+	// THe UID.
+	BlueAttach string `json:"blueAttach,omitempty"`
+
+	// THe UID.
+	BlueDefense string `json:"blueDefense,omitempty"`
+
+	// THe UID.
+	RedAttack string `json:"redAttack,omitempty"`
+
+	// THe UID.
+	RedDefense string `json:"redDefense,omitempty"`
+}
+
+// Validate validates this match positions
+func (m *MatchPositions) Validate(formats strfmt.Registry) error {
+	return nil
+}
+
+// MarshalBinary interface implementation
+func (m *MatchPositions) MarshalBinary() ([]byte, error) {
+	if m == nil {
+		return nil, nil
+	}
+	return swag.WriteJSON(m)
+}
+
+// UnmarshalBinary interface implementation
+func (m *MatchPositions) UnmarshalBinary(b []byte) error {
+	var res MatchPositions
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

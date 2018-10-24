@@ -13,11 +13,10 @@ var (
 
 const (
 	// Start: For Users
-	joinLobby   = "joinLobby"
-	leaveLobby  = "leaveLobby"
-	joinTable   = "joinTable"
-	leaveTable  = "leaveTable"
-	setPosition = "setPosition"
+	joinLobby  = "joinLobby"
+	leaveLobby = "leaveLobby"
+	joinTable  = "joinTable"
+	leaveTable = "leaveTable"
 	// Start: For Admin
 
 	newGoal
@@ -41,6 +40,8 @@ func handleCommunication(c *Client, message []byte) {
 func handleUsers(c *Client, m *message) {
 	switch m.Command {
 	case "setPosition":
+		//setSide(c, stringFromMap(m.Values, "side") )
+		setPosition(c, stringFromMap(m.Values, "position"), stringFromMap(m.Values, "side"))
 		sendMatchData(c)
 	case "leaveMatch":
 		// Tested for normal user.
@@ -54,9 +55,9 @@ func handleAdmin(c *Client, m *message) {
 	case "startMatch":
 	case "double":
 	case "rated":
-	case "max_time":
-	case "max_goals":
-	case "switch_positions":
+	case "maxTime":
+	case "maxGoals":
+	case "switchPositions":
 	}
 }
 

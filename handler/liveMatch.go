@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"github.com/iafoosball/livematches-service/models"
 	"log"
 	"time"
@@ -16,7 +17,7 @@ var LiveMatches = []*LiveMatch{}
 func createMatch(c *Client, tableID string) bool {
 	c.table.ID = tableID
 	for i, match := range LiveMatches {
-		if match.MatchID == c.table.ID {
+		if match.TableID == c.table.ID {
 			LiveMatches[i] = LiveMatches[len(LiveMatches)-1]
 			LiveMatches = LiveMatches[:len(LiveMatches)-1]
 		}
@@ -27,7 +28,8 @@ func createMatch(c *Client, tableID string) bool {
 		Unregister: make(chan *Client),
 		MatchCast:  make(chan []byte),
 		MatchData:  &models.Match{},
-		MatchID:    c.table.ID,
+		Positions:  &models.MatchPositions{},
+		TableID:    c.table.ID,
 		Started:    false,
 	}
 	go match.initMatch()
@@ -41,10 +43,10 @@ func joinMatch(c *Client, id string) bool {
 	log.Println(id)
 	for _, match := range LiveMatches {
 		log.Println(match)
-		if match.MatchID == id {
+		if match.TableID == id {
 			c.liveMatch = match
 			c.liveMatch.Register <- c
-			c.liveMatch.Players = append(c.liveMatch.Players, c.user)
+			c.liveMatch.Users = append(c.liveMatch.Users, c.user)
 			log.Println(c.liveMatch)
 		}
 		return true
@@ -65,9 +67,9 @@ func closeMatch(c *Client) {
 	for cl, _ := range c.liveMatch.Clients {
 		leaveMatch(cl)
 	}
-	id := c.liveMatch.MatchID
+	id := c.liveMatch.TableID
 	for i, l := range LiveMatches {
-		if l.MatchID == id {
+		if l.TableID == id {
 			LiveMatches[i] = LiveMatches[len(LiveMatches)-1]
 			LiveMatches = LiveMatches[:len(LiveMatches)-1]
 		}
@@ -77,14 +79,33 @@ func closeMatch(c *Client) {
 // Used by users to leave a Match
 func leaveMatch(c *Client) {
 	c.liveMatch.Unregister <- c
-	for i, p := range c.liveMatch.Players {
+	for i, p := range c.liveMatch.Users {
 		log.Println(c.user.ID)
 		log.Println(p.ID)
-
 		if p.ID == c.user.ID {
 			log.Println("delete user from match")
-			c.liveMatch.Players[i] = c.liveMatch.Players[len(c.liveMatch.Players)-1]
-			c.liveMatch.Players = c.liveMatch.Players[:len(c.liveMatch.Players)-1]
+			c.liveMatch.Users[i] = c.liveMatch.Users[len(c.liveMatch.Users)-1]
+			c.liveMatch.Users = c.liveMatch.Users[:len(c.liveMatch.Users)-1]
+		}
+	}
+}
+
+func setPosition(c *Client, position string, side string) {
+	if position == "attack" && side == "blue" {
+		if c.liveMatch.Positions.BlueAttach == "" {
+			c.liveMatch.Positions.BlueAttach = c.user.ID
+		}
+	} else if position == "defense" && side == "blue" {
+		if c.liveMatch.Positions.BlueDefense == "" {
+			c.liveMatch.Positions.BlueDefense = c.user.ID
+		}
+	} else if position == "attack" && side == "red" {
+		if c.liveMatch.Positions.RedAttack == "" {
+			c.liveMatch.Positions.RedAttack = c.user.ID
+		}
+	} else if position == "defense" && side == "red" {
+		if c.liveMatch.Positions.RedDefense == "" {
+			c.liveMatch.Positions.RedDefense = c.user.ID
 		}
 	}
 }
@@ -93,7 +114,7 @@ func addGoal(c *Client, side string, speed string) {
 	c.liveMatch.Goals = append(c.liveMatch.Goals, &models.Goal{
 		Side:     side,
 		Speed:    speed,
-		Datetime: time.Now().Format(time.RFC3339),
+		DateTime: time.Now().Format(time.RFC3339),
 	})
 	if side == "red" {
 		c.liveMatch.ScoreRed++
@@ -109,12 +130,6 @@ type LiveMatch struct {
 	// Outbound messages for all users inside a LiveMatch
 	MatchCast chan []byte `json:"-"`
 
-	// The LiveMatch ID
-	MatchID string `json:"matchID"`
-
-	// Started is True if match is active
-	Started bool `json:"started"`
-
 	// Register requests from the Clients.
 	Register chan *Client `json:"-"`
 
@@ -125,27 +140,96 @@ type LiveMatch struct {
 	MatchData *models.Match `json:"-"`
 
 	// holds the data of the Goals for a LiveMatch
-	Goals []*models.Goal `json:"-"`
+	Goals []*models.Goal `json:"goals"`
 
 	// list of all Players
-	Players []*models.User `json:"users"`
+	Users []*models.User `json:"users"`
 
-	// list of all Visitors
-	Visitors []*models.User `json:"Visitors"`
+	//Start auto generated stuff
+	// The match id which is the collection + "/" + the key
+	ID string `json:"_id,omitempty"`
 
-	ScoreRed int `json:"score_red"`
+	// The match key
+	Key string `json:"_key,omitempty"`
 
-	ScoreBlue int `json:"score_blue"`
+	// Is this game with bets
+	Bet bool `json:"bet,omitempty"`
+
+	// Was the game completed.
+	Completed bool `json:"completed,omitempty"`
+
+	// the datetime when the match ends
+	EndTime string `json:"endTime,omitempty"`
+
+	// free game
+	FreeGame bool `json:"freeGame,omitempty"`
+
+	// The position of the players
+	Lobby []string `json:"lobby"`
+
+	// The maximum number of goals for this game. If a time is specified the first criteria which is true will stop the match.
+	MaxGoals *int64 `json:"maxGoals,omitempty"`
+
+	// The maximum tim in sec for this game. If a max goals is specified the first criteria which is true will stop the match.
+	MaxTime int64 `json:"maxTime,omitempty"`
+
+	// one on one
+	OneOnOne bool `json:"oneOnOne,omitempty"`
+
+	// payed
+	Payed bool `json:"payed,omitempty"`
+
+	// positions
+	Positions *models.MatchPositions `json:"positions,omitempty"`
+
+	// A match can be rated, ie a ranked game with points, or without.
+	RatedMatch bool `json:"ratedMatch,omitempty"`
+
+	// score blue
+	ScoreBlue int64 `json:"scoreBlue,omitempty"`
+
+	// score red
+	ScoreRed int64 `json:"scoreRed,omitempty"`
+
+	// the datetime when the game ends
+	StartTime string `json:"startTime,omitempty"`
+
+	// started
+	Started bool `json:"started,omitempty"`
+
+	// Switch the position after 50% of the goal (time or goals) is reached.
+	SwitchPosition bool `json:"switchPosition,omitempty"`
+
+	// the id of table
+	TableID string `json:"tableID,omitempty"`
+
+	// tournament
+	Tournament bool `json:"tournament,omitempty"`
+
+	// two on one
+	TwoOnOne bool `json:"twoOnOne,omitempty"`
+
+	// two on two
+	TwoOnTwo bool `json:"twoOnTwo,omitempty"`
+
+	// Can be either "red" or "blue"
+	Winner string `json:"winner,omitempty"`
 }
 
 func (m *LiveMatch) initMatch() {
+	defer func() {
+		// recover from panic if one occured. Set err to nil otherwise.
+		if recover() != nil {
+			err = errors.New("Probably connection interrupt")
+		}
+	}()
 	for {
 		select {
 		case client := <-m.Register:
 			m.Clients[client] = true
 		case client := <-m.Unregister:
 			if _, ok := m.Clients[client]; ok {
-
+				//leaveMatch(client)
 			}
 		case message := <-m.MatchCast:
 			for client := range m.Clients {

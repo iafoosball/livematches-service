@@ -24,7 +24,7 @@ func main() {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 
-	u := url.URL{Scheme: "ws", Host: *addr, Path: "/users/table-1/user-1"}
+	u := url.URL{Scheme: "ws", Host: *addr, Path: "/users/table-1/user-2"}
 	log.Printf("connecting to %s", u.String())
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {
@@ -43,8 +43,8 @@ func main() {
 			if !stop {
 				switch next {
 				case "":
-					//msg := "{ \"command\": \"setPosition\", \"values\": { \"username\": \"hallo\" } }"
-					//client.send <- []byte(msg)
+					msg := "{ \"command\": \"setPosition\", \"values\": { \"side\": \"red\",\"position\": \"defense\" } }"
+					client.send <- []byte(msg)
 					//next = "joinMatch"
 				case "joinMatch":
 					msg := "{ \"command\": \"joinMatch\", \"values\": { \"id\": \"table-1\", \"side\": \"blue\", \"attack\": \"true\" } }"

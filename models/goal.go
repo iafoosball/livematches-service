@@ -28,13 +28,13 @@ type Goal struct {
 	To string `json:"_to,omitempty"`
 
 	// The datetime in nanoseconds of the goal.
-	Datetime string `json:"datetime,omitempty"`
+	DateTime string `json:"dateTime,omitempty"`
 
 	// the corresponding match id
-	MatchID string `json:"match_id,omitempty"`
+	MatchID string `json:"matchID,omitempty"`
 
 	// This could be used in a double game, if the person attacking scores.
-	PositionAttack bool `json:"position_attack,omitempty"`
+	Position bool `json:"position,omitempty"`
 
 	// The side who scored the goal. Usually either red or blue.
 	Side string `json:"side,omitempty"`

@@ -41,9 +41,6 @@ type User struct {
 
 	// The first to join the lobby is the admin.
 	Admin bool `json:"admin"`
-
-	// for people streaming the results
-	Visitor bool `json:"visitor"`
 }
 
 func (u *User) SetID(s string) {
