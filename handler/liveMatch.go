@@ -40,14 +40,11 @@ func createMatch(c *Client, tableID string) bool {
 }
 
 func joinMatch(c *Client, id string) bool {
-	log.Println(id)
 	for _, match := range LiveMatches {
-		log.Println(match)
 		if match.TableID == id {
 			c.liveMatch = match
 			c.liveMatch.Register <- c
 			c.liveMatch.Users = append(c.liveMatch.Users, c.user)
-			log.Println(c.liveMatch)
 		}
 		return true
 	}
@@ -146,12 +143,6 @@ type LiveMatch struct {
 	Users []*models.User `json:"users"`
 
 	//Start auto generated stuff
-	// The match id which is the collection + "/" + the key
-	ID string `json:"_id,omitempty"`
-
-	// The match key
-	Key string `json:"_key,omitempty"`
-
 	// Is this game with bets
 	Bet bool `json:"bet,omitempty"`
 
@@ -218,6 +209,7 @@ type LiveMatch struct {
 
 func (m *LiveMatch) initMatch() {
 	defer func() {
+		log.Println(*m)
 		// recover from panic if one occured. Set err to nil otherwise.
 		if recover() != nil {
 			err = errors.New("Probably connection interrupt")
@@ -228,6 +220,7 @@ func (m *LiveMatch) initMatch() {
 		case client := <-m.Register:
 			m.Clients[client] = true
 		case client := <-m.Unregister:
+			log.Println(client)
 			if _, ok := m.Clients[client]; ok {
 				//leaveMatch(client)
 			}

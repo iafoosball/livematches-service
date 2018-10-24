@@ -78,6 +78,26 @@ func sendPrivate(c *Client, msg string) {
 	c.send <- []byte(msg)
 }
 
+func closeUser(c *Client) {
+	log.Println("cloooose")
+	for i, u := range c.liveMatch.Users {
+		if u.ID == c.user.ID {
+			c.liveMatch.Users[i] = c.liveMatch.Users[len(c.liveMatch.Users)-1]
+			c.liveMatch.Users = c.liveMatch.Users[:len(c.liveMatch.Users)-1]
+		}
+	}
+}
+
+func closeTable(c *Client) {
+	c.liveMatch = nil
+	//for i, u := range LiveMatches {
+	//	if  {
+	//		c.liveMatch.Users[i] = c.liveMatch.Users[len(c.liveMatch.Users)-1]
+	//		c.liveMatch.Users = c.liveMatch.Users[:len(c.liveMatch.Users)-1]
+	//	}
+	//}
+}
+
 // writePump pumps messages from the hub to the websocket connection.
 //
 // A goroutine running writePump is Started for each connection. The
@@ -86,6 +106,12 @@ func sendPrivate(c *Client, msg string) {
 func (c *Client) writePump() {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
+		if c.isUser {
+			closeUser(c)
+		} else {
+			closeTable(c)
+		}
+		//log.Printf("%+v\n", *c.user)
 		ticker.Stop()
 		c.conn.Close()
 	}()

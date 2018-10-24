@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"log"
 )
 
 var (
@@ -26,7 +25,6 @@ func handleCommunication(c *Client, message []byte) {
 	if m, b = unmarshal(message); !b {
 		return
 	}
-	log.Println(m)
 	if c.isUser && c.user.Admin {
 		handleAdmin(c, m)
 	} else if c.isUser {
@@ -62,8 +60,7 @@ func handleAdmin(c *Client, m *message) {
 }
 
 func handleTable(c *Client, m *message) {
-	log.Println(c.isUser)
-	log.Println("Hanlde table " + c.table.ID + " with cmd: " + m.Command)
+	//log.Println("Hanlde table " + c.table.ID + " with cmd: " + m.Command)
 	switch m.Command {
 	case "closeMatch":
 		closeMatch(c)
