@@ -53,7 +53,7 @@ func main() {
 	http.HandleFunc("/tables/", func(w http.ResponseWriter, r *http.Request) {
 		s := strings.Split(r.URL.Path, "/")
 		// 3 is hardedcoded so it fails, if id is not specified.
-		handler.ServeWs(hub, w, r, false, "", s[2])
+		handler.ServeWs(hub, w, r, false, s[2], "")
 	})
 	http.HandleFunc("/users/", func(w http.ResponseWriter, r *http.Request) {
 		log.Println(r.URL.Path)

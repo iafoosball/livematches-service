@@ -118,8 +118,8 @@ func (c *Client) writePump() {
 }
 
 // serveWs handles websocket requests from the peer.
-func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, userID string, tableID string) {
-	log.Println("new Client connected with id: " + userID)
+func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tableID string, userID string) {
+	log.Println("new Client connected with  tableID: " + tableID + " userID: " + userID)
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
@@ -136,11 +136,11 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, user
 
 	if isUser {
 		client.isUser = true
-		client.user = &models.User{ID: userID}
-		joinMatch(client, tableID)
+		client.user = &models.User{ID: tableID}
+		joinMatch(client, userID)
 	} else {
-		client.table = &models.Table{ID: tableID}
-		createMatch(client, tableID)
+		client.table = &models.Table{ID: userID}
+		createMatch(client, userID)
 	}
 
 }
