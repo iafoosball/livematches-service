@@ -41,6 +41,8 @@ var upgrader = websocket.Upgrader{
 // reads from this goroutine.
 func (c *Client) readPump() {
 	defer func() {
+		log.Println("defer read pump")
+		c.liveMatch.Unregister <- c
 		c.hub.unregister <- c
 		c.conn.Close()
 	}()
@@ -79,10 +81,21 @@ func sendPrivate(c *Client, msg string) {
 	c.send <- []byte(msg)
 }
 
+func closeClient(c *Client) {
+	if c.isUser {
+		closeUser(c)
+	} else {
+		closeTable(c)
+	}
+	sendMatchData(c)
+}
+
 func closeUser(c *Client) {
 	log.Println("close User: " + c.user.ID)
 	for i, u := range c.liveMatch.Users {
 		if u.ID == c.user.ID {
+
+			log.Println("close User match: " + c.user.ID)
 			c.liveMatch.Users[i] = c.liveMatch.Users[len(c.liveMatch.Users)-1]
 			c.liveMatch.Users = c.liveMatch.Users[:len(c.liveMatch.Users)-1]
 		}
@@ -107,11 +120,10 @@ func closeTable(c *Client) {
 func (c *Client) writePump() {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
-		if c.isUser {
-			closeUser(c)
-		} else {
-			closeTable(c)
-		}
+		log.Println("defer write pump")
+		//c.liveMatch.Unregister <- c
+		//c.hub.unregister <- c
+		//closeClient(c)
 		//log.Printf("%+v\n", *c.user)
 		ticker.Stop()
 		c.conn.Close()

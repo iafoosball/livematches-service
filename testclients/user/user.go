@@ -19,7 +19,7 @@ var (
 func main() {
 	log.SetFlags(log.Ltime | log.Lshortfile)
 	log.Println("start ws client")
-	var addr = flag.String("addr", "iafoosball.aau.dk:9003", "http service address")
+	var addr = flag.String("addr", "0.0.0.0:9003", "http service address")
 
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)

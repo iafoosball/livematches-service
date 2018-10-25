@@ -22,7 +22,17 @@ func createMatch(c *Client, tableID string) bool {
 			LiveMatches = LiveMatches[:len(LiveMatches)-1]
 		}
 	}
-	match := &LiveMatch{
+	match := newMatch()
+	match.TableID = tableID
+	go match.runMatch()
+	LiveMatches = append(LiveMatches, match)
+	c.liveMatch = match
+	c.liveMatch.Register <- c
+	return true
+}
+
+func newMatch() *LiveMatch {
+	return &LiveMatch{
 		Clients:    make(map[*Client]bool),
 		Register:   make(chan *Client),
 		Unregister: make(chan *Client),
@@ -30,25 +40,26 @@ func createMatch(c *Client, tableID string) bool {
 		MatchData:  &models.Match{},
 		Positions:  &models.MatchPositions{},
 		Users:      []*models.User{},
-		TableID:    c.table.ID,
 		Started:    false,
 	}
-	go match.initMatch()
-	LiveMatches = append(LiveMatches, match)
-	c.liveMatch = match
-	c.liveMatch.Register <- c
-	return true
 }
 
 func joinMatch(c *Client, id string) bool {
 	for _, match := range LiveMatches {
+		log.Println(match.TableID)
 		if match.TableID == id {
+			log.Println(c.hub.clients)
 			//if len(c.liveMatch.Users) > 3  {
 			//	return false
 			//}
 			c.liveMatch = match
-			c.liveMatch.Register <- c
+			log.Println(c.liveMatch.Users)
 			c.liveMatch.Users = append(c.liveMatch.Users, c.user)
+			log.Println("should have users")
+			c.liveMatch.Register <- c
+
+			log.Println("should have users")
+			log.Println(c.liveMatch.Clients)
 		}
 		return true
 	}
@@ -208,21 +219,24 @@ type LiveMatch struct {
 	Winner string `json:"winner,omitempty"`
 }
 
-func (m *LiveMatch) initMatch() {
+func (m *LiveMatch) runMatch() {
 	defer func() {
+		log.Println("runMatch")
 		// recover from panic if one occured. Set err to nil otherwise.
 		if recover() != nil {
 			err = errors.New("Probably connection interrupt")
 		}
+
 	}()
 	for {
 		select {
 		case client := <-m.Register:
 			m.Clients[client] = true
 		case client := <-m.Unregister:
-			log.Println(client)
+			log.Println("                         ")
+			log.Println(*client)
 			if _, ok := m.Clients[client]; ok {
-				//leaveMatch(client)
+				delete(m.Clients, client)
 			}
 		case message := <-m.MatchCast:
 			for client := range m.Clients {
