@@ -44,32 +44,27 @@ func newMatch() *LiveMatch {
 	}
 }
 
-func joinMatch(c *Client, id string) bool {
+func joinMatch(c *Client, id string) {
 	for _, match := range LiveMatches {
-		log.Println(match.TableID)
 		if match.TableID == id {
-			log.Println(c.hub.clients)
-			//if len(c.liveMatch.Users) > 3  {
-			//	return false
-			//}
+			log.Println(len(match.Users))
+			if len(match.Users) > 3 {
+				closeClient(c)
+				return
+			}
 			c.liveMatch = match
-			log.Println(c.liveMatch.Users)
 			c.liveMatch.Users = append(c.liveMatch.Users, c.user)
-			log.Println("should have users")
 			c.liveMatch.Register <- c
-
-			log.Println("should have users")
-			log.Println(c.liveMatch.Clients)
 		}
-		return true
+		return
 	}
 	handleErr(err)
-	return false
+	closeClient(c)
 }
 
 // startMatch writes everything to the Match object.
 // Before users etc. is stored on the livematch
-func startMatch() {
+func startmatch() {
 
 }
 
@@ -92,17 +87,14 @@ func closeMatch(c *Client) {
 func leaveMatch(c *Client) {
 	c.liveMatch.Unregister <- c
 	for i, p := range c.liveMatch.Users {
-		log.Println(c.user.ID)
-		log.Println(p.ID)
 		if p.ID == c.user.ID {
-			log.Println("delete user from match")
 			c.liveMatch.Users[i] = c.liveMatch.Users[len(c.liveMatch.Users)-1]
 			c.liveMatch.Users = c.liveMatch.Users[:len(c.liveMatch.Users)-1]
 		}
 	}
 }
 
-func setPosition(c *Client, position string, side string) {
+func position(c *Client, position string, side string) {
 	if position == "attack" && side == "blue" {
 		if c.liveMatch.Positions.BlueAttach == "" {
 			c.liveMatch.Positions.BlueAttach = c.user.ID
@@ -122,7 +114,7 @@ func setPosition(c *Client, position string, side string) {
 	}
 }
 
-func addGoal(c *Client, side string, speed string) {
+func addgoal(c *Client, side string, speed string) {
 	c.liveMatch.Goals = append(c.liveMatch.Goals, &models.Goal{
 		Side:     side,
 		Speed:    speed,
@@ -221,7 +213,6 @@ type LiveMatch struct {
 
 func (m *LiveMatch) runMatch() {
 	defer func() {
-		log.Println("runMatch")
 		// recover from panic if one occured. Set err to nil otherwise.
 		if recover() != nil {
 			err = errors.New("Probably connection interrupt")
@@ -233,8 +224,6 @@ func (m *LiveMatch) runMatch() {
 		case client := <-m.Register:
 			m.Clients[client] = true
 		case client := <-m.Unregister:
-			log.Println("                         ")
-			log.Println(*client)
 			if _, ok := m.Clients[client]; ok {
 				delete(m.Clients, client)
 			}

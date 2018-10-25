@@ -34,6 +34,60 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
+func sendAll(c *Client, msg string) {
+	c.hub.broadcast <- []byte(msg)
+}
+
+func sendMatch(c *Client, msg string) {
+	c.liveMatch.MatchCast <- []byte(msg)
+}
+
+func sendMatchData(c *Client) {
+	b, err := json.Marshal(*c.liveMatch)
+	handleErr(err)
+	c.liveMatch.MatchCast <- b
+}
+
+func sendPrivate(c *Client, msg string) {
+	c.send <- []byte(msg)
+}
+
+func closeClient(c *Client) {
+	if c.isUser {
+		closeUser(c)
+		sendMatchData(c)
+	} else {
+		closeTable(c)
+	}
+}
+
+func closeUser(c *Client) {
+	for i, u := range c.liveMatch.Users {
+		if u.ID == c.user.ID {
+			c.liveMatch.Users[i] = c.liveMatch.Users[len(c.liveMatch.Users)-1]
+			c.liveMatch.Users = c.liveMatch.Users[:len(c.liveMatch.Users)-1]
+		}
+	}
+	c.liveMatch.Unregister <- c
+	c.hub.unregister <- c
+	c.conn.Close()
+}
+
+// Opens: If table closes, kick all clients, if full kick
+
+func closeTable(c *Client) {
+	log.Println("called close")
+	for u, _ := range c.liveMatch.Clients {
+		if u.isUser {
+			log.Println(u.user.ID)
+			closeUser(u)
+		}
+	}
+	c.liveMatch = nil
+	c.hub.unregister <- c
+	c.conn.Close()
+}
+
 // readPump pumps messages from the websocket connection to the hub.
 //
 // The application runs readPump in a per-connection goroutine. The application
@@ -41,10 +95,11 @@ var upgrader = websocket.Upgrader{
 // reads from this goroutine.
 func (c *Client) readPump() {
 	defer func() {
-		log.Println("defer read pump")
-		c.liveMatch.Unregister <- c
-		c.hub.unregister <- c
-		c.conn.Close()
+		if c.isUser {
+			closeClient(c)
+		} else {
+			closeTable(c)
+		}
 	}()
 	c.conn.SetReadLimit(maxMessageSize)
 	c.conn.SetReadDeadline(time.Now().Add(pongWait))
@@ -62,56 +117,6 @@ func (c *Client) readPump() {
 	}
 }
 
-func sendAll(c *Client, msg string) {
-	c.hub.broadcast <- []byte(msg)
-}
-
-func sendMatch(c *Client, msg string) {
-	c.liveMatch.MatchCast <- []byte(msg)
-}
-
-func sendMatchData(c *Client) {
-	log.Println("sendMatchData")
-	b, err := json.Marshal(*c.liveMatch)
-	handleErr(err)
-	c.liveMatch.MatchCast <- b
-}
-
-func sendPrivate(c *Client, msg string) {
-	c.send <- []byte(msg)
-}
-
-func closeClient(c *Client) {
-	if c.isUser {
-		closeUser(c)
-	} else {
-		closeTable(c)
-	}
-	sendMatchData(c)
-}
-
-func closeUser(c *Client) {
-	log.Println("close User: " + c.user.ID)
-	for i, u := range c.liveMatch.Users {
-		if u.ID == c.user.ID {
-
-			log.Println("close User match: " + c.user.ID)
-			c.liveMatch.Users[i] = c.liveMatch.Users[len(c.liveMatch.Users)-1]
-			c.liveMatch.Users = c.liveMatch.Users[:len(c.liveMatch.Users)-1]
-		}
-	}
-}
-
-func closeTable(c *Client) {
-	c.liveMatch = nil
-	//for i, u := range LiveMatches {
-	//	if  {
-	//		c.liveMatch.Users[i] = c.liveMatch.Users[len(c.liveMatch.Users)-1]
-	//		c.liveMatch.Users = c.liveMatch.Users[:len(c.liveMatch.Users)-1]
-	//	}
-	//}
-}
-
 // writePump pumps messages from the hub to the websocket connection.
 //
 // A goroutine running writePump is Started for each connection. The
@@ -120,11 +125,6 @@ func closeTable(c *Client) {
 func (c *Client) writePump() {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
-		log.Println("defer write pump")
-		//c.liveMatch.Unregister <- c
-		//c.hub.unregister <- c
-		//closeClient(c)
-		//log.Printf("%+v\n", *c.user)
 		ticker.Stop()
 		c.conn.Close()
 	}()
@@ -167,19 +167,14 @@ func (c *Client) writePump() {
 func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tableID string, userID string) {
 	log.Println("new Client connected with  tableID: " + tableID + " userID: " + userID)
 	conn, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Println(err)
-		return
-	}
+	handleErr(err)
 	var client *Client
 	client = &Client{hub: hub, conn: conn, send: make(chan []byte, 256), isUser: false}
 	client.hub.register <- client
-
 	// Allow collection of memory referenced by the caller by doing all work in
 	// new goroutines.
 	go client.writePump()
 	go client.readPump()
-
 	if isUser {
 		client.isUser = true
 		client.user = &models.User{ID: userID}

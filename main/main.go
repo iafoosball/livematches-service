@@ -29,12 +29,7 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 
 func listMatches(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		for _, m := range handler.LiveMatches {
-			ma, _ := m.MatchData.MarshalBinary()
-			log.Printf("%+v\n", string(ma))
-		}
 		b, err := swag.WriteJSON(handler.LiveMatches)
-		log.Printf("%+v\n", string(b))
 		if err != nil {
 			log.Println(err)
 			return
@@ -51,10 +46,9 @@ func main() {
 	go hub.Run()
 	http.HandleFunc("/", serveHome)
 	http.HandleFunc("/matches", listMatches)
-	// if request goes to table, bool isUser is set to false
 	http.HandleFunc("/tables/", func(w http.ResponseWriter, r *http.Request) {
 		s := strings.Split(r.URL.Path, "/")
-		// 3 is hardedcoded so it fails, if id is not specified.
+		// 2 and 3 are hardedcoded so it fails, if id is not specified.
 		handler.ServeWs(hub, w, r, false, s[2], "")
 	})
 	http.HandleFunc("/users/", func(w http.ResponseWriter, r *http.Request) {

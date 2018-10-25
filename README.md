@@ -20,13 +20,75 @@ The first user to connect to a match/lobby is the admin (as before).
 
 ## API
 
-### Normal User:
-###### leaveMatch (tested)
+```
+// Start: For Users
+setPosition = "setPosition"
+// { \"command\": \"setPosition\", \"values\": { \"side\": \"red\", \"position\": \"attack\" }}
 
-### Admin User:
+setColor    = "setColor"
+// { \"command\": \"setColor\", \"values\": { \"color\": \"green\" }}
 
-### Table:
-###### addGoal (not tested)
+setUsername = "setUsername"
+// { \"command\": \"setUsername\", \"values\": { \"username\": \"joe\" }}
+
+setBet      = "setBet"
+// { \"command\": \"setBet\", \"values\": { \"bet\": 123 }}
+
+ready       = "ready"
+// { \"command\": \"ready\", \"values\": { \"ready\": true }}
+
+// Start: For Admin
+twoOnTwo        = "twoOnTwo"
+// { \"command\": \"twoOnTwo\", \"values\": { \"twoOnTwo\": true }}
+
+twoOnOne        = "twoOnOne"
+// { \"command\": \"oneOnTwo\", \"values\": { \"oneOnTwo\": true }}
+
+oneOnOne        = "oneOnOne"
+// { \"command\": \"oneOnOne\", \"values\": { \"oneOnOne\": true }}
+
+switchPositions = "switchPositions"
+// { \"command\": \"switchPositions\", \"values\": { \"switchPositions\": true }}
+
+bet             = "bet"
+// { \"command\": \"bet\", \"values\": { \"bet\": true }}
+
+maxGoals        = "maxGoals"
+// { \"command\": \"maxGoals\", \"values\": { \"maxGoals\": 10 }}
+
+tournament      = "tournament"
+// { \"command\": \"tournament\", \"values\": { \"tournament\": true }}
+
+startMatch      = "startMatch"
+// { \"command\": \"startMatch\", \"values\": { }}
+
+drunk           = "drunk"
+// { \"command\": \"drunk\", \"values\": { \"drunk\": true }}
+
+freeGame        = "freeGame"
+// { \"command\": \"freeGame\", \"values\": { \"freeGame\": true }}
+
+payed           = "payed"
+// { \"command\": \"payed\", \"values\": { \"payed\": true }}
+
+maxTime         = "maxTime"
+// { \"command\": \"maxTime\", \"values\": { \"maxTime\": 600 }}
+
+rated           = "rated"
+// { \"command\": \"rated\", \"values\": { \"rated\": true }}
+
+cancelMatch     = "cancelMatch"
+// { \"command\": \"candelMatch\", \"values\": { }}
+
+kickUser        = "kickUser"
+// { \"command\": \"kickUser\", \"values\": { \"kickUser\": "userID" }}
+
+// Start: For Table, possible by admin as well
+addGoal    = "addGoal"
+// { \"command\": \"addGoal\", \"values\": { \"speed\": 12, \"side\": \"blue\", \"position\": \"attack\"  }}
+
+removeGoal = "removeGoal"
+```
 
 ### JSON
 ```json
@@ -70,6 +132,7 @@ The first user to connect to a match/lobby is the admin (as before).
       "freeGame": true,
       "payed": true,
       "maxTime": ""
+      "rated" : true
     },
     "goals" :[
       {"speed":20.0,"position":"attack/defense","side":"blue/red"},

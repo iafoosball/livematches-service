@@ -12,13 +12,51 @@ var (
 
 const (
 	// Start: For Users
-	joinLobby  = "joinLobby"
-	leaveLobby = "leaveLobby"
-	joinTable  = "joinTable"
-	leaveTable = "leaveTable"
+	setPosition = "setPosition"
+	// { \"command\": \"setPosition\", \"values\": { \"side\": \"red\", \"position\": \"attack\" }}
+	setColor = "setColor"
+	// { \"command\": \"setColor\", \"values\": { \"color\": \"green\" }}
+	setUsername = "setUsername"
+	// { \"command\": \"setUsername\", \"values\": { \"username\": \"joe\" }}
+	setBet = "setBet"
+	// { \"command\": \"setBet\", \"values\": { \"bet\": 123 }}
+	ready = "ready"
+	// { \"command\": \"ready\", \"values\": { \"ready\": true }}
 	// Start: For Admin
-
-	newGoal
+	twoOnTwo = "twoOnTwo"
+	// { \"command\": \"twoOnTwo\", \"values\": { \"twoOnTwo\": true }}
+	twoOnOne = "twoOnOne"
+	// { \"command\": \"oneOnTwo\", \"values\": { \"oneOnTwo\": true }}
+	oneOnOne = "oneOnOne"
+	// { \"command\": \"oneOnOne\", \"values\": { \"oneOnOne\": true }}
+	switchPositions = "switchPositions"
+	// { \"command\": \"switchPositions\", \"values\": { \"switchPositions\": true }}
+	bet = "bet"
+	// { \"command\": \"bet\", \"values\": { \"bet\": true }}
+	maxGoals = "maxGoals"
+	// { \"command\": \"maxGoals\", \"values\": { \"maxGoals\": 10 }}
+	tournament = "tournament"
+	// { \"command\": \"tournament\", \"values\": { \"tournament\": true }}
+	startMatch = "startMatch"
+	// { \"command\": \"startMatch\", \"values\": { }}
+	drunk = "drunk"
+	// { \"command\": \"drunk\", \"values\": { \"drunk\": true }}
+	freeGame = "freeGame"
+	// { \"command\": \"freeGame\", \"values\": { \"freeGame\": true }}
+	payed = "payed"
+	// { \"command\": \"payed\", \"values\": { \"payed\": true }}
+	maxTime = "maxTime"
+	// { \"command\": \"maxTime\", \"values\": { \"maxTime\": 600 }}
+	rated = "rated"
+	// { \"command\": \"rated\", \"values\": { \"rated\": true }}
+	cancelMatch = "cancelMatch"
+	// { \"command\": \"candelMatch\", \"values\": { }}
+	kickUser = "kickUser"
+	// { \"command\": \"kickUser\", \"values\": { \"kickUser\": "userID" }}
+	// Start: For Table, possible by admin as well
+	addGoal = "addGoal"
+	// { \"command\": \"addGoal\", \"values\": { \"speed\": 12, \"side\": \"blue\", \"position\": \"attack\"  }}
+	removeGoal = "removeGoal"
 )
 
 func handleCommunication(c *Client, message []byte) {
@@ -37,14 +75,15 @@ func handleCommunication(c *Client, message []byte) {
 
 func handleUsers(c *Client, m *message) {
 	switch m.Command {
-	case "setPosition":
-		//setSide(c, stringFromMap(m.Values, "side") )
-		setPosition(c, stringFromMap(m.Values, "position"), stringFromMap(m.Values, "side"))
-		sendMatchData(c)
-	case "leaveMatch":
-		// Tested for normal user.
+	case setPosition:
+		position(c, stringFromMap(m.Values, "position"), stringFromMap(m.Values, "side"))
+		//sendMatchData(c)
+	case setColor:
 		leaveMatch(c)
+	case setUsername:
+	case setBet:
 	}
+	//sendMatchData(c)
 }
 
 func handleAdmin(c *Client, m *message) {
@@ -65,7 +104,7 @@ func handleTable(c *Client, m *message) {
 	case "closeMatch":
 		closeMatch(c)
 	case "addGoal":
-		addGoal(c, stringFromMap(m.Values, "side"), stringFromMap(m.Values, "speed"))
+		addgoal(c, stringFromMap(m.Values, "side"), stringFromMap(m.Values, "speed"))
 		sendMatch(c, "")
 	case "removeGoal":
 	case "startLobby":
@@ -74,6 +113,7 @@ func handleTable(c *Client, m *message) {
 	}
 }
 
+//stringFromMap returns a string for a certain id from a map
 func stringFromMap(m map[string]string, key string) string {
 	for k, v := range m {
 		if k == key {
