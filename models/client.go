@@ -41,6 +41,10 @@ type User struct {
 
 	// The first to join the lobby is the admin.
 	Admin bool `json:"admin"`
+
+	Bet int64 `json:"bet"`
+
+	Ready bool `json:"ready"`
 }
 
 func (u *User) SetID(s string) {

@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/iafoosball/livematches-service/models"
 	"log"
-	"time"
 )
 
 // operations for live LiveMatches
@@ -62,12 +61,6 @@ func joinMatch(c *Client, id string) {
 	closeClient(c)
 }
 
-// startMatch writes everything to the Match object.
-// Before users etc. is stored on the livematch
-func startmatch() {
-
-}
-
 // Used by pi to finish a Match
 // If match is finished it is send to matches-service and stored their
 func closeMatch(c *Client) {
@@ -83,6 +76,15 @@ func closeMatch(c *Client) {
 	}
 }
 
+func kickuser(c *Client, id string) {
+	for _, u := range c.liveMatch.Users {
+		if u.ID == id {
+			leaveMatch(c)
+			return
+		}
+	}
+}
+
 // Used by users to leave a Match
 func leaveMatch(c *Client) {
 	c.liveMatch.Unregister <- c
@@ -91,39 +93,6 @@ func leaveMatch(c *Client) {
 			c.liveMatch.Users[i] = c.liveMatch.Users[len(c.liveMatch.Users)-1]
 			c.liveMatch.Users = c.liveMatch.Users[:len(c.liveMatch.Users)-1]
 		}
-	}
-}
-
-func position(c *Client, position string, side string) {
-	if position == "attack" && side == "blue" {
-		if c.liveMatch.Positions.BlueAttach == "" {
-			c.liveMatch.Positions.BlueAttach = c.user.ID
-		}
-	} else if position == "defense" && side == "blue" {
-		if c.liveMatch.Positions.BlueDefense == "" {
-			c.liveMatch.Positions.BlueDefense = c.user.ID
-		}
-	} else if position == "attack" && side == "red" {
-		if c.liveMatch.Positions.RedAttack == "" {
-			c.liveMatch.Positions.RedAttack = c.user.ID
-		}
-	} else if position == "defense" && side == "red" {
-		if c.liveMatch.Positions.RedDefense == "" {
-			c.liveMatch.Positions.RedDefense = c.user.ID
-		}
-	}
-}
-
-func addgoal(c *Client, side string, speed string) {
-	c.liveMatch.Goals = append(c.liveMatch.Goals, &models.Goal{
-		Side:     side,
-		Speed:    speed,
-		DateTime: time.Now().Format(time.RFC3339),
-	})
-	if side == "red" {
-		c.liveMatch.ScoreRed++
-	} else if side == "blue" {
-		c.liveMatch.ScoreBlue++
 	}
 }
 
@@ -156,6 +125,9 @@ type LiveMatch struct {
 	// Was the game completed.
 	Completed bool `json:"completed,omitempty"`
 
+	// Is this game with bets
+	Drunk bool `json:"drunk,omitempty"`
+
 	// the datetime when the match ends
 	EndTime string `json:"endTime,omitempty"`
 
@@ -163,7 +135,7 @@ type LiveMatch struct {
 	FreeGame bool `json:"freeGame,omitempty"`
 
 	// The maximum number of goals for this game. If a time is specified the first criteria which is true will stop the match.
-	MaxGoals *int64 `json:"maxGoals,omitempty"`
+	MaxGoals int64 `json:"maxGoals,omitempty"`
 
 	// The maximum tim in sec for this game. If a max goals is specified the first criteria which is true will stop the match.
 	MaxTime int64 `json:"maxTime,omitempty"`
@@ -192,7 +164,7 @@ type LiveMatch struct {
 	// started
 	Started bool `json:"started,omitempty"`
 
-	// Switch the position after 50% of the goal (time or goals) is reached.
+	// Switch the setposition after 50% of the goal (time or goals) is reached.
 	SwitchPosition bool `json:"switchPosition,omitempty"`
 
 	// the id of table

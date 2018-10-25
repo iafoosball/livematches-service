@@ -2,6 +2,8 @@ package handler
 
 import (
 	"encoding/json"
+	"github.com/iafoosball/livematches-service/models"
+	"time"
 )
 
 var (
@@ -13,15 +15,16 @@ var (
 const (
 	// Start: For Users
 	setPosition = "setPosition"
-	// { \"command\": \"setPosition\", \"values\": { \"side\": \"red\", \"position\": \"attack\" }}
+	// { \"command\": \"setPosition\", \"values\": { \"side\": \"red\", \"setposition\": \"attack\" }}
 	setColor = "setColor"
 	// { \"command\": \"setColor\", \"values\": { \"color\": \"green\" }}
 	setUsername = "setUsername"
-	// { \"command\": \"setUsername\", \"values\": { \"username\": \"joe\" }}
+	// { \"command\": \"setUsername\", \"values\": { \"setusername\": \"joe\" }}
 	setBet = "setBet"
 	// { \"command\": \"setBet\", \"values\": { \"bet\": 123 }}
 	ready = "ready"
 	// { \"command\": \"ready\", \"values\": { \"ready\": true }}
+
 	// Start: For Admin
 	twoOnTwo = "twoOnTwo"
 	// { \"command\": \"twoOnTwo\", \"values\": { \"twoOnTwo\": true }}
@@ -53,9 +56,10 @@ const (
 	// { \"command\": \"candelMatch\", \"values\": { }}
 	kickUser = "kickUser"
 	// { \"command\": \"kickUser\", \"values\": { \"kickUser\": "userID" }}
+
 	// Start: For Table, possible by admin as well
 	addGoal = "addGoal"
-	// { \"command\": \"addGoal\", \"values\": { \"speed\": 12, \"side\": \"blue\", \"position\": \"attack\"  }}
+	// { \"command\": \"addGoal\", \"values\": { \"speed\": 12, \"side\": \"blue\", \"setposition\": \"attack\"  }}
 	removeGoal = "removeGoal"
 )
 
@@ -76,12 +80,15 @@ func handleCommunication(c *Client, message []byte) {
 func handleUsers(c *Client, m *message) {
 	switch m.Command {
 	case setPosition:
-		position(c, stringFromMap(m.Values, "position"), stringFromMap(m.Values, "side"))
-		//sendMatchData(c)
+		setposition(c, stringFromMap(m.Values, "setposition"), stringFromMap(m.Values, "side"))
 	case setColor:
 		leaveMatch(c)
 	case setUsername:
+		setusername(c, stringFromMap(m.Values, "setusername"))
 	case setBet:
+		setbet(c, intFromMap(m.Values, "bet"))
+	case ready:
+		setReady(c, boolFromMap(m.Values, ready))
 	}
 	//sendMatchData(c)
 }
@@ -89,55 +96,97 @@ func handleUsers(c *Client, m *message) {
 func handleAdmin(c *Client, m *message) {
 	handleUsers(c, m)
 	switch m.Command {
-	case "startMatch":
-	case "double":
-	case "rated":
-	case "maxTime":
-	case "maxGoals":
-	case "switchPositions":
+	case startMatch:
+		startmatch(c)
+	case rated:
+		setRated(c, boolFromMap(m.Values, rated))
+	case maxTime:
+		maxtime(c, intFromMap(m.Values, maxTime))
+	case maxGoals:
+		maxgoals(c, intFromMap(m.Values, maxGoals))
+	case switchPositions:
+		switchpositions(c, boolFromMap(m.Values, switchPositions))
+	case twoOnTwo:
+		twoontwo(c, boolFromMap(m.Values, twoOnTwo))
+	case twoOnOne:
+		twoonone(c, boolFromMap(m.Values, twoOnOne))
+	case oneOnOne:
+		oneonone(c, boolFromMap(m.Values, oneOnOne))
+	case bet:
+		isBet(c, boolFromMap(m.Values, bet))
+	case tournament:
+		isTournament(c, boolFromMap(m.Values, tournament))
+	case drunk:
+		isDrunk(c, boolFromMap(m.Values, drunk))
+	case payed:
+		isPayed(c, boolFromMap(m.Values, drunk))
+	case kickUser:
+		kickuser(c, stringFromMap(m.Values, kickUser))
 	}
 }
 
 func handleTable(c *Client, m *message) {
 	//log.Println("Hanlde table " + c.table.ID + " with cmd: " + m.Command)
 	switch m.Command {
-	case "closeMatch":
+	case cancelMatch:
 		closeMatch(c)
-	case "addGoal":
-		addgoal(c, stringFromMap(m.Values, "side"), stringFromMap(m.Values, "speed"))
-		sendMatch(c, "")
-	case "removeGoal":
-	case "startLobby":
-	default:
+	case addGoal:
+		addgoal(c, stringFromMap(m.Values, "side"), numberFromMap(m.Values, "speed"))
+	case removeGoal:
+		removegoal(c)
+	case freeGame:
+		freegame(c, boolFromMap(m.Values, freeGame))
+	}
+}
 
+func addgoal(c *Client, side string, speed float64) {
+	c.liveMatch.Goals = append(c.liveMatch.Goals, &models.Goal{
+		Side:     side,
+		Speed:    speed,
+		DateTime: time.Now().Format(time.RFC3339),
+	})
+	if side == "red" {
+		c.liveMatch.ScoreRed++
+	} else if side == "blue" {
+		c.liveMatch.ScoreBlue++
 	}
 }
 
 //stringFromMap returns a string for a certain id from a map
-func stringFromMap(m map[string]string, key string) string {
+func stringFromMap(m map[string]interface{}, key string) string {
 	for k, v := range m {
 		if k == key {
-			return v
+			return v.(string)
 		}
 	}
 	return ""
 }
 
 //boolFromMap returns a string for a certain id from a map
-func boolFromMap(m map[string]bool, key string) bool {
+func boolFromMap(m map[string]interface{}, key string) bool {
 	for k, v := range m {
 		if k == key {
-			return v
+			return v.(bool)
 		}
 	}
 	return false
 }
 
-//numberFromMap returns a string for a certain id from a map
-func numberFromMap(m map[string]float64, key string) float64 {
+//intFromMap returns a string for a certain id from a map
+func intFromMap(m map[string]interface{}, key string) int64 {
 	for k, v := range m {
 		if k == key {
-			return v
+			return v.(int64)
+		}
+	}
+	return 0
+}
+
+//numberFromMap returns a string for a certain id from a map
+func numberFromMap(m map[string]interface{}, key string) float64 {
+	for k, v := range m {
+		if k == key {
+			return v.(float64)
 		}
 	}
 	return 0
@@ -161,5 +210,5 @@ type message struct {
 	Command string `json:"command"`
 
 	// Insert all possible command structures
-	Values map[string]string `json:"values"`
+	Values map[string]interface{} `json:"values"`
 }

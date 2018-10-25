@@ -40,7 +40,7 @@ type Goal struct {
 	Side string `json:"side,omitempty"`
 
 	// The speed of the goal
-	Speed string `json:"speed,omitempty"`
+	Speed float64 `json:"speed,omitempty"`
 }
 
 // Validate validates this goal
