@@ -123,6 +123,26 @@ func stringFromMap(m map[string]string, key string) string {
 	return ""
 }
 
+//boolFromMap returns a string for a certain id from a map
+func boolFromMap(m map[string]bool, key string) bool {
+	for k, v := range m {
+		if k == key {
+			return v
+		}
+	}
+	return false
+}
+
+//numberFromMap returns a string for a certain id from a map
+func numberFromMap(m map[string]float64, key string) float64 {
+	for k, v := range m {
+		if k == key {
+			return v
+		}
+	}
+	return 0
+}
+
 // unmarshal converts the byte into a message struct.
 // If it fails it returns an empty struct and false.
 func unmarshal(msg []byte) (*message, bool) {
