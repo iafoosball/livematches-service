@@ -20,8 +20,8 @@ The first user to connect to a match/lobby is the admin (as before).
 
 ## API
 
+### For Users
 ```
-// Start: For Users
 setPosition = "setPosition"
 // { \"command\": \"setPosition\", \"values\": { \"side\": \"red\", \"position\": \"attack\" }}
 
@@ -36,8 +36,11 @@ setBet      = "setBet"
 
 ready       = "ready"
 // { \"command\": \"ready\", \"values\": { \"ready\": true }}
+```
 
-// Start: For Admin
+
+### For Admin
+```
 twoOnTwo        = "twoOnTwo"
 // { \"command\": \"twoOnTwo\", \"values\": { \"twoOnTwo\": true }}
 
@@ -82,8 +85,10 @@ cancelMatch     = "cancelMatch"
 
 kickUser        = "kickUser"
 // { \"command\": \"kickUser\", \"values\": { \"kickUser\": "userID" }}
+```
 
-// Start: For Table, possible by admin as well
+### For Table, possible by admin as well
+```
 addGoal    = "addGoal"
 // { \"command\": \"addGoal\", \"values\": { \"speed\": 12, \"side\": \"blue\", \"position\": \"attack\"  }}
 
