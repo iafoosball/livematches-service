@@ -1,5 +1,10 @@
 # livematches-service
 
+## TODO:
+Add database and synch every important event. <br />
+Hanlde erros, don't exit. <br />
+Send livematch data to server <br />
+
 ## Endpoints:
 ###### Clients:
 ws://iafoosball.aau.dk:9003/users/{table-id}/{user-id} <br />
@@ -99,17 +104,17 @@ removeGoal = "removeGoal"
 ```json
 [
   {
-    "tableID": "table-2",
+    "tableID": "table2",
     "started": false,
     "users": {
-      "user-1": {
+      "user1": {
         "username": "",
         "admin": false,
         "position": "attack",
         "bet": 100,
         "color": "#ffffff"
       },
-      "user-2": {
+      "user2": {
         "username": "",
         "admin": false,
         "position": "attack",
