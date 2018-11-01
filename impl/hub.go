@@ -1,4 +1,4 @@
-package handler
+package impl
 
 type Hub struct {
 	// Register Clients.

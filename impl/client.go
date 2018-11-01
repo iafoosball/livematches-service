@@ -1,4 +1,4 @@
-package handler
+package impl
 
 import (
 	"bytes"
@@ -177,7 +177,7 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 	go client.readPump()
 	if isUser {
 		client.isUser = true
-		client.user = &models.User{ID: userID}
+		client.user = &models.MatchUsersItems0{ID: userID}
 		joinMatch(client, tableID)
 		sendMatchData(client)
 	} else {
@@ -186,7 +186,7 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 	}
 }
 
-// User is a middleman between the websocket connection and the LiveMatch.
+// MatchUsersItems0 is a middleman between the websocket connection and the LiveMatch.
 type Client struct {
 	hub *Hub
 
@@ -203,7 +203,7 @@ type Client struct {
 	isUser bool
 
 	//The client data. Going to be nil for a table (or empty pointer?)
-	user *models.User
+	user *models.MatchUsersItems0
 
 	// The table data. Nil for a user.
 	table *models.Table

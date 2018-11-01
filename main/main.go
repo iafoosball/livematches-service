@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"github.com/go-openapi/swag"
-	"github.com/iafoosball/livematches-service/handler"
+	"github.com/iafoosball/livematches-service/impl"
 	"log"
 	"net/http"
 	"strings"
@@ -29,7 +29,7 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 
 func listMatches(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		b, err := swag.WriteJSON(handler.LiveMatches)
+		b, err := swag.WriteJSON(impl.LiveMatches)
 		if err != nil {
 			log.Println(err)
 			return
@@ -42,19 +42,19 @@ func main() {
 	flag.Parse()
 	log.SetFlags(log.Ltime | log.Lshortfile)
 	log.Println("V1: Open for clients on: " + *host + ":" + *port)
-	hub := handler.NewHub()
+	hub := impl.NewHub()
 	go hub.Run()
 	http.HandleFunc("/", serveHome)
 	http.HandleFunc("/matches", listMatches)
 	http.HandleFunc("/tables/", func(w http.ResponseWriter, r *http.Request) {
 		s := strings.Split(r.URL.Path, "/")
 		// 2 and 3 are hardedcoded so it fails, if id is not specified.
-		handler.ServeWs(hub, w, r, false, s[2], "")
+		impl.ServeWs(hub, w, r, false, s[2], "")
 	})
 	http.HandleFunc("/users/", func(w http.ResponseWriter, r *http.Request) {
 		log.Println(r.URL.Path)
 		s := strings.Split(r.URL.Path, "/")
-		handler.ServeWs(hub, w, r, true, s[2], s[3])
+		impl.ServeWs(hub, w, r, true, s[2], s[3])
 	})
 	err := http.ListenAndServe(*host+":"+*port, nil)
 	if err != nil {

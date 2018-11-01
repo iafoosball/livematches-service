@@ -1,4 +1,4 @@
-package handler
+package impl
 
 import (
 	"errors"
@@ -38,7 +38,7 @@ func newMatch() *LiveMatch {
 		MatchCast:  make(chan []byte),
 		MatchData:  &models.Match{},
 		Positions:  &models.MatchPositions{},
-		Users:      []*models.User{},
+		Users:      []*models.MatchUsersItems0{},
 		Started:    false,
 	}
 }
@@ -113,10 +113,10 @@ type LiveMatch struct {
 	MatchData *models.Match `json:"-"`
 
 	// holds the data of the Goals for a LiveMatch
-	Goals []*models.Goal `json:"goals"`
+	Goals []*models.Goal `json:"-"`
 
 	// list of all Players
-	Users []*models.User `json:"users"`
+	Users []*models.MatchUsersItems0 `json:"users"`
 
 	//Start auto generated stuff
 	// Is this game with bets

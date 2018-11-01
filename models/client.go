@@ -30,26 +30,3 @@ func (t *Table) SetID(s string) {
 func (t *Table) GetID() string {
 	return t.ID
 }
-
-type User struct {
-
-	// The user ID
-	ID string `json:"id"`
-
-	// The username
-	Username string `json:"username"`
-
-	// The first to join the lobby is the admin.
-	Admin bool `json:"admin"`
-
-	Bet int64 `json:"bet"`
-
-	Ready bool `json:"ready"`
-}
-
-func (u *User) SetID(s string) {
-	u.ID = s
-}
-func (u *User) GetID() string {
-	return u.ID
-}

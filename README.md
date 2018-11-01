@@ -112,14 +112,17 @@ removeGoal = "removeGoal"
         "admin": false,
         "position": "attack",
         "bet": 100,
-        "color": "#ffffff"
+        "color": "#ffffff",
+        "ready": true
       },
       "user2": {
         "username": "",
         "admin": false,
         "position": "attack",
         "bet": 0,
-        "color": "#ffffff"
+        "color": "#ffffff",
+        "ready": false
+
       }
     },
     "positions": {

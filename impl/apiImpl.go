@@ -1,4 +1,6 @@
-package handler
+package impl
+
+import "time"
 
 func setusername(c *Client, username string) {
 	c.user.Username = username
@@ -32,6 +34,7 @@ func setposition(c *Client, position string, side string) {
 // startMatch writes everything to the Match object.
 // Before users etc. is stored on the livematch
 func startmatch(c *Client) {
+	c.liveMatch.StartTime = time.Now().Format(time.RFC3339)
 	c.liveMatch.Started = true
 	sendMatchData(c)
 }

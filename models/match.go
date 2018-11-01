@@ -6,6 +6,8 @@ package models
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"strconv"
+
 	strfmt "github.com/go-openapi/strfmt"
 
 	"github.com/go-openapi/errors"
@@ -79,6 +81,9 @@ type Match struct {
 	// two on two
 	TwoOnTwo bool `json:"twoOnTwo,omitempty"`
 
+	// users
+	Users []*MatchUsersItems0 `json:"users"`
+
 	// Can be either "red" or "blue"
 	Winner string `json:"winner,omitempty"`
 }
@@ -88,6 +93,10 @@ func (m *Match) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validatePositions(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateUsers(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -110,6 +119,31 @@ func (m *Match) validatePositions(formats strfmt.Registry) error {
 			}
 			return err
 		}
+	}
+
+	return nil
+}
+
+func (m *Match) validateUsers(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.Users) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.Users); i++ {
+		if swag.IsZero(m.Users[i]) { // not required
+			continue
+		}
+
+		if m.Users[i] != nil {
+			if err := m.Users[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("users" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
 	}
 
 	return nil
@@ -138,7 +172,7 @@ func (m *Match) UnmarshalBinary(b []byte) error {
 type MatchPositions struct {
 
 	// THe UID.
-	BlueAttach string `json:"blueAttach"`
+	BlueAttach string `json:"blueAttach,omitempty"`
 
 	// THe UID.
 	BlueDefense string `json:"blueDefense,omitempty"`
@@ -166,6 +200,55 @@ func (m *MatchPositions) MarshalBinary() ([]byte, error) {
 // UnmarshalBinary interface implementation
 func (m *MatchPositions) UnmarshalBinary(b []byte) error {
 	var res MatchPositions
+	if err := swag.ReadJSON(b, &res); err != nil {
+		return err
+	}
+	*m = res
+	return nil
+}
+
+// MatchUsersItems0 match users items0
+// swagger:model MatchUsersItems0
+type MatchUsersItems0 struct {
+
+	// admin
+	Admin bool `json:"admin,omitempty"`
+
+	// is the amount a user wants to bet on this game
+	Bet int64 `json:"bet,omitempty"`
+
+	// color
+	Color string `json:"color,omitempty"`
+
+	// id
+	ID string `json:"id,omitempty"`
+
+	// Can either be attack or defense
+	Position string `json:"position,omitempty"`
+
+	// ready
+	Ready bool `json:"ready,omitempty"`
+
+	// username
+	Username string `json:"username,omitempty"`
+}
+
+// Validate validates this match users items0
+func (m *MatchUsersItems0) Validate(formats strfmt.Registry) error {
+	return nil
+}
+
+// MarshalBinary interface implementation
+func (m *MatchUsersItems0) MarshalBinary() ([]byte, error) {
+	if m == nil {
+		return nil, nil
+	}
+	return swag.WriteJSON(m)
+}
+
+// UnmarshalBinary interface implementation
+func (m *MatchUsersItems0) UnmarshalBinary(b []byte) error {
+	var res MatchUsersItems0
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}
