@@ -70,6 +70,7 @@ func closeMatch(c *Client) {
 	id := c.liveMatch.TableID
 	for i, l := range LiveMatches {
 		if l.TableID == id {
+			SendMatch(*l)
 			LiveMatches[i] = LiveMatches[len(LiveMatches)-1]
 			LiveMatches = LiveMatches[:len(LiveMatches)-1]
 		}
