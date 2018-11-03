@@ -15,7 +15,7 @@ var (
 	stop      bool = false
 )
 
-func Start() {
+func Start(tableID string, scenario string) {
 	log.Println("start ws client")
 	//var addr = flag.String("addr", "192.168.1.107:9003", "http service address")
 	var addr = flag.String("addrTable", "0.0.0.0:9003", "http service address")

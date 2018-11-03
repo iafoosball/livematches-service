@@ -40,7 +40,7 @@ type Match struct {
 	ScoreRed int64 `json:"scoreRed,omitempty"`
 
 	// settings
-	Settings []*MatchSettingsItems0 `json:"settings"`
+	Settings *MatchSettings `json:"settings,omitempty"`
 
 	// the datetime when the game ends
 	StartTime string `json:"startTime,omitempty"`
@@ -101,20 +101,13 @@ func (m *Match) validateSettings(formats strfmt.Registry) error {
 		return nil
 	}
 
-	for i := 0; i < len(m.Settings); i++ {
-		if swag.IsZero(m.Settings[i]) { // not required
-			continue
-		}
-
-		if m.Settings[i] != nil {
-			if err := m.Settings[i].Validate(formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("settings" + "." + strconv.Itoa(i))
-				}
-				return err
+	if m.Settings != nil {
+		if err := m.Settings.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("settings")
 			}
+			return err
 		}
-
 	}
 
 	return nil
@@ -203,12 +196,15 @@ func (m *MatchPositions) UnmarshalBinary(b []byte) error {
 	return nil
 }
 
-// MatchSettingsItems0 match settings items0
-// swagger:model MatchSettingsItems0
-type MatchSettingsItems0 struct {
+// MatchSettings match settings
+// swagger:model MatchSettings
+type MatchSettings struct {
 
 	// Is this game with bets
 	Bet bool `json:"bet,omitempty"`
+
+	// drunk
+	Drunk bool `json:"drunk,omitempty"`
 
 	// free game
 	FreeGame bool `json:"freeGame,omitempty"`
@@ -244,13 +240,13 @@ type MatchSettingsItems0 struct {
 	TwoOnTwo bool `json:"twoOnTwo,omitempty"`
 }
 
-// Validate validates this match settings items0
-func (m *MatchSettingsItems0) Validate(formats strfmt.Registry) error {
+// Validate validates this match settings
+func (m *MatchSettings) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
 // MarshalBinary interface implementation
-func (m *MatchSettingsItems0) MarshalBinary() ([]byte, error) {
+func (m *MatchSettings) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -258,8 +254,8 @@ func (m *MatchSettingsItems0) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *MatchSettingsItems0) UnmarshalBinary(b []byte) error {
-	var res MatchSettingsItems0
+func (m *MatchSettings) UnmarshalBinary(b []byte) error {
+	var res MatchSettings
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

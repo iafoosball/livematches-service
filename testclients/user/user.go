@@ -1,7 +1,6 @@
 package user
 
 import (
-	"flag"
 	"github.com/gorilla/websocket"
 	"log"
 	"net/url"
@@ -16,16 +15,16 @@ var (
 	next      = ""
 )
 
-func Start() {
+func Start(userID string, scenario string) {
 
 	log.Println("start ws client")
 	//var addr = flag.String("addr", "iafoosball.aau.dk:9003", "http service address")
-	var addr = flag.String("addrUser", "0.0.0.0:9003", "http service address")
+	var addr = "0.0.0.0:9003"
 
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 
-	u := url.URL{Scheme: "ws", Host: *addr, Path: "/users/table-11/user-2"}
+	u := url.URL{Scheme: "ws", Host: addr, Path: "/users/table-11/user-2"}
 	log.Printf("connecting to %s", u.String())
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {

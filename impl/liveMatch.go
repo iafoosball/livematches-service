@@ -38,8 +38,8 @@ func newMatch() *LiveMatch {
 		MatchCast:  make(chan []byte),
 		MatchData:  &models.Match{},
 		Positions:  &models.MatchPositions{},
+		Settings:   &models.MatchSettings{},
 		Users:      []*models.MatchUsersItems0{},
-		Started:    false,
 	}
 }
 
@@ -113,45 +113,21 @@ type LiveMatch struct {
 	// holds the data of the LiveMatch
 	MatchData *models.Match `json:"-"`
 
+	// started indicates if the match started
+	Started bool `json:"started,omitempty"`
+
 	// holds the data of the Goals for a LiveMatch
 	Goals []*models.Goal `json:"-"`
 
-	// list of all Players
-	Users []*models.MatchUsersItems0 `json:"users"`
-
 	//Start auto generated stuff
-	// Is this game with bets
-	Bet bool `json:"bet,omitempty"`
-
 	// Was the game completed.
 	Completed bool `json:"completed,omitempty"`
-
-	// Is this game with bets
-	Drunk bool `json:"drunk,omitempty"`
 
 	// the datetime when the match ends
 	EndTime string `json:"endTime,omitempty"`
 
-	// free game
-	FreeGame bool `json:"freeGame,omitempty"`
-
-	// The maximum number of goals for this game. If a time is specified the first criteria which is true will stop the match.
-	MaxGoals int64 `json:"maxGoals,omitempty"`
-
-	// The maximum tim in sec for this game. If a max goals is specified the first criteria which is true will stop the match.
-	MaxTime int64 `json:"maxTime,omitempty"`
-
-	// one on one
-	OneOnOne bool `json:"oneOnOne,omitempty"`
-
-	// payed
-	Payed bool `json:"payed,omitempty"`
-
 	// positions
 	Positions *models.MatchPositions `json:"positions,omitempty"`
-
-	// A match can be rated, ie a ranked game with points, or without.
-	RatedMatch bool `json:"ratedMatch,omitempty"`
 
 	// score blue
 	ScoreBlue int64 `json:"scoreBlue,omitempty"`
@@ -159,26 +135,17 @@ type LiveMatch struct {
 	// score red
 	ScoreRed int64 `json:"scoreRed,omitempty"`
 
+	// settings
+	Settings *models.MatchSettings `json:"settings,omitempty"`
+
 	// the datetime when the game ends
 	StartTime string `json:"startTime,omitempty"`
-
-	// started
-	Started bool `json:"started,omitempty"`
-
-	// Switch the setposition after 50% of the goal (time or goals) is reached.
-	SwitchPosition bool `json:"switchPosition,omitempty"`
 
 	// the id of table
 	TableID string `json:"tableID,omitempty"`
 
-	// tournament
-	Tournament bool `json:"tournament,omitempty"`
-
-	// two on one
-	TwoOnOne bool `json:"twoOnOne,omitempty"`
-
-	// two on two
-	TwoOnTwo bool `json:"twoOnTwo,omitempty"`
+	// users
+	Users []*models.MatchUsersItems0 `json:"users"`
 
 	// Can be either "red" or "blue"
 	Winner string `json:"winner,omitempty"`

@@ -14,15 +14,18 @@ var (
 	testHost string
 	testPort int
 	testUrl  string
+	scenario string
 )
 
-func TestIntegration(*testing.T) {
+func TestIntegrationScenario1(*testing.T) {
+	scenario = "scenario1"
 	log.SetFlags(log.Ltime | log.Lshortfile)
 	go main()
-	time.Sleep(2 * time.Second)
-	go table.Start()
-	time.Sleep(2 * time.Second)
-	go user.Start()
+	time.Sleep(1 * time.Second)
+	go table.Start("table-1", scenario)
+	time.Sleep(1 * time.Second)
+	go user.Start("user-1", scenario)
+	go user.Start("user-2", scenario)
 
 	time.Sleep(5 * time.Second)
 	log.Println("Exit now!")

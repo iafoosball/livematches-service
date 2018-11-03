@@ -40,42 +40,42 @@ func startmatch(c *Client) {
 }
 
 func switchpositions(c *Client, b bool) {
-	c.liveMatch.SwitchPosition = b
+	c.liveMatch.Settings.SwitchPosition = b
 	sendMatchData(c)
 }
 
 func twoontwo(c *Client, b bool) {
-	c.liveMatch.TwoOnOne = b
+	c.liveMatch.Settings.TwoOnOne = b
 	sendMatchData(c)
 }
 func twoonone(c *Client, b bool) {
-	c.liveMatch.TwoOnOne = b
+	c.liveMatch.Settings.TwoOnOne = b
 	sendMatchData(c)
 }
 func oneonone(c *Client, b bool) {
-	c.liveMatch.OneOnOne = b
+	c.liveMatch.Settings.OneOnOne = b
 	sendMatchData(c)
 }
 
 func isBet(c *Client, b bool) {
-	c.liveMatch.Bet = b
+	c.liveMatch.Settings.Bet = b
 	sendMatchData(c)
 }
 func isTournament(c *Client, b bool) {
-	c.liveMatch.Tournament = b
+	c.liveMatch.Settings.Tournament = b
 	sendMatchData(c)
 }
 func isDrunk(c *Client, b bool) {
-	c.liveMatch.Drunk = b
+	c.liveMatch.Settings.Drunk = b
 	sendMatchData(c)
 }
 func isPayed(c *Client, b bool) {
-	c.liveMatch.Payed = b
+	c.liveMatch.Settings.Payed = b
 	sendMatchData(c)
 }
 
 func freegame(c *Client, b bool) {
-	c.liveMatch.FreeGame = b
+	c.liveMatch.Settings.FreeGame = b
 	sendMatchData(c)
 }
 
@@ -90,17 +90,17 @@ func setbet(c *Client, bet int64) {
 }
 
 func setRated(c *Client, rated bool) {
-	c.liveMatch.RatedMatch = rated
+	c.liveMatch.Settings.RatedMatch = rated
 	sendMatchData(c)
 }
 
 func maxtime(c *Client, goals int64) {
-	c.liveMatch.MaxTime = goals
+	c.liveMatch.Settings.MaxTime = goals
 	sendMatchData(c)
 }
 
 func maxgoals(c *Client, maxTime int64) {
-	c.liveMatch.MaxGoals = maxTime
+	c.liveMatch.Settings.MaxGoals = &maxTime
 	sendMatchData(c)
 }
 
