@@ -68,6 +68,7 @@ func closeUser(c *Client) {
 			c.liveMatch.Users = c.liveMatch.Users[:len(c.liveMatch.Users)-1]
 		}
 	}
+
 	c.liveMatch.Unregister <- c
 	c.hub.unregister <- c
 	c.conn.Close()
@@ -166,13 +167,17 @@ func (c *Client) writePump() {
 // serveWs handles websocket requests from the peer.
 func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tableID string, userID string) {
 	log.Println("new Client connected with  tableID: " + tableID + " userID: " + userID)
+	defer r.Body.Close()
+	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 	conn, err := upgrader.Upgrade(w, r, nil)
 	handleErr(err)
+	if err != nil {
+		return
+	}
 	var client *Client
 	client = &Client{hub: hub, conn: conn, send: make(chan []byte, 256), isUser: false}
 	client.hub.register <- client
 	// Allow collection of memory referenced by the caller by doing all work in
-	// new goroutines.
 	go client.writePump()
 	go client.readPump()
 	if isUser {
@@ -211,6 +216,6 @@ type Client struct {
 
 func handleErr(err error) {
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 }

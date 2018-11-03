@@ -1,7 +1,12 @@
 package main
 
 import (
+	"github.com/iafoosball/livematches-service/testclients/table"
+	"github.com/iafoosball/livematches-service/testclients/user"
+	"log"
+	"os"
 	"testing"
+	"time"
 )
 
 // used by all test classes in package matches
@@ -11,17 +16,15 @@ var (
 	testUrl  string
 )
 
-func init() {
-	//log.SetFlags(log.Ltime | log.Lshortfile)
-	//flag.StringVar(&testHost, "testHost", "0.0.0.0", "the test host")
-	//testPort = *flag.Int("testPort", 8000, "the port of the matches service where the test should connect")
-	//flag.Parse()
-	//testUrl = "http://" + testHost + ":" + strconv.Itoa(testPort) + "/"
-	//log.Println(testUrl)
-}
+func TestIntegration(*testing.T) {
+	log.SetFlags(log.Ltime | log.Lshortfile)
+	go main()
+	time.Sleep(2 * time.Second)
+	go table.Start()
+	time.Sleep(2 * time.Second)
+	go user.Start()
 
-func TestWS(*testing.T) {
-	//go client.Client()
-	//client.Client()
-
+	time.Sleep(5 * time.Second)
+	log.Println("Exit now!")
+	os.Exit(3)
 }

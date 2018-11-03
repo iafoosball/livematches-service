@@ -1,4 +1,4 @@
-package main
+package table
 
 import (
 	"flag"
@@ -15,15 +15,15 @@ var (
 	stop      bool = false
 )
 
-func main() {
-	log.SetFlags(log.Ltime | log.Lshortfile)
+func Start() {
 	log.Println("start ws client")
-	var addr = flag.String("addr", "0.0.0.0:9003", "http service address")
+	//var addr = flag.String("addr", "192.168.1.107:9003", "http service address")
+	var addr = flag.String("addrTable", "0.0.0.0:9003", "http service address")
 
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 
-	u := url.URL{Scheme: "ws", Host: *addr, Path: "/tables/table-1"}
+	u := url.URL{Scheme: "ws", Host: *addr, Path: "/tables/table-11"}
 	log.Printf("connecting to %s", u.String())
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {
