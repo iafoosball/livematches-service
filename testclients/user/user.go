@@ -54,11 +54,9 @@ func Start(userID string, scenario string, addr string) {
 					}
 					next = "setPosition"
 				case "setPosition":
-					{
-						msg := "{ \"command\": \"setPosition\", \"values\": { \"side\": \"red\", \"position\": \"attack\" } }"
-						client.send <- []byte(msg)
-						next = "setPosition"
-					}
+					msg := "{ \"command\": \"setPosition\", \"values\": { \"side\": \"red\", \"position\": \"attack\" } }"
+					client.send <- []byte(msg)
+					next = "leaveMatch"
 				case "leaveMatch":
 					msg := "{ \"command\": \"leaveMatch\", \"values\": {  } }"
 					client.send <- []byte(msg)
@@ -105,7 +103,6 @@ func Start(userID string, scenario string, addr string) {
 			if !ok {
 				c.WriteMessage(websocket.CloseMessage, []byte{})
 			}
-			log.Println(string(message))
 			c.WriteMessage(websocket.TextMessage, message)
 		case <-interrupt:
 			log.Println("interrupt")

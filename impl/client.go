@@ -68,7 +68,7 @@ func closeUser(c *Client) {
 			c.liveMatch.Users = c.liveMatch.Users[:len(c.liveMatch.Users)-1]
 		}
 	}
-
+	setposition(c, "", "")
 	c.liveMatch.Unregister <- c
 	c.hub.unregister <- c
 	c.conn.Close()

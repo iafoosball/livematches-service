@@ -24,6 +24,8 @@ const (
 	// { \"command\": \"setBet\", \"values\": { \"bet\": 123 }}
 	ready = "ready"
 	// { \"command\": \"ready\", \"values\": { \"ready\": true }}
+	leaveMatch = "leaveMatch"
+	// { \"command\": \"ready\", \"values\": { \"ready\": true }}
 
 	// Start: For Admin
 	twoOnTwo = "twoOnTwo"
@@ -82,14 +84,17 @@ func handleUsers(c *Client, m *message) {
 	case setPosition:
 		setposition(c, stringFromMap(m.Values, "position"), stringFromMap(m.Values, "side"))
 	case setColor:
-		leaveMatch(c)
+
 	case setUsername:
 		setusername(c, stringFromMap(m.Values, "setusername"))
 	case setBet:
 		setbet(c, intFromMap(m.Values, "bet"))
 	case ready:
 		setReady(c, boolFromMap(m.Values, ready))
+	case leaveMatch:
+		leavematch(c)
 	}
+
 	//sendMatchData(c)
 }
 

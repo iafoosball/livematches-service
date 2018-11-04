@@ -3,7 +3,6 @@ package impl
 import (
 	"errors"
 	"github.com/iafoosball/livematches-service/models"
-	"log"
 )
 
 // operations for live LiveMatches
@@ -46,7 +45,6 @@ func newMatch() *LiveMatch {
 func joinMatch(c *Client, id string) {
 	for _, match := range LiveMatches {
 		if match.TableID == id {
-			log.Println(len(match.Users))
 			if len(match.Users) > 3 {
 				closeClient(c)
 				return
@@ -65,7 +63,7 @@ func joinMatch(c *Client, id string) {
 // If match is finished it is send to matches-service and stored their
 func closeMatch(c *Client) {
 	for cl, _ := range c.liveMatch.Clients {
-		leaveMatch(cl)
+		leavematch(cl)
 	}
 	id := c.liveMatch.TableID
 	for i, l := range LiveMatches {
@@ -80,21 +78,23 @@ func closeMatch(c *Client) {
 func kickuser(c *Client, id string) {
 	for _, u := range c.liveMatch.Users {
 		if u.ID == id {
-			leaveMatch(c)
+			leavematch(c)
 			return
 		}
 	}
 }
 
-// Used by users to leave a Match
-func leaveMatch(c *Client) {
+// leavematch is used by users to leave a Match
+func leavematch(c *Client) {
 	c.liveMatch.Unregister <- c
 	for i, p := range c.liveMatch.Users {
 		if p.ID == c.user.ID {
+			setposition(c, "", "")
 			c.liveMatch.Users[i] = c.liveMatch.Users[len(c.liveMatch.Users)-1]
 			c.liveMatch.Users = c.liveMatch.Users[:len(c.liveMatch.Users)-1]
 		}
 	}
+	sendMatchData(c)
 }
 
 type LiveMatch struct {

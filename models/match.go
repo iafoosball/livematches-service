@@ -161,7 +161,7 @@ func (m *Match) UnmarshalBinary(b []byte) error {
 type MatchPositions struct {
 
 	// THe UID.
-	BlueAttach string `json:"blueAttach,omitempty"`
+	BlueAttack string `json:"blueAttack,omitempty"`
 
 	// THe UID.
 	BlueDefense string `json:"blueDefense,omitempty"`
