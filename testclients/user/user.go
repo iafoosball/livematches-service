@@ -12,19 +12,20 @@ import (
 var (
 	serverMsg = ""
 	stop      = false
-	next      = ""
+	next      = "setPosition"
 )
 
-func Start(userID string, scenario string) {
+func Start(userID string, scenario string, addr string) {
 
 	log.Println("start ws client")
 	//var addr = flag.String("addr", "iafoosball.aau.dk:9003", "http service address")
-	var addr = "0.0.0.0:9003"
-
+	if addr == "" {
+		addr = "0.0.0.0:9003"
+	}
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 
-	u := url.URL{Scheme: "ws", Host: addr, Path: "/users/table-11/user-2"}
+	u := url.URL{Scheme: "ws", Host: addr, Path: "/users/table-1/" + userID}
 	log.Printf("connecting to %s", u.String())
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {
@@ -47,9 +48,17 @@ func Start(userID string, scenario string) {
 					//client.send <- []byte(msg)
 					//next = "joinMatch"
 				case "joinMatch":
-					msg := "{ \"command\": \"joinMatch\", \"values\": { \"id\": \"table-1\", \"side\": \"blue\", \"attack\": \"true\" } }"
+					msg := "{ \"command\": \"joinMatch\", \"values\": { \"id\": \"table-1\", \"side\": \"blue\", \"position\": \"attack\" } }"
 					client.send <- []byte(msg)
-					next = "leaveMatch"
+					if userID == "user1" {
+					}
+					next = "setPosition"
+				case "setPosition":
+					{
+						msg := "{ \"command\": \"setPosition\", \"values\": { \"side\": \"red\", \"position\": \"attack\" } }"
+						client.send <- []byte(msg)
+						next = "setPosition"
+					}
 				case "leaveMatch":
 					msg := "{ \"command\": \"leaveMatch\", \"values\": {  } }"
 					client.send <- []byte(msg)
@@ -58,8 +67,8 @@ func Start(userID string, scenario string) {
 					//case "":
 					//case "":
 				}
-				time.Sleep(500 * time.Second)
 			}
+			time.Sleep(5 * time.Second)
 		}
 	}()
 

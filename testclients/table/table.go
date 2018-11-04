@@ -1,7 +1,6 @@
 package table
 
 import (
-	"flag"
 	"github.com/gorilla/websocket"
 	"log"
 	"net/url"
@@ -12,18 +11,19 @@ import (
 
 var (
 	serverMsg      = ""
-	stop      bool = false
+	Stop      bool = false
 )
 
-func Start(tableID string, scenario string) {
+func Start(tableID string, scenario string, addr string) {
 	log.Println("start ws client")
 	//var addr = flag.String("addr", "192.168.1.107:9003", "http service address")
-	var addr = flag.String("addrTable", "0.0.0.0:9003", "http service address")
-
+	if addr == "" {
+		addr = "0.0.0.0:9003"
+	}
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 
-	u := url.URL{Scheme: "ws", Host: *addr, Path: "/tables/table-11"}
+	u := url.URL{Scheme: "ws", Host: addr, Path: "/tables/table-1"}
 	log.Printf("connecting to %s", u.String())
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {
@@ -39,7 +39,7 @@ func Start(tableID string, scenario string) {
 	go func() {
 		defer close(done)
 		for {
-			if !stop {
+			if !Stop {
 				switch serverMsg {
 				case "":
 					//msg := "{ \"command\": \"createMatch\", \"values\": { \"match\": \"123\", \"side\": \"blue\", \"attack\": \"true\" } }"
@@ -48,7 +48,7 @@ func Start(tableID string, scenario string) {
 				case "closeMatch":
 					msg := "{ \"command\": \"closeMatch\", \"values\": { } }"
 					client.send <- []byte(msg)
-					stop = true
+					Stop = true
 
 					//case "":
 					//case "":

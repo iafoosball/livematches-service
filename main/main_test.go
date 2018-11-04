@@ -11,23 +11,29 @@ import (
 
 // used by all test classes in package matches
 var (
-	testHost string
-	testPort int
-	testUrl  string
 	scenario string
 )
 
+func init() {
+	log.SetFlags(log.Ltime | log.Lshortfile)
+}
+
 func TestIntegrationScenario1(*testing.T) {
 	scenario = "scenario1"
-	log.SetFlags(log.Ltime | log.Lshortfile)
+	addr := "0.0.0.0:9003"
+
 	go main()
 	time.Sleep(1 * time.Second)
-	go table.Start("table-1", scenario)
+	go table.Start("table1", scenario, addr)
 	time.Sleep(1 * time.Second)
-	go user.Start("user-1", scenario)
-	go user.Start("user-2", scenario)
+	go user.Start("user1", scenario, addr)
+	//go user.Start("user2", scenario, addr)
 
-	time.Sleep(5 * time.Second)
+	// Test logic inside here
+	for table.Stop != true {
+
+	}
+
 	log.Println("Exit now!")
 	os.Exit(3)
 }

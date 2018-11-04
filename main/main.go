@@ -47,6 +47,7 @@ func main() {
 	http.HandleFunc("/", serveHome)
 	http.HandleFunc("/matches", listMatches)
 	http.HandleFunc("/tables/", func(w http.ResponseWriter, r *http.Request) {
+		log.Println("connected")
 		s := strings.Split(r.URL.Path, "/")
 		// 2 and 3 are hardedcoded so it fails, if id is not specified.
 		impl.ServeWs(hub, w, r, false, s[2], "")

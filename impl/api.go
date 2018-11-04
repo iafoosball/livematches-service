@@ -80,7 +80,7 @@ func handleCommunication(c *Client, message []byte) {
 func handleUsers(c *Client, m *message) {
 	switch m.Command {
 	case setPosition:
-		setposition(c, stringFromMap(m.Values, "setposition"), stringFromMap(m.Values, "side"))
+		setposition(c, stringFromMap(m.Values, "position"), stringFromMap(m.Values, "side"))
 	case setColor:
 		leaveMatch(c)
 	case setUsername:

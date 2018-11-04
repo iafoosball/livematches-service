@@ -1,6 +1,8 @@
 package impl
 
-import "time"
+import (
+	"time"
+)
 
 func setusername(c *Client, username string) {
 	c.user.Username = username
