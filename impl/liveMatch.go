@@ -89,7 +89,7 @@ func leavematch(c *Client) {
 	c.liveMatch.Unregister <- c
 	for i, p := range c.liveMatch.Users {
 		if p.ID == c.user.ID {
-			setposition(c, "", "")
+			resetPosition(c)
 			c.liveMatch.Users[i] = c.liveMatch.Users[len(c.liveMatch.Users)-1]
 			c.liveMatch.Users = c.liveMatch.Users[:len(c.liveMatch.Users)-1]
 		}

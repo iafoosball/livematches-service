@@ -10,6 +10,7 @@ func setusername(c *Client, username string) {
 }
 
 func setposition(c *Client, position string, side string) {
+	resetPosition(c)
 	if position == "attack" && side == "blue" {
 		if c.liveMatch.Positions.BlueAttack == "" {
 			c.liveMatch.Positions.BlueAttack = c.user.ID
@@ -30,17 +31,18 @@ func setposition(c *Client, position string, side string) {
 			c.liveMatch.Positions.RedDefense = c.user.ID
 			sendMatchData(c)
 		}
-	} else {
-		// Set to spectator position
-		if c.liveMatch.Positions.RedDefense == c.user.ID {
-			c.liveMatch.Positions.RedDefense = ""
-		} else if c.liveMatch.Positions.RedAttack == c.user.ID {
-			c.liveMatch.Positions.RedAttack = ""
-		} else if c.liveMatch.Positions.BlueDefense == c.user.ID {
-			c.liveMatch.Positions.BlueDefense = ""
-		} else if c.liveMatch.Positions.BlueAttack == c.user.ID {
-			c.liveMatch.Positions.BlueAttack = ""
-		}
+	}
+}
+
+func resetPosition(c *Client) {
+	if c.liveMatch.Positions.RedDefense == c.user.ID {
+		c.liveMatch.Positions.RedDefense = ""
+	} else if c.liveMatch.Positions.RedAttack == c.user.ID {
+		c.liveMatch.Positions.RedAttack = ""
+	} else if c.liveMatch.Positions.BlueDefense == c.user.ID {
+		c.liveMatch.Positions.BlueDefense = ""
+	} else if c.liveMatch.Positions.BlueAttack == c.user.ID {
+		c.liveMatch.Positions.BlueAttack = ""
 	}
 }
 
