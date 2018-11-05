@@ -28,74 +28,74 @@ The first user to connect to a match/lobby is the admin (as before).
 #### For Users
 ```
 setPosition = "setPosition"
-// { \"command\": \"setPosition\", \"values\": { \"side\": \"red\", \"position\": \"attack\" }}
+// { "command": "setPosition", "values": { "side": "red", "position": "attack" }}
 
 setColor    = "setColor"
-// { \"command\": \"setColor\", \"values\": { \"color\": \"green\" }}
+// { "command": "setColor", "values": { "color": "green" }}
 
 setUsername = "setUsername"
-// { \"command\": \"setUsername\", \"values\": { \"username\": \"joe\" }}
+// { "command": "setUsername", "values": { "username": "joe" }}
 
 setBet      = "setBet"
-// { \"command\": \"setBet\", \"values\": { \"bet\": 123 }}
+// { "command": "setBet", "values": { "bet": 123 }}
 
 ready       = "ready"
-// { \"command\": \"ready\", \"values\": { \"ready\": true }}
+// { "command": "ready", "values": { "ready": true }}
 ```
 
 
 #### For Admin
 ```
 twoOnTwo        = "twoOnTwo"
-// { \"command\": \"twoOnTwo\", \"values\": { \"twoOnTwo\": true }}
+// { "command": "twoOnTwo", "values": { "twoOnTwo": true }}
 
 twoOnOne        = "twoOnOne"
-// { \"command\": \"oneOnTwo\", \"values\": { \"oneOnTwo\": true }}
+// { "command": "oneOnTwo", "values": { "oneOnTwo": true }}
 
 oneOnOne        = "oneOnOne"
-// { \"command\": \"oneOnOne\", \"values\": { \"oneOnOne\": true }}
+// { "command": "oneOnOne", "values": { "oneOnOne": true }}
 
 switchPositions = "switchPositions"
-// { \"command\": \"switchPositions\", \"values\": { \"switchPositions\": true }}
+// { "command": "switchPositions", "values": { "switchPositions": true }}
 
 bet             = "bet"
-// { \"command\": \"bet\", \"values\": { \"bet\": true }}
+// { "command": "bet", "values": { "bet": true }}
 
 maxGoals        = "maxGoals"
-// { \"command\": \"maxGoals\", \"values\": { \"maxGoals\": 10 }}
+// { "command": "maxGoals", "values": { "maxGoals": 10 }}
 
 tournament      = "tournament"
-// { \"command\": \"tournament\", \"values\": { \"tournament\": true }}
+// { "command": "tournament", "values": { "tournament": true }}
 
 startMatch      = "startMatch"
-// { \"command\": \"startMatch\", \"values\": { }}
+// { "command": "startMatch", "values": { }}
 
 drunk           = "drunk"
-// { \"command\": \"drunk\", \"values\": { \"drunk\": true }}
+// { "command": "drunk", "values": { "drunk": true }}
 
 freeGame        = "freeGame"
-// { \"command\": \"freeGame\", \"values\": { \"freeGame\": true }}
+// { "command": "freeGame", "values": { "freeGame": true }}
 
 payed           = "payed"
-// { \"command\": \"payed\", \"values\": { \"payed\": true }}
+// { "command": "payed", "values": { "payed": true }}
 
 maxTime         = "maxTime"
-// { \"command\": \"maxTime\", \"values\": { \"maxTime\": 600 }}
+// { "command": "maxTime", "values": { "maxTime": 600 }}
 
 rated           = "rated"
-// { \"command\": \"rated\", \"values\": { \"rated\": true }}
+// { "command": "rated", "values": { "rated": true }}
 
 cancelMatch     = "cancelMatch"
-// { \"command\": \"candelMatch\", \"values\": { }}
+// { "command": "candelMatch", "values": { }}
 
 kickUser        = "kickUser"
-// { \"command\": \"kickUser\", \"values\": { \"kickUser\": "userID" }}
+// { "command": "kickUser", "values": { "kickUser": "userID" }}
 ```
 
 #### For Table, possible by admin as well
 ```
 addGoal    = "addGoal"
-// { \"command\": \"addGoal\", \"values\": { \"speed\": 12, \"side\": \"blue\", \"position\": \"attack\"  }}
+// { "command": "addGoal", "values": { "speed": 12, "side": "blue", "position": "attack"  }}
 
 removeGoal = "removeGoal"
 ```
