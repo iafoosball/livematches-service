@@ -210,7 +210,7 @@ type MatchSettings struct {
 	FreeGame bool `json:"freeGame,omitempty"`
 
 	// The maximum number of goals for this game. If a time is specified the first criteria which is true will stop the match.
-	MaxGoals *int64 `json:"maxGoals,omitempty"`
+	MaxGoals int64 `json:"maxGoals,omitempty"`
 
 	// The maximum tim in sec for this game. If a max goals is specified the first criteria which is true will stop the match.
 	MaxTime int64 `json:"maxTime,omitempty"`

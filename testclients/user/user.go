@@ -56,6 +56,10 @@ func Start(userID string, scenario string, addr string) {
 				case "setPosition":
 					msg := "{ \"command\": \"setPosition\", \"values\": { \"side\": \"red\", \"position\": \"attack\" } }"
 					client.send <- []byte(msg)
+					next = "setPosition1"
+				case "setPosition1":
+					msg := "{ \"command\": \"setPosition\", \"values\": { \"side\": \"blue\", \"position\": \"attack\" } }"
+					client.send <- []byte(msg)
 					next = "leaveMatch"
 				case "leaveMatch":
 					msg := "{ \"command\": \"leaveMatch\", \"values\": {  } }"

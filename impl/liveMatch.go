@@ -37,8 +37,22 @@ func newMatch() *LiveMatch {
 		MatchCast:  make(chan []byte),
 		MatchData:  &models.Match{},
 		Positions:  &models.MatchPositions{},
-		Settings:   &models.MatchSettings{},
-		Users:      []*models.MatchUsersItems0{},
+		Settings: &models.MatchSettings{
+			Bet:            false,
+			Drunk:          false,
+			FreeGame:       false,
+			MaxGoals:       0,
+			MaxTime:        0,
+			OneOnOne:       false,
+			Payed:          false,
+			RatedMatch:     false,
+			Started:        false,
+			SwitchPosition: false,
+			Tournament:     false,
+			TwoOnOne:       false,
+			TwoOnTwo:       false,
+		},
+		Users: []*models.MatchUsersItems0{},
 	}
 }
 
