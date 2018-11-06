@@ -156,6 +156,7 @@ func addgoal(c *Client, side string, speed float64) {
 	} else if side == "blue" {
 		c.liveMatch.ScoreBlue++
 	}
+	sendMatchData(c)
 }
 
 //stringFromMap returns a string for a certain id from a map
