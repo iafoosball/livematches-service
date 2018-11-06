@@ -35,11 +35,8 @@ func newMatch() *LiveMatch {
 		Register:   make(chan *Client),
 		Unregister: make(chan *Client),
 		MatchCast:  make(chan []byte),
-		MatchData: &models.Match{
-			ScoreBlue: 0,
-			ScoreRed:  0,
-		},
-		Positions: &models.MatchPositions{},
+		MatchData:  &models.Match{},
+		Positions:  &models.MatchPositions{},
 		Settings: &models.MatchSettings{
 			Bet:            false,
 			Drunk:          false,
@@ -55,7 +52,9 @@ func newMatch() *LiveMatch {
 			TwoOnOne:       false,
 			TwoOnTwo:       false,
 		},
-		Users: []*models.MatchUsersItems0{},
+		Users:     []*models.MatchUsersItems0{},
+		ScoreBlue: 0,
+		ScoreRed:  0,
 	}
 }
 
@@ -150,10 +149,10 @@ type LiveMatch struct {
 	Positions *models.MatchPositions `json:"positions,omitempty"`
 
 	// score blue
-	ScoreBlue int64 `json:"scoreBlue,omitempty"`
+	ScoreBlue int64 `json:"scoreBlue"`
 
 	// score red
-	ScoreRed int64 `json:"scoreRed,omitempty"`
+	ScoreRed int64 `json:"scoreRed"`
 
 	// settings
 	Settings *models.MatchSettings `json:"settings,omitempty"`
