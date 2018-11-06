@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/iafoosball/livematches-service/testclients/table"
-	"github.com/iafoosball/livematches-service/testclients/user"
 	"log"
 	"os"
 	"os/signal"
@@ -26,11 +25,11 @@ func TestIntegrationScenario1(*testing.T) {
 	//var wg sync.WaitGroup
 
 	//wg.Add(3)
-	go main()
+	//go main()
 	time.Sleep(1 * time.Second)
-	go table.Start("table1", scenario, addr, end)
+	go table.Start("table2", scenario, addr, end)
 	time.Sleep(2 * time.Second)
-	go user.Start("user1", scenario, addr, end)
+	//go user.Start("user1", scenario, addr, end)
 	//go user.Start("user2", scenario, addr)
 
 	exit()
