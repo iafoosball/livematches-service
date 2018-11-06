@@ -3,6 +3,7 @@ package impl
 import (
 	"encoding/json"
 	"github.com/iafoosball/livematches-service/models"
+	"log"
 	"time"
 )
 
@@ -69,6 +70,7 @@ func handleCommunication(c *Client, message []byte) {
 	if m, b = unmarshal(message); !b {
 		return
 	}
+	log.Println(string(message))
 	if c.isUser && c.user.Admin {
 		handleAdmin(c, m)
 	} else if c.isUser {
@@ -84,7 +86,7 @@ func handleUsers(c *Client, m *message) {
 	case setPosition:
 		setposition(c, stringFromMap(m.Values, "position"), stringFromMap(m.Values, "side"))
 	case setColor:
-
+		setcolor(c, stringFromMap(m.Values, "color"))
 	case setUsername:
 		setusername(c, stringFromMap(m.Values, "setusername"))
 	case setBet:
@@ -94,8 +96,6 @@ func handleUsers(c *Client, m *message) {
 	case leaveMatch:
 		leavematch(c)
 	}
-
-	//sendMatchData(c)
 }
 
 func handleAdmin(c *Client, m *message) {

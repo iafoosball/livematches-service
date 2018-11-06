@@ -72,6 +72,11 @@ func oneonone(c *Client, b bool) {
 	sendMatchData(c)
 }
 
+func setcolor(c *Client, color string) {
+	c.user.Color = color
+	sendMatchData(c)
+}
+
 func isBet(c *Client, b bool) {
 	c.liveMatch.Settings.Bet = b
 	sendMatchData(c)
@@ -115,7 +120,7 @@ func maxtime(c *Client, goals int64) {
 }
 
 func maxgoals(c *Client, maxTime int64) {
-	c.liveMatch.Settings.MaxGoals = &maxTime
+	c.liveMatch.Settings.MaxGoals = maxTime
 	sendMatchData(c)
 }
 

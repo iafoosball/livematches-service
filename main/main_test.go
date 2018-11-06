@@ -22,15 +22,20 @@ func init() {
 func TestIntegrationScenario1(*testing.T) {
 	scenario = "scenario1"
 	addr := "0.0.0.0:9003"
+	end := make(chan string)
+	//var wg sync.WaitGroup
 
+	//wg.Add(3)
 	go main()
 	time.Sleep(1 * time.Second)
-	go table.Start("table1", scenario, addr)
+	go table.Start("table1", scenario, addr, end)
 	time.Sleep(2 * time.Second)
-	go user.Start("user1", scenario, addr)
+	go user.Start("user1", scenario, addr, end)
 	//go user.Start("user2", scenario, addr)
 
 	exit()
+	//wg.Wait()
+
 	// Test logic inside here
 	for table.Stop != true {
 

@@ -14,8 +14,9 @@ var (
 	Stop      bool = false
 )
 
-func Start(tableID string, scenario string, addr string) {
-	log.Println("start ws client")
+func Start(tableID string, scenario string, addr string, end chan string) {
+	log.SetFlags(log.Ltime | log.Lshortfile)
+	log.Println("start ws table")
 	//var addr = flag.String("addr", "192.168.1.107:9003", "http service address")
 	if addr == "" {
 		addr = "0.0.0.0:9003"
@@ -54,7 +55,7 @@ func Start(tableID string, scenario string, addr string) {
 					//case "":
 					//case "":
 				}
-				time.Sleep(30 * time.Second)
+				time.Sleep(10 * time.Second)
 			}
 		}
 	}()
@@ -70,7 +71,7 @@ func Start(tableID string, scenario string, addr string) {
 				log.Println("read:", err)
 				return
 			}
-			c.WriteMessage(websocket.TextMessage, message)
+			//c.WriteMessage(websocket.TextMessage, message)
 
 		}
 	}()
@@ -93,7 +94,7 @@ func Start(tableID string, scenario string, addr string) {
 				c.WriteMessage(websocket.CloseMessage, []byte{})
 			}
 			log.Println(string(message))
-			c.WriteMessage(websocket.TextMessage, message)
+			//c.WriteMessage(websocket.TextMessage, message)
 		case <-interrupt:
 			log.Println("interrupt")
 
@@ -109,6 +110,10 @@ func Start(tableID string, scenario string, addr string) {
 			case <-time.After(time.Second):
 			}
 			return
+		case msg := <-end:
+			if msg == "quit" {
+				return
+			}
 		}
 	}
 

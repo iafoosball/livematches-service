@@ -1,6 +1,7 @@
 package user
 
 import (
+	"bufio"
 	"github.com/gorilla/websocket"
 	"log"
 	"net/url"
@@ -15,8 +16,8 @@ var (
 	next      = "setPosition"
 )
 
-func Start(userID string, scenario string, addr string) {
-
+func Start(userID string, scenario string, addr string, end chan string) {
+	log.SetFlags(log.Ltime | log.Lshortfile)
 	log.Println("start ws client")
 	//var addr = flag.String("addr", "iafoosball.aau.dk:9003", "http service address")
 	if addr == "" {
@@ -41,52 +42,47 @@ func Start(userID string, scenario string, addr string) {
 	go func() {
 		defer close(done)
 		for {
-			if !stop {
-				switch next {
-				case "":
-					//msg := "{ \"command\": \"setPosition\", \"values\": { \"side\": \"red\",\"position\": \"defense\" } }"
-					//client.send <- []byte(msg)
-					//next = "joinMatch"
-				case "joinMatch":
-					msg := "{ \"command\": \"joinMatch\", \"values\": { \"id\": \"table-1\", \"side\": \"blue\", \"position\": \"attack\" } }"
-					client.send <- []byte(msg)
-					if userID == "user1" {
-					}
-					next = "setPosition"
-				case "setPosition":
-					msg := "{ \"command\": \"setPosition\", \"values\": { \"side\": \"red\", \"position\": \"attack\" } }"
-					client.send <- []byte(msg)
-					next = "setPosition1"
-				case "setPosition1":
-					msg := "{ \"command\": \"setPosition\", \"values\": { \"side\": \"blue\", \"position\": \"attack\" } }"
-					client.send <- []byte(msg)
-					next = "leaveMatch"
-				case "leaveMatch":
-					msg := "{ \"command\": \"leaveMatch\", \"values\": {  } }"
-					client.send <- []byte(msg)
-					next = "joinMatch"
-					//case "":
-					//case "":
-					//case "":
+			path := "../testclients/" + scenario + "/" + userID
+			file, err := os.Open(path)
+			defer file.Close()
+			scanner := bufio.NewScanner(file)
+			for scanner.Scan() {
+				line := scanner.Text()
+				log.Println(line)
+				if line == "quit" || stop {
+					stop = true
+					end <- "quit"
+					return
 				}
+				scanner.Text()
+				line = scanner.Text()
+				scanner.Scan()
+				line = scanner.Text()
+				client.send <- []byte(line)
+				scanner.Scan()
+				line = scanner.Text()
+				log.Println(line)
+				time.Sleep(1 * time.Second)
+				checkResponse(line)
+				time.Sleep(5 * time.Second)
 			}
-			time.Sleep(5 * time.Second)
+			log.Println(err)
 		}
 	}()
 
 	go func() {
 		defer close(done)
 		for {
+			if stop {
+
+			}
+
 			_, message, err := c.ReadMessage()
-			// Prints the server message
 			serverMsg = string(message)
 			log.Println(serverMsg)
 			if err != nil {
 				log.Println("read:", err)
-				return
 			}
-			c.WriteMessage(websocket.TextMessage, message)
-
 		}
 	}()
 
@@ -118,14 +114,25 @@ func Start(userID string, scenario string, addr string) {
 				log.Println("write close:", err)
 				return
 			}
-			select {
-			case <-done:
-			case <-time.After(time.Second):
+		case msg := <-end:
+			if msg == "quit" {
+				c.Close()
+				return
 			}
-			return
+			//select {
+			//case <-done:
+			//case <-time.After(time.Second):
+			//}
+			//return
 		}
 	}
 
+}
+
+func checkResponse(message string) {
+	if message != serverMsg {
+		log.Fatalln(message + " expected but not found in message from server: " + serverMsg)
+	}
 }
 
 type client struct {
