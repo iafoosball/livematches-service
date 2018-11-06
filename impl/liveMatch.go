@@ -41,9 +41,9 @@ func newMatch() *LiveMatch {
 			Bet:            false,
 			Drunk:          false,
 			FreeGame:       false,
-			MaxGoals:       0,
+			MaxGoals:       10,
 			MaxTime:        0,
-			OneOnOne:       false,
+			OneOnOne:       true,
 			Payed:          false,
 			RatedMatch:     false,
 			Started:        false,
@@ -62,6 +62,9 @@ func joinMatch(c *Client, id string) {
 			if len(match.Users) > 3 {
 				closeClient(c)
 				return
+			}
+			if len(match.Users) == 0 {
+				c.user.Admin = true
 			}
 			c.liveMatch = match
 			c.liveMatch.Users = append(c.liveMatch.Users, c.user)
