@@ -73,9 +73,11 @@ func handleCommunication(c *Client, message []byte) {
 	log.Println(string(message))
 	if c.isUser && c.user.Admin {
 		handleAdmin(c, m)
-	} else if c.isUser {
+	}
+	if c.isUser {
 		handleUsers(c, m)
-	} else {
+	}
+	if !c.isUser || c.user.Admin {
 		handleTable(c, m)
 	}
 
