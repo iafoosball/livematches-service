@@ -73,11 +73,9 @@ func handleCommunication(c *Client, message []byte) {
 	log.Println(string(message))
 	if c.isUser && c.user.Admin {
 		handleAdmin(c, m)
-	}
-	if c.isUser {
+	} else if c.isUser {
 		handleUsers(c, m)
-	}
-	if !c.isUser || c.user.Admin {
+	} else {
 		handleTable(c, m)
 	}
 
@@ -101,6 +99,7 @@ func handleUsers(c *Client, m *message) {
 }
 
 func handleAdmin(c *Client, m *message) {
+	handleTable(c, m)
 	handleUsers(c, m)
 	switch m.Command {
 	case startMatch:

@@ -14,24 +14,21 @@ func setposition(c *Client, position string, side string) {
 	if position == "attack" && side == "blue" {
 		if c.liveMatch.Positions.BlueAttack == "" {
 			c.liveMatch.Positions.BlueAttack = c.user.ID
-			sendMatchData(c)
 		}
 	} else if position == "defense" && side == "blue" {
 		if c.liveMatch.Positions.BlueDefense == "" {
 			c.liveMatch.Positions.BlueDefense = c.user.ID
-			sendMatchData(c)
 		}
 	} else if position == "attack" && side == "red" {
 		if c.liveMatch.Positions.RedAttack == "" {
 			c.liveMatch.Positions.RedAttack = c.user.ID
-			sendMatchData(c)
 		}
 	} else if position == "defense" && side == "red" {
 		if c.liveMatch.Positions.RedDefense == "" {
 			c.liveMatch.Positions.RedDefense = c.user.ID
-			sendMatchData(c)
 		}
 	}
+	sendMatchData(c)
 }
 
 func resetPosition(c *Client) {
