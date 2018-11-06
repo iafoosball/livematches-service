@@ -5,6 +5,10 @@ Add database and synch every important event. <br />
 Hanlde erros, don't exit. <br />
 Send livematch data to server <br />
 
+## Important:
+Position have to omitted when no empty.
+
+
 ## Endpoints:
 ###### Clients:
 ws://iafoosball.aau.dk:9003/users/{table-id}/{user-id} <br />
