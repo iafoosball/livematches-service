@@ -19,40 +19,40 @@ import (
 type Match struct {
 
 	// The match id which is the collection + "/" + the key
-	ID string `json:"_id,omitempty"`
+	ID string `json:"_id,"`
 
 	// The match key
-	Key string `json:"_key,omitempty"`
+	Key string `json:"_key,"`
 
 	// Was the game completed.
-	Completed bool `json:"completed,omitempty"`
+	Completed bool `json:"completed,"`
 
 	// the datetime when the match ends
-	EndTime string `json:"endTime,omitempty"`
+	EndTime string `json:"endTime,"`
 
 	// positions
-	Positions *MatchPositions `json:"positions,omitempty"`
+	Positions *MatchPositions `json:"positions,"`
 
 	// score blue
-	ScoreBlue int64 `json:"scoreBlue,omitempty"`
+	ScoreBlue int64 `json:"scoreBlue,"`
 
 	// score red
-	ScoreRed int64 `json:"scoreRed,omitempty"`
+	ScoreRed int64 `json:"scoreRed,"`
 
 	// settings
-	Settings *MatchSettings `json:"settings,omitempty"`
+	Settings *MatchSettings `json:"settings,"`
 
 	// the datetime when the game ends
-	StartTime string `json:"startTime,omitempty"`
+	StartTime string `json:"startTime,"`
 
 	// the id of table
-	TableID string `json:"tableID,omitempty"`
+	TableID string `json:"tableID,"`
 
 	// users
 	Users []*MatchUsersItems0 `json:"users"`
 
 	// Can be either "red" or "blue"
-	Winner string `json:"winner,omitempty"`
+	Winner string `json:"winner,"`
 }
 
 // Validate validates this match
@@ -161,16 +161,16 @@ func (m *Match) UnmarshalBinary(b []byte) error {
 type MatchPositions struct {
 
 	// THe UID.
-	BlueAttack string `json:"blueAttack,omitempty"`
+	BlueAttack string `json:"blueAttack,"`
 
 	// THe UID.
-	BlueDefense string `json:"blueDefense,omitempty"`
+	BlueDefense string `json:"blueDefense,"`
 
 	// THe UID.
-	RedAttack string `json:"redAttack,omitempty"`
+	RedAttack string `json:"redAttack,"`
 
 	// THe UID.
-	RedDefense string `json:"redDefense,omitempty"`
+	RedDefense string `json:"redDefense,"`
 }
 
 // Validate validates this match positions
@@ -201,43 +201,43 @@ func (m *MatchPositions) UnmarshalBinary(b []byte) error {
 type MatchSettings struct {
 
 	// Is this game with bets
-	Bet bool `json:"bet,omitempty"`
+	Bet bool `json:"bet,"`
 
 	// drunk
-	Drunk bool `json:"drunk,omitempty"`
+	Drunk bool `json:"drunk,"`
 
 	// free game
-	FreeGame bool `json:"freeGame,omitempty"`
+	FreeGame bool `json:"freeGame,"`
 
 	// The maximum number of goals for this game. If a time is specified the first criteria which is true will stop the match.
-	MaxGoals int64 `json:"maxGoals,omitempty"`
+	MaxGoals int64 `json:"maxGoals,"`
 
 	// The maximum tim in sec for this game. If a max goals is specified the first criteria which is true will stop the match.
-	MaxTime int64 `json:"maxTime,omitempty"`
+	MaxTime int64 `json:"maxTime,"`
 
 	// one on one
-	OneOnOne bool `json:"oneOnOne,omitempty"`
+	OneOnOne bool `json:"oneOnOne,"`
 
 	// payed
-	Payed bool `json:"payed,omitempty"`
+	Payed bool `json:"payed,"`
 
 	// A match can be rated, ie a ranked game with points, or without.
-	RatedMatch bool `json:"ratedMatch,omitempty"`
+	RatedMatch bool `json:"ratedMatch,"`
 
 	// started
-	Started bool `json:"started,omitempty"`
+	Started bool `json:"started,"`
 
 	// Switch the position after 50% of the goal (time or goals) is reached.
-	SwitchPosition bool `json:"switchPosition,omitempty"`
+	SwitchPosition bool `json:"switchPosition,"`
 
 	// tournament
-	Tournament bool `json:"tournament,omitempty"`
+	Tournament bool `json:"tournament,"`
 
 	// two on one
-	TwoOnOne bool `json:"twoOnOne,omitempty"`
+	TwoOnOne bool `json:"twoOnOne"`
 
 	// two on two
-	TwoOnTwo bool `json:"twoOnTwo,omitempty"`
+	TwoOnTwo bool `json:"twoOnTwo"`
 }
 
 // Validate validates this match settings
@@ -268,25 +268,25 @@ func (m *MatchSettings) UnmarshalBinary(b []byte) error {
 type MatchUsersItems0 struct {
 
 	// admin
-	Admin bool `json:"admin,omitempty"`
+	Admin bool `json:"admin,"`
 
 	// is the amount a user wants to bet on this game
-	Bet int64 `json:"bet,omitempty"`
+	Bet int64 `json:"bet,"`
 
 	// color
-	Color string `json:"color,omitempty"`
+	Color string `json:"color,"`
 
 	// id
-	ID string `json:"id,omitempty"`
+	ID string `json:"id,"`
 
 	// Can either be attack or defense
-	Position string `json:"position,omitempty"`
+	Position string `json:"position,"`
 
 	// ready
-	Ready bool `json:"ready,omitempty"`
+	Ready bool `json:"ready,"`
 
 	// username
-	Username string `json:"username,omitempty"`
+	Username string `json:"username,"`
 }
 
 // Validate validates this match users items0
