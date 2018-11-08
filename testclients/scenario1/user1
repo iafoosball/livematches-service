@@ -1,10 +1,70 @@
-// setPosition
+// Start: For Users
 { "command": "setPosition", "values": { "side": "red", "position": "attack" }}
 "redAttack":"user1"
-// setColor
+
 { "command": "setColor", "values": { "color": "green" }}
 "color":"green"
-// ready
+
+{ "command": "setUsername", "values": { "setusername": "joe" }}
+"username":"joe"
+
+{ "command": "setBet", "values": { "bet": 123 }}
+"bet":123
+
 { "command": "ready", "values": { "ready": true }}
 "ready":true
+------------------ Start: For Admin -----------------------
+{ "command": "addGoal", "values": { "speed": 12, "side": "blue", "setposition": "attack"  }}
+"scoreBlue":1
+
+{ "command": "addGoal", "values": { "speed": 12, "side": "blue", "setposition": "attack"  }}
+"scoreBlue":2
+
+{ "command": "removeGoal", "values": { "side": "blue" }}
+"scoreBlue":1
+quit
+
+
+
+
+
+
+
+
+twoOnTwo = "twoOnTwo"
+// { \"command\": \"twoOnTwo\", \"values\": { \"twoOnTwo\": true }}
+twoOnOne = "twoOnOne"
+// { \"command\": \"oneOnTwo\", \"values\": { \"oneOnTwo\": true }}
+oneOnOne = "oneOnOne"
+// { \"command\": \"oneOnOne\", \"values\": { \"oneOnOne\": true }}
+switchPositions = "switchPositions"
+// { \"command\": \"switchPositions\", \"values\": { \"switchPositions\": true }}
+bet = "bet"
+// { \"command\": \"bet\", \"values\": { \"bet\": true }}
+maxGoals = "maxGoals"
+// { \"command\": \"maxGoals\", \"values\": { \"maxGoals\": 10 }}
+tournament = "tournament"
+// { \"command\": \"tournament\", \"values\": { \"tournament\": true }}
+startMatch = "startMatch"
+// { \"command\": \"startMatch\", \"values\": { }}
+drunk = "drunk"
+// { \"command\": \"drunk\", \"values\": { \"drunk\": true }}
+freeGame = "freeGame"
+// { \"command\": \"freeGame\", \"values\": { \"freeGame\": true }}
+payed = "payed"
+// { \"command\": \"payed\", \"values\": { \"payed\": true }}
+maxTime = "maxTime"
+// { \"command\": \"maxTime\", \"values\": { \"maxTime\": 600 }}
+rated = "rated"
+// { \"command\": \"rated\", \"values\": { \"rated\": true }}
+cancelMatch = "cancelMatch"
+// { \"command\": \"candelMatch\", \"values\": { }}
+kickUser = "kickUser"
+// { \"command\": \"kickUser\", \"values\": { \"kickUser\": "userID" }}
+
+// Start: For Table, possible by admin as well
+addGoal = "addGoal"
+// { \"command\": \"addGoal\", \"values\": { \"speed\": 12, \"side\": \"blue\", \"setposition\": \"attack\"  }}
+removeGoal = "removeGoal"
+
 quit

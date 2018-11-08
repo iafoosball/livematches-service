@@ -183,7 +183,7 @@ func boolFromMap(m map[string]interface{}, key string) bool {
 func intFromMap(m map[string]interface{}, key string) int64 {
 	for k, v := range m {
 		if k == key {
-			return v.(int64)
+			return int64(v.(float64))
 		}
 	}
 	return 0

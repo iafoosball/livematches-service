@@ -50,7 +50,6 @@ func Start(userID string, tableID, scenario string, addr string, end chan string
 			scanner := bufio.NewScanner(file)
 			for scanner.Scan() {
 				line := scanner.Text()
-				log.Println(line)
 				if line == "quit" || stop {
 					stop = true
 					end <- "quit"
@@ -60,6 +59,7 @@ func Start(userID string, tableID, scenario string, addr string, end chan string
 				// Read and send command
 				scanner.Scan()
 				line = scanner.Text()
+				log.Println(line)
 				client.send <- []byte(line)
 				// Read line and check if return from server contains line
 				scanner.Scan()

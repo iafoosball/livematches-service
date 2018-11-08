@@ -45,6 +45,9 @@ setBet      = "setBet"
 
 ready       = "ready"
 // { "command": "ready", "values": { "ready": true }}
+
+leaveMatch = "leaveMatch"
+// { \"command\": \"leaveMatch\", \"values\": { }}
 ```
 
 
