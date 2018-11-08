@@ -50,10 +50,6 @@ func Start(tableID string, scenario string, addr string, end chan string) {
 					msg := "{ \"command\": \"closeMatch\", \"values\": { } }"
 					client.send <- []byte(msg)
 					Stop = true
-
-					//case "":
-					//case "":
-					//case "":
 				}
 				time.Sleep(10 * time.Second)
 			}

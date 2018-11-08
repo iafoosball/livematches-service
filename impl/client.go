@@ -55,23 +55,31 @@ func sendPrivate(c *Client, msg string) {
 func closeClient(c *Client) {
 	if c.isUser {
 		closeUser(c)
-		sendMatchData(c)
 	} else {
 		closeTable(c)
 	}
 }
 
 func closeUser(c *Client) {
+	var table *Client
 	for i, u := range c.liveMatch.Users {
 		if u.ID == c.user.ID {
 			c.liveMatch.Users[i] = c.liveMatch.Users[len(c.liveMatch.Users)-1]
 			c.liveMatch.Users = c.liveMatch.Users[:len(c.liveMatch.Users)-1]
+			break
+		}
+	}
+	for c, _ := range c.liveMatch.Clients {
+		if !c.isUser {
+			table = c
+			break
 		}
 	}
 	setposition(c, "", "")
 	c.liveMatch.Unregister <- c
 	c.hub.unregister <- c
 	c.conn.Close()
+	sendMatchData(table)
 }
 
 // Opens: If table closes, kick all clients, if full kick

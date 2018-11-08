@@ -53,8 +53,7 @@ func Start(userID string, tableID, scenario string, addr string, end chan string
 				if line == "quit" || stop {
 					stop = true
 					end <- "quit"
-					client.conn.Close()
-					return
+					break
 				}
 				// Read and send command
 				scanner.Scan()
@@ -68,7 +67,6 @@ func Start(userID string, tableID, scenario string, addr string, end chan string
 				line = scanner.Text()
 				time.Sleep(1 * time.Second)
 				checkResponse(line)
-				time.Sleep(5 * time.Second)
 			}
 			log.Println(err)
 		}
@@ -78,7 +76,7 @@ func Start(userID string, tableID, scenario string, addr string, end chan string
 		defer close(done)
 		for {
 			if stop {
-
+				break
 			}
 
 			_, message, err := c.ReadMessage()
@@ -123,7 +121,6 @@ func Start(userID string, tableID, scenario string, addr string, end chan string
 }
 
 func checkResponse(msg string) {
-	log.Println("Expected: " + msg + " actual:" + serverMsg)
 	if !strings.Contains(serverMsg, msg) {
 		log.Println("Server msg: " + serverMsg)
 		log.Println("Client msg: " + msg)

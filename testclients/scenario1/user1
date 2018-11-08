@@ -1,4 +1,4 @@
-// Start: For Users
+------------------ Start: For Users ------------------------
 { "command": "setPosition", "values": { "side": "red", "position": "attack" }}
 "redAttack":"user1"
 
@@ -22,49 +22,54 @@
 
 { "command": "removeGoal", "values": { "side": "blue" }}
 "scoreBlue":1
-quit
 
+{ "command": "addGoal", "values": { "speed": 12, "side": "red", "setposition": "attack"  }}
+"scoreRed":1
 
+{ "command": "addGoal", "values": { "speed": 12, "side": "red", "setposition": "attack"  }}
+"scoreRed":2
 
+{ "command": "removeGoal", "values": { "side": "red" }}
+"scoreRed":1
 
+{ \"command\": \"twoOnTwo\", \"values\": { \"twoOnTwo\": true }}
+"twoOnTwo":true
 
+{ \"command\": \"oneOnTwo\", \"values\": { \"oneOnTwo\": true }}
+"twoOnOne":true
 
+{ \"command\": \"oneOnOne\", \"values\": { \"oneOnOne\": true }}
+"oneOnOne":true
 
+ { \"command\": \"switchPositions\", \"values\": { \"switchPositions\": true }}
+"switchPositions":true
 
-twoOnTwo = "twoOnTwo"
-// { \"command\": \"twoOnTwo\", \"values\": { \"twoOnTwo\": true }}
-twoOnOne = "twoOnOne"
-// { \"command\": \"oneOnTwo\", \"values\": { \"oneOnTwo\": true }}
-oneOnOne = "oneOnOne"
-// { \"command\": \"oneOnOne\", \"values\": { \"oneOnOne\": true }}
-switchPositions = "switchPositions"
-// { \"command\": \"switchPositions\", \"values\": { \"switchPositions\": true }}
-bet = "bet"
-// { \"command\": \"bet\", \"values\": { \"bet\": true }}
+ { \"command\": \"bet\", \"values\": { \"bet\": true }}
+"bet"
 maxGoals = "maxGoals"
-// { \"command\": \"maxGoals\", \"values\": { \"maxGoals\": 10 }}
+ { \"command\": \"maxGoals\", \"values\": { \"maxGoals\": 10 }}
 tournament = "tournament"
-// { \"command\": \"tournament\", \"values\": { \"tournament\": true }}
+ { \"command\": \"tournament\", \"values\": { \"tournament\": true }}
 startMatch = "startMatch"
-// { \"command\": \"startMatch\", \"values\": { }}
+ { \"command\": \"startMatch\", \"values\": { }}
 drunk = "drunk"
-// { \"command\": \"drunk\", \"values\": { \"drunk\": true }}
+ { \"command\": \"drunk\", \"values\": { \"drunk\": true }}
 freeGame = "freeGame"
-// { \"command\": \"freeGame\", \"values\": { \"freeGame\": true }}
+ { \"command\": \"freeGame\", \"values\": { \"freeGame\": true }}
 payed = "payed"
-// { \"command\": \"payed\", \"values\": { \"payed\": true }}
+ { \"command\": \"payed\", \"values\": { \"payed\": true }}
 maxTime = "maxTime"
-// { \"command\": \"maxTime\", \"values\": { \"maxTime\": 600 }}
+ { \"command\": \"maxTime\", \"values\": { \"maxTime\": 600 }}
 rated = "rated"
-// { \"command\": \"rated\", \"values\": { \"rated\": true }}
+ { \"command\": \"rated\", \"values\": { \"rated\": true }}
 cancelMatch = "cancelMatch"
-// { \"command\": \"candelMatch\", \"values\": { }}
+ { \"command\": \"candelMatch\", \"values\": { }}
 kickUser = "kickUser"
-// { \"command\": \"kickUser\", \"values\": { \"kickUser\": "userID" }}
+ { \"command\": \"kickUser\", \"values\": { \"kickUser\": "userID" }}
 
-// Start: For Table, possible by admin as well
+ Start: For Table, possible by admin as well
 addGoal = "addGoal"
-// { \"command\": \"addGoal\", \"values\": { \"speed\": 12, \"side\": \"blue\", \"setposition\": \"attack\"  }}
+ { \"command\": \"addGoal\", \"values\": { \"speed\": 12, \"side\": \"blue\", \"setposition\": \"attack\"  }}
 removeGoal = "removeGoal"
 
 quit

@@ -14,18 +14,30 @@ import (
 // used by all test classes in package matches
 var (
 	scenario string
+	addr     = "0.0.0.0:9003"
 )
 
 func init() {
 	log.SetFlags(log.Ltime | log.Lshortfile)
+	//f, err := os.OpenFile("livematches.log", os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
+	//if err != nil {
+	//	log.Fatalf("error opening file: %v", err)
+	//}
+	//log.SetOutput(f)
+	//log.Print("hallo")
+}
+
+func TestRunTestClient(*testing.T) {
+	end := make(chan string)
+	go user.Start("user1", "table2", scenario, addr, end)
 }
 
 func TestIntegrationScenario1(*testing.T) {
 	scenario = "scenario1"
-	addr := "0.0.0.0:9003"
 	end := make(chan string)
 	var wg sync.WaitGroup
 
+	log.Print("123")
 	wg.Add(3)
 	go main()
 	time.Sleep(1 * time.Second)
