@@ -152,7 +152,7 @@ removeGoal = "removeGoal"
       "drunk": true,
       "freeGame": true,
       "payed": true,
-      "maxTime": ""
+      "maxTime": "",
       "rated" : true
     },
     "goals" :[
