@@ -57,16 +57,25 @@ func switchpositions(c *Client, b bool) {
 }
 
 func twoontwo(c *Client, b bool) {
+	resetPlayOption(c)
 	c.liveMatch.Settings.TwoOnOne = b
 	sendMatchData(c)
 }
 func twoonone(c *Client, b bool) {
+	resetPlayOption(c)
 	c.liveMatch.Settings.TwoOnOne = b
 	sendMatchData(c)
 }
 func oneonone(c *Client, b bool) {
+	resetPlayOption(c)
 	c.liveMatch.Settings.OneOnOne = b
 	sendMatchData(c)
+}
+
+func resetPlayOption(c *Client) {
+	c.liveMatch.Settings.OneOnOne = false
+	c.liveMatch.Settings.TwoOnTwo = false
+	c.liveMatch.Settings.TwoOnOne = false
 }
 
 func setcolor(c *Client, color string) {
