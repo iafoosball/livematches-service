@@ -139,7 +139,7 @@ func handleTable(c *Client, m *message) {
 	case addGoal:
 		addgoal(c, stringFromMap(m.Values, "side"), numberFromMap(m.Values, "speed"))
 	case removeGoal:
-		removegoal(c)
+		removegoal(c, stringFromMap(m.Values, "side"))
 	case freeGame:
 		freegame(c, boolFromMap(m.Values, freeGame))
 	}
