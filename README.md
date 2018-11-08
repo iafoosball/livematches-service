@@ -102,6 +102,7 @@ addGoal    = "addGoal"
 // { "command": "addGoal", "values": { "speed": 12, "side": "blue", "position": "attack"  }}
 
 removeGoal = "removeGoal"
+// { "command": "addGoal", "values": { "side": "blue" }}
 ```
 
 ### JSON

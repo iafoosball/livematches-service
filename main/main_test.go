@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/iafoosball/livematches-service/testclients/table"
-	"github.com/iafoosball/livematches-service/testclients/user"
 	"log"
 	"os"
 	"os/signal"
+	"sync"
 	"testing"
 	"time"
 )
@@ -21,16 +21,16 @@ func init() {
 
 func TestIntegrationScenario1(*testing.T) {
 	scenario = "scenario1"
-	addr := "0.0.0.0:9003"
-	end := make(chan string)
-	//var wg sync.WaitGroup
+	//addr := "0.0.0.0:9003"
+	//end := make(chan string)
+	var wg sync.WaitGroup
 
-	//wg.Add(3)
+	wg.Add(3)
 	go main()
 	time.Sleep(1 * time.Second)
-	go table.Start("table2", scenario, addr, end)
+	//go table.Start("table2", scenario, addr, end)
 	time.Sleep(2 * time.Second)
-	go user.Start("user1", "table2", scenario, addr, end)
+	//go user.Start("user1", "table2", scenario, addr, end)
 	//go user.Start("user2", scenario, addr)
 
 	exit()

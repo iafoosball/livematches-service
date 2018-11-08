@@ -1,10 +1,10 @@
 // setPosition
 { "command": "setPosition", "values": { "side": "red", "position": "attack" }}
-{"positions":{"redAttack":"user1"},"settings":{},"tableID":"table-1","users":[{"id":"user1"}]}
+"redAttack":"user1"
 // setColor
 { "command": "setColor", "values": { "color": "green" }}
-{"positions":{"redAttack":"user1"},"settings":{},"tableID":"table-1","users":[{"color":"green","id":"user1"}]}
+"color":"green"
 // ready
 { "command": "ready", "values": { "ready": true }}
-{"positions":{"redAttack":"user1"},"settings":{},"tableID":"table-1","users":[{"color":"green","id":"user1","ready":true}]}
+"ready":true
 quit

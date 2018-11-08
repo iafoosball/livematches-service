@@ -206,7 +206,7 @@ func unmarshal(msg []byte) (*message, bool) {
 	err = json.Unmarshal(msg, m)
 	if err != nil {
 		// Not logging error because its most probably a ping/pong message.
-		//log.Println(err)
+		log.Println(err)
 		return m, false
 	}
 	return m, true

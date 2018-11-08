@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"os"
 	"os/signal"
+	"strings"
 	"time"
 )
 
@@ -45,6 +46,7 @@ func Start(userID string, tableID, scenario string, addr string, end chan string
 			path := "../testclients/" + scenario + "/" + userID
 			file, err := os.Open(path)
 			defer file.Close()
+			// Read first line, either description or quit
 			scanner := bufio.NewScanner(file)
 			for scanner.Scan() {
 				line := scanner.Text()
@@ -52,16 +54,20 @@ func Start(userID string, tableID, scenario string, addr string, end chan string
 				if line == "quit" || stop {
 					stop = true
 					end <- "quit"
+					client.conn.Close()
 					return
 				}
-				scanner.Text()
-				line = scanner.Text()
+				// Read and send command
 				scanner.Scan()
 				line = scanner.Text()
+				log.Println("Read and send: " + line)
 				client.send <- []byte(line)
+				// Read line and check if return from server contains line
 				scanner.Scan()
 				line = scanner.Text()
-				log.Println(line)
+				// Check if response is as expected
+				line = scanner.Text()
+				log.Println("Read expected and compare: " + line)
 				time.Sleep(1 * time.Second)
 				checkResponse(line)
 				time.Sleep(5 * time.Second)
@@ -94,11 +100,11 @@ func Start(userID string, tableID, scenario string, addr string, end chan string
 		case <-done:
 			return
 		case t := <-ticker.C:
-			err := c.WriteMessage(websocket.TextMessage, []byte(t.String()))
-			if err != nil {
-				log.Println("write:", err)
-				return
-			}
+			//err := c.WriteMessage(websocket.TextMessage, []byte(t.String()))
+			//if err != nil {
+			//	log.Println("write:", err)
+			//	return
+			//}
 		case message, ok := <-client.send:
 			if !ok {
 				c.WriteMessage(websocket.CloseMessage, []byte{})
@@ -119,26 +125,23 @@ func Start(userID string, tableID, scenario string, addr string, end chan string
 				c.Close()
 				return
 			}
-			//select {
-			//case <-done:
-			//case <-time.After(time.Second):
-			//}
-			//return
 		}
 	}
 
 }
 
-func checkResponse(message string) {
-	if message != serverMsg {
-		log.Fatalln(message + " expected but not found in message from server: " + serverMsg)
+func checkResponse(msg string) {
+	log.Println("Expected: " + msg + " actual:" + serverMsg)
+	if !strings.Contains(serverMsg, msg) {
+		log.Println("Server msg: " + serverMsg)
+		log.Println("Client msg: " + msg)
+		log.Fatalln("Expected string was not found in message from server")
 	}
 }
 
 type client struct {
 	// The websocket connection.
 	conn *websocket.Conn
-
 	// Buffered channel of outbound messages.
 	send chan []byte
 }

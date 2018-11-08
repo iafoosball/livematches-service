@@ -121,8 +121,11 @@ func maxgoals(c *Client, maxTime int64) {
 	sendMatchData(c)
 }
 
-func removegoal(c *Client) {
-	//c.liveMatch.Goals[] = c.liveMatch.Goals[len(c.liveMatch.Goals)-1]
-	c.liveMatch.Goals = c.liveMatch.Goals[:len(c.liveMatch.Goals)-1]
+func removegoal(c *Client, side string) {
+	if side == "red" {
+		c.liveMatch.ScoreBlue = c.liveMatch.ScoreBlue
+	} else {
+		c.liveMatch.ScoreRed = c.liveMatch.ScoreRed
+	}
 	sendMatchData(c)
 }
