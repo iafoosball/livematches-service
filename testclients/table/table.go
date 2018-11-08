@@ -83,12 +83,6 @@ func Start(tableID string, scenario string, addr string, end chan string) {
 		select {
 		case <-done:
 			return
-		case t := <-ticker.C:
-			err := c.WriteMessage(websocket.TextMessage, []byte(t.String()))
-			if err != nil {
-				log.Println("write:", err)
-				return
-			}
 		case message, ok := <-client.send:
 			if !ok {
 				c.WriteMessage(websocket.CloseMessage, []byte{})

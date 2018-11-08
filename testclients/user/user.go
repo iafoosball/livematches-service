@@ -60,14 +60,12 @@ func Start(userID string, tableID, scenario string, addr string, end chan string
 				// Read and send command
 				scanner.Scan()
 				line = scanner.Text()
-				log.Println("Read and send: " + line)
 				client.send <- []byte(line)
 				// Read line and check if return from server contains line
 				scanner.Scan()
 				line = scanner.Text()
 				// Check if response is as expected
 				line = scanner.Text()
-				log.Println("Read expected and compare: " + line)
 				time.Sleep(1 * time.Second)
 				checkResponse(line)
 				time.Sleep(5 * time.Second)
@@ -99,12 +97,6 @@ func Start(userID string, tableID, scenario string, addr string, end chan string
 		select {
 		case <-done:
 			return
-		case t := <-ticker.C:
-			//err := c.WriteMessage(websocket.TextMessage, []byte(t.String()))
-			//if err != nil {
-			//	log.Println("write:", err)
-			//	return
-			//}
 		case message, ok := <-client.send:
 			if !ok {
 				c.WriteMessage(websocket.CloseMessage, []byte{})
