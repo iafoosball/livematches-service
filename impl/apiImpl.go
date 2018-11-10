@@ -1,18 +1,11 @@
 package impl
 
 import (
-	"log"
 	"time"
 )
 
 func closeUser(c *Client) {
-	var table *Client
 	// reset position and delete from users
-	for u, _ := range c.liveMatch.Clients {
-		if !u.isUser {
-			table = u
-		}
-	}
 	for i, u := range c.liveMatch.M.Users {
 		if u.ID == c.user.ID {
 			resetPosition(c)
@@ -20,10 +13,15 @@ func closeUser(c *Client) {
 			break
 		}
 	}
+	for u, _ := range c.liveMatch.Clients {
+		if !u.isUser {
+			sendMatchData(u)
+		}
+
+	}
 	c.liveMatch.Unregister <- c
 	c.hub.unregister <- c
 	c.end <- true
-	sendMatchData(table)
 }
 
 func setusername(c *Client, username string) {
@@ -162,9 +160,9 @@ func maxtime(c *Client, time int64) {
 }
 
 func kickuser(c *Client, id string) {
-	for c, _ := range c.liveMatch.Clients {
-		if c.isUser && c.user.ID == id {
-			closeUser(c)
+	for client, _ := range c.liveMatch.Clients {
+		if client.isUser && client.user.ID == id {
+			closeUser(client)
 			return
 		}
 	}

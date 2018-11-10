@@ -30,17 +30,16 @@ func init() {
 
 func TetRunTestClient(*testing.T) {
 	end := make(chan bool)
-	go user.Start("user1", "table2", scenario, addr, end)
+	go user.Start("user1", "table1", scenario, addr, end)
 }
 
 func TestUser(*testing.T) {
 	log.Println("TestUser")
 	scenario = "testUser"
 	end := make(chan bool)
-	go table.Start("table2", scenario, addr, end)
+	go table.Start("table1", scenario, addr, end)
 	time.Sleep(1 * time.Second)
-	go user.Start("user1", "table2", scenario, addr, end)
-
+	go user.Start("user1", "table1", scenario, addr, end)
 	for {
 
 		select {
@@ -54,12 +53,11 @@ func TestAdmin(t *testing.T) {
 	log.Println("testAdmin")
 	scenario = "testAdmin"
 	end := make(chan bool)
-	go table.Start("table2", scenario, addr, end)
+	go table.Start("table1", scenario, addr, end)
 	time.Sleep(1 * time.Second)
-	go user.Start("user1", "table2", scenario, addr, end)
+	go user.Start("user1", "table1", scenario, addr, end)
 	time.Sleep(1 * time.Second)
-	go user.Start("user2", "table2", scenario, addr, end)
-
+	go user.Start("user2", "table1", scenario, addr, end)
 	for {
 		select {
 		case _ = <-end:

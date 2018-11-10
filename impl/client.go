@@ -72,11 +72,7 @@ func closeTable(c *Client) {
 // reads from this goroutine.
 func (c *Client) readPump() {
 	defer func() {
-		//if c.isUser {
-		//	closeUser(c)
-		//} else {
-		//	closeTable(c)
-		//}
+		c.end <- true
 	}()
 	c.conn.SetReadLimit(maxMessageSize)
 	c.conn.SetReadDeadline(time.Now().Add(pongWait))
@@ -109,6 +105,9 @@ func (c *Client) writePump() {
 		select {
 		case ok := <-c.end:
 			if ok {
+				if c.isUser {
+					log.Println(c.user.ID)
+				}
 				c.conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 				time.Sleep(1 * time.Second)
 				c.conn.Close()

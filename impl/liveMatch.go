@@ -12,13 +12,11 @@ var LiveMatches = []*LiveMatch{}
 
 // Creates a new match. (Either return already existing LiveMatch or create new one)
 // How to handle contradictions??? If there is an already open match what to do....
-func createMatch(c *Client, tableID string) bool {
+func createMatch(c *Client, tableID string) {
 	c.table.ID = tableID
 	for i, match := range LiveMatches {
 		if match.M.TableID == c.table.ID {
 			LiveMatches = append(LiveMatches[:i], LiveMatches[i+1:]...)
-			//LiveMatches[i] = LiveMatches[len(LiveMatches)-1]
-			//LiveMatches = LiveMatches[:len(LiveMatches)-1]
 		}
 	}
 	match := newMatch(tableID)
@@ -26,7 +24,6 @@ func createMatch(c *Client, tableID string) bool {
 	LiveMatches = append(LiveMatches, match)
 	c.liveMatch = match
 	c.liveMatch.Register <- c
-	return true
 }
 
 func newMatch(tableID string) *LiveMatch {
@@ -63,15 +60,14 @@ func newMatch(tableID string) *LiveMatch {
 // If match is finished it is send to matches-service and stored their
 // sending data still needs implementation
 func closeMatch(c *Client) {
+	SendMatch(*c.liveMatch)
 	for cl, _ := range c.liveMatch.Clients {
 		closeUser(cl)
 	}
 	id := c.liveMatch.M.TableID
 	for i, l := range LiveMatches {
 		if l.M.TableID == id {
-			SendMatch(*l)
-			LiveMatches[i] = LiveMatches[len(LiveMatches)-1]
-			LiveMatches = LiveMatches[:len(LiveMatches)-1]
+			LiveMatches = append(LiveMatches[:i], LiveMatches[i+1:]...)
 		}
 	}
 }
@@ -105,7 +101,6 @@ func (m *LiveMatch) runMatch() {
 		if recover() != nil {
 			err = errors.New("Probably connection interrupt")
 		}
-
 	}()
 	for {
 		select {

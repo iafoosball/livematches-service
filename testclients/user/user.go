@@ -13,8 +13,6 @@ import (
 
 var (
 	serverMsg = ""
-	stop      = false
-	next      = "setPosition"
 )
 
 func Start(userID string, tableID, scenario string, addr string, end chan bool) {
@@ -39,15 +37,16 @@ func Start(userID string, tableID, scenario string, addr string, end chan bool) 
 	//handle input here. Is send to the server
 	go func() {
 		defer c.Close()
+		path := "../testclients/" + scenario + "/" + userID
+		file, err := os.Open(path)
+		defer file.Close()
+		// Read first line, either description or quit
+		scanner := bufio.NewScanner(file)
 		for {
-			path := "../testclients/" + scenario + "/" + userID
-			file, err := os.Open(path)
-			defer file.Close()
-			// Read first line, either description or quit
-			scanner := bufio.NewScanner(file)
 			for scanner.Scan() {
 				line := scanner.Text()
-				if line == "quit" || stop {
+				if line == "quit" {
+					time.Sleep(2 * time.Second)
 					end <- true
 					return
 				}
@@ -73,9 +72,8 @@ func Start(userID string, tableID, scenario string, addr string, end chan bool) 
 		for {
 			_, message, err := c.ReadMessage()
 			serverMsg = string(message)
-			if err != nil || stop {
+			if err != nil {
 				log.Println(userID+" ReadPump :", err)
-				end <- true
 				return
 			}
 		}
@@ -89,6 +87,7 @@ func Start(userID string, tableID, scenario string, addr string, end chan bool) 
 			}
 			c.WriteMessage(websocket.TextMessage, message)
 		case _ = <-end:
+			log.Println("clonsinsoaidnfosndf")
 			defer c.Close()
 			// Cleanly close the connection by sending a close message and then
 			// waiting (with timeout) for the server to close the connection.
