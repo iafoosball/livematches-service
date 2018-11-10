@@ -134,22 +134,19 @@ func handleAdmin(c *Client, m *message) {
 }
 
 func handleTable(c *Client, m *message) {
-	for k, v := range m.Values {
-		switch m.Command {
-		case started:
-			start(c)
-		case cancelMatch:
-			closeMatch(c)
-		case addGoal:
-			addgoal(c, stringFromMap(m.Values, "side"), numberFromMap(m.Values, "speed"))
-		case removeGoal:
-			removegoal(c, v.(string))
-		case "settings":
-			if k == freeGame {
-				freegame(c, v.(bool))
-			}
+	switch m.Command {
+	case started:
+		start(c)
+	case cancelMatch:
+		closeMatch(c)
+	case addGoal:
+		addgoal(c, stringFromMap(m.Values, "side"), numberFromMap(m.Values, "speed"))
+	case removeGoal:
+		removegoal(c, stringFromMap(m.Values, "side"))
+	case "settings":
+		if stringFromMap(m.Values, "freeGame") == freeGame {
+			freegame(c, boolFromMap(m.Values, "freeGame"))
 		}
-		break
 	}
 }
 

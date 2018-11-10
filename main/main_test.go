@@ -14,6 +14,7 @@ import (
 var (
 	scenario string
 	addr     = "0.0.0.0:9003"
+	//addr     = "iafoosball.aau.dk:9003"
 )
 
 func init() {
