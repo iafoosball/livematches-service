@@ -9,9 +9,11 @@ import (
 	"strings"
 )
 
-func SendMatch(liveMatch LiveMatch) {
-	js, _ := json.Marshal(liveMatch)
-	resp, err := http.Post("http://localhost:8000/"+"matches/", "application/json", bytes.NewReader(js))
+func SendMatch(liveMatch *LiveMatch) {
+	js, err := json.Marshal(*liveMatch.M)
+	handleErr(err)
+	//resp, err := http.Post("http://0.0.0.0:8000/"+"matches/", "application/json", bytes.NewReader(js))
+	resp, err := http.Post("http://iafoosball.aau.dk:8000/"+"matches/", "application/json", bytes.NewReader(js))
 	handleErr(err)
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
@@ -24,7 +26,8 @@ func SendMatch(liveMatch LiveMatch) {
 		g.From = m.ID
 		g.To = m.ID
 		js, _ = json.Marshal(g)
-		resp, err = http.Post("http://localhost:8000/"+"goals/", "application/json", bytes.NewReader(js))
+		//resp, err = http.Post("http://0.0.0.0:8000/"+"goals/", "application/json", bytes.NewReader(js))
+		resp, err = http.Post("http://iafoosball.aau.dk:8000/"+"goals/", "application/json", bytes.NewReader(js))
 	}
 
 }

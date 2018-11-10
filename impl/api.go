@@ -42,6 +42,8 @@ const (
 	// { "command": "settings", "values": { "maxGoals": 10 }}
 	tournament = "tournament"
 	// { "command": "settings", "values": { "tournament": true }}
+	tournamentMode = "tournamentMode"
+	// { "command": "settings", "values": { "tournamentMode": true }}
 	started = "started"
 	// { "command": "started", "values": { }}
 	drunk = "drunk"
@@ -70,9 +72,9 @@ func handleCommunication(c *Client, message []byte) {
 		return
 	}
 	log.Println(string(message))
-	if c.isUser && c.user.Admin {
+	if c.IsUser && c.User.Admin {
 		handleAdmin(c, m)
-	} else if c.isUser {
+	} else if c.IsUser {
 		handleUsers(c, m)
 	} else {
 		handleTable(c, m)
@@ -120,6 +122,8 @@ func handleAdmin(c *Client, m *message) {
 				isBet(c, v.(bool))
 			case tournament:
 				isTournament(c, v.(bool))
+			case tournamentMode:
+				tournamentmode(c, v.(bool))
 			case drunk:
 				isDrunk(c, v.(bool))
 			case payed:
@@ -151,15 +155,15 @@ func handleTable(c *Client, m *message) {
 }
 
 func addgoal(c *Client, side string, speed float64) {
-	c.liveMatch.Goals = append(c.liveMatch.Goals, &models.Goal{
+	c.LiveMatch.Goals = append(c.LiveMatch.Goals, &models.Goal{
 		Side:     side,
 		Speed:    speed,
 		DateTime: time.Now().Format(time.RFC3339),
 	})
 	if side == "red" {
-		c.liveMatch.M.ScoreRed++
+		c.LiveMatch.M.ScoreRed++
 	} else if side == "blue" {
-		c.liveMatch.M.ScoreBlue++
+		c.LiveMatch.M.ScoreBlue++
 	}
 	sendMatchData(c)
 }

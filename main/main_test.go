@@ -67,6 +67,32 @@ func TestAdmin(t *testing.T) {
 	}
 }
 
+func TestMultiUser(t *testing.T) {
+	tableID := "table1"
+	log.Println("testMultiUser")
+	scenario = "testMultiUser"
+	end := make(chan bool)
+	go table.Start(tableID, scenario, addr, end)
+	time.Sleep(1 * time.Second)
+	go user.Start("user1", tableID, scenario, addr, end)
+	time.Sleep(1 * time.Second)
+	go user.Start("user2", tableID, scenario, addr, end)
+	time.Sleep(1 * time.Second)
+	go user.Start("user3", tableID, scenario, addr, end)
+	time.Sleep(1 * time.Second)
+	go user.Start("user4", tableID, scenario, addr, end)
+	time.Sleep(1 * time.Second)
+	go user.Start("user5", tableID, scenario, addr, end)
+	time.Sleep(1 * time.Second)
+	go user.Start("user6", tableID, scenario, addr, end)
+	for {
+		select {
+		case _ = <-end:
+			return
+		}
+	}
+}
+
 // exit the program if Ctrl-C is pressed
 func exit() {
 	signalChan := make(chan os.Signal, 1)

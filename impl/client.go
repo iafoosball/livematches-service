@@ -39,29 +39,29 @@ func sendAll(c *Client, msg string) {
 }
 
 func sendMatch(c *Client, msg string) {
-	c.liveMatch.MatchCast <- []byte(msg)
+	c.LiveMatch.MatchCast <- []byte(msg)
 }
 
 func sendMatchData(c *Client) {
-	b, err := json.Marshal(*c.liveMatch.M)
+	b, err := json.Marshal(*c.LiveMatch.M)
 	handleErr(err)
-	c.liveMatch.MatchCast <- b
+	c.LiveMatch.MatchCast <- b
 }
 
 func sendPrivate(c *Client, msg string) {
 	c.send <- []byte(msg)
 }
 
-// Opens: If table closes, kick all clients, if full kick
+// Opens: If Table closes, kick all clients, if full kick
 func closeTable(c *Client) {
-	log.Println("called close table")
-	for u, _ := range c.liveMatch.Clients {
-		if u.isUser {
-			log.Println(u.user.ID)
+	log.Println("called close Table")
+	for u, _ := range c.LiveMatch.Clients {
+		if u.IsUser {
+			log.Println(u.User.ID)
 			closeUser(u)
 		}
 	}
-	c.liveMatch = nil
+	c.LiveMatch = nil
 	c.conn.Close()
 }
 
@@ -105,8 +105,8 @@ func (c *Client) writePump() {
 		select {
 		case ok := <-c.end:
 			if ok {
-				if c.isUser {
-					log.Println(c.user.ID)
+				if c.IsUser {
+					log.Println(c.User.ID)
 				}
 				c.conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 				time.Sleep(1 * time.Second)
@@ -156,18 +156,18 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 		return
 	}
 	var client *Client
-	client = &Client{hub: hub, conn: conn, send: make(chan []byte, 256), isUser: false}
+	client = &Client{hub: hub, conn: conn, send: make(chan []byte, 256), IsUser: false}
 	client.hub.register <- client
 	// Allow collection of memory referenced by the caller by doing all work in
 	go client.writePump()
 	go client.readPump()
 	if isUser {
-		client.isUser = true
-		client.user = &models.MatchUsersItems0{ID: userID}
+		client.IsUser = true
+		client.User = &models.MatchUsersItems0{ID: userID}
 		joinMatch(client, tableID)
 		sendMatchData(client)
 	} else {
-		client.table = &models.Table{ID: tableID}
+		client.Table = &models.Table{ID: tableID}
 		createMatch(client, tableID)
 	}
 }
@@ -185,17 +185,17 @@ type Client struct {
 	// dicsonnects the client gracefully
 	end chan bool
 
-	// The LiveMatch which the user joins
-	liveMatch *LiveMatch
+	// The LiveMatch which the User joins
+	LiveMatch *LiveMatch
 
-	// isUser is true for a user. False for a table.
-	isUser bool
+	// IsUser is true for a User. False for a Table.
+	IsUser bool
 
-	//The client data. Going to be nil for a table (or empty pointer?)
-	user *models.MatchUsersItems0
+	//The client data. Going to be nil for a Table (or empty pointer?)
+	User *models.MatchUsersItems0
 
-	// The table data. Nil for a user.
-	table *models.Table
+	// The Table data. Nil for a User.
+	Table *models.Table
 }
 
 func handleErr(err error) {

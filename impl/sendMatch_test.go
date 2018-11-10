@@ -1,8 +1,6 @@
 package impl
 
 import (
-	"bytes"
-	"encoding/json"
 	"github.com/iafoosball/livematches-service/models"
 	"io/ioutil"
 	"log"
@@ -13,7 +11,7 @@ import (
 )
 
 func TestEndMatch(t *testing.T) {
-	match := LiveMatch{
+	match := &LiveMatch{
 		M: &models.Match{
 			Users: []*models.MatchUsersItems0{
 				&models.MatchUsersItems0{
@@ -43,7 +41,7 @@ func TestEndMatch(t *testing.T) {
 				Drunk:           false,
 				FreeGame:        true,
 				MaxGoals:        10,
-				MaxTime:         10,
+				MaxTime:         1000,
 				OneOnOne:        true,
 				Payed:           false,
 				Rated:           true,
@@ -71,21 +69,21 @@ func TestEndMatch(t *testing.T) {
 			},
 		},
 	}
-	js, _ := json.Marshal(match.M)
-	resp, err := http.Post("http://localhost:8000/"+"matches/", "application/json", bytes.NewReader(js))
-	handleErr(err)
-	defer resp.Body.Close()
+	SendMatch(match)
+	query := "http://iafoosball.aau.dk:8000/matches/?filter=settings.maxTime==1000"
+	resp, err := http.Get(query)
+	handleTesterr(t, err)
+	if http.StatusOK != resp.StatusCode {
+		t.Error("wrong http code")
+	}
 	body, err := ioutil.ReadAll(resp.Body)
-	handleErr(err)
-	m := models.DocumentMeta{}
-	err = json.NewDecoder(strings.NewReader(string(body))).Decode(&m)
-	handleErr(err)
-	log.Println(m)
-	goals := match.Goals
-	for _, g := range goals {
-		g.From = m.ID
-		g.To = m.ID
-		js, _ = json.Marshal(g)
-		resp, err = http.Post("http://localhost:8000/"+"goals/", "application/json", bytes.NewReader(js))
+	if !strings.Contains(string(body), "\"maxTime\":1000") {
+		log.Fatal("\"maxTime\":1000 not in string!")
+	}
+}
+
+func handleTesterr(t *testing.T, err error) {
+	if err != nil {
+		t.Error(err)
 	}
 }

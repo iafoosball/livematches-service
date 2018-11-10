@@ -19,43 +19,43 @@ import (
 type Match struct {
 
 	// The match id which is the collection + "/" + the key
-	ID string `json:"_id,"`
+	ID string `json:"_id,omitempty"`
 
 	// The match key
-	Key string `json:"_key,"`
+	Key string `json:"_key,omitempty"`
 
 	// Was the game completed.
-	Completed bool `json:"completed,"`
+	Completed bool `json:"completed,omitempty"`
 
 	// the datetime when the match ends
-	EndTime string `json:"endTime,"`
+	EndTime string `json:"endTime,omitempty"`
 
 	// positions
-	Positions *MatchPositions `json:"positions,"`
+	Positions *MatchPositions `json:"positions,omitempty"`
 
 	// score blue
-	ScoreBlue int64 `json:"scoreBlue,"`
+	ScoreBlue int64 `json:"scoreBlue,omitempty"`
 
 	// score red
-	ScoreRed int64 `json:"scoreRed,"`
+	ScoreRed int64 `json:"scoreRed,omitempty"`
 
 	// settings
-	Settings *MatchSettings `json:"settings,"`
+	Settings *MatchSettings `json:"settings,omitempty"`
 
 	// the datetime when the game ends
-	StartTime string `json:"startTime,"`
+	StartTime string `json:"startTime,omitempty"`
 
 	// started
-	Started bool `json:"started,"`
+	Started bool `json:"started,omitempty"`
 
 	// the id of table
-	TableID string `json:"tableID,"`
+	TableID string `json:"tableID,omitempty"`
 
 	// users
 	Users []*MatchUsersItems0 `json:"users"`
 
 	// Can be either "red" or "blue"
-	Winner string `json:"winner,"`
+	Winner string `json:"winner,omitempty"`
 }
 
 // Validate validates this match
@@ -164,16 +164,16 @@ func (m *Match) UnmarshalBinary(b []byte) error {
 type MatchPositions struct {
 
 	// THe UID.
-	BlueAttack string `json:"blueAttack,"`
+	BlueAttack string `json:"blueAttack,omitempty"`
 
 	// THe UID.
-	BlueDefense string `json:"blueDefense,"`
+	BlueDefense string `json:"blueDefense,omitempty"`
 
 	// THe UID.
-	RedAttack string `json:"redAttack,"`
+	RedAttack string `json:"redAttack,omitempty"`
 
 	// THe UID.
-	RedDefense string `json:"redDefense,"`
+	RedDefense string `json:"redDefense,omitempty"`
 }
 
 // Validate validates this match positions
@@ -204,40 +204,43 @@ func (m *MatchPositions) UnmarshalBinary(b []byte) error {
 type MatchSettings struct {
 
 	// Is this game with bets
-	Bet bool `json:"bet,"`
+	Bet bool `json:"bet,omitempty"`
 
 	// drunk
-	Drunk bool `json:"drunk,"`
+	Drunk bool `json:"drunk,omitempty"`
 
 	// free game
-	FreeGame bool `json:"freeGame,"`
+	FreeGame bool `json:"freeGame,omitempty"`
 
 	// The maximum number of goals for this game. If a time is specified the first criteria which is true will stop the match.
-	MaxGoals int64 `json:"maxGoals,"`
+	MaxGoals int64 `json:"maxGoals,omitempty"`
 
 	// The maximum tim in sec for this game. If a max goals is specified the first criteria which is true will stop the match.
-	MaxTime int64 `json:"maxTime,"`
+	MaxTime int64 `json:"maxTime,omitempty"`
 
 	// one on one
-	OneOnOne bool `json:"oneOnOne,"`
+	OneOnOne bool `json:"oneOnOne,omitempty"`
 
 	// payed
-	Payed bool `json:"payed,"`
+	Payed bool `json:"payed,omitempty"`
 
 	// A match can be rated, ie a ranked game with points, or without.
-	Rated bool `json:"rated,"`
+	Rated bool `json:"rated,omitempty"`
 
 	// Switch the position after 50% of the goal (time or goals) is reached.
-	SwitchPositions bool `json:"switchPositions,"`
+	SwitchPositions bool `json:"switchPositions,omitempty"`
 
 	// tournament
-	Tournament bool `json:"tournament,"`
+	Tournament bool `json:"tournament,omitempty"`
+
+	// Thats for chaning to a mode where each game goes until. Default side with two players is red.
+	TournamentMode bool `json:"tournamentMode,omitempty"`
 
 	// two on one
-	TwoOnOne bool `json:"twoOnOne,"`
+	TwoOnOne bool `json:"twoOnOne,omitempty"`
 
 	// two on two
-	TwoOnTwo bool `json:"twoOnTwo,"`
+	TwoOnTwo bool `json:"twoOnTwo,omitempty"`
 }
 
 // Validate validates this match settings
@@ -268,25 +271,25 @@ func (m *MatchSettings) UnmarshalBinary(b []byte) error {
 type MatchUsersItems0 struct {
 
 	// admin
-	Admin bool `json:"admin,"`
+	Admin bool `json:"admin,omitempty"`
 
 	// is the amount a user wants to bet on this game
-	Bet int64 `json:"bet,"`
+	Bet int64 `json:"bet,omitempty"`
 
 	// color
-	Color string `json:"color,"`
+	Color string `json:"color,omitempty"`
 
 	// id
-	ID string `json:"id,"`
+	ID string `json:"id,omitempty"`
 
 	// Can either be attack or defense
-	Position string `json:"position,"`
+	Position string `json:"position,omitempty"`
 
 	// ready
-	Ready bool `json:"ready,"`
+	Ready bool `json:"ready,omitempty"`
 
 	// username
-	Username string `json:"username,"`
+	Username string `json:"username,omitempty"`
 }
 
 // Validate validates this match users items0

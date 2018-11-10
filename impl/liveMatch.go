@@ -13,17 +13,17 @@ var LiveMatches = []*LiveMatch{}
 // Creates a new match. (Either return already existing LiveMatch or create new one)
 // How to handle contradictions??? If there is an already open match what to do....
 func createMatch(c *Client, tableID string) {
-	c.table.ID = tableID
+	c.Table.ID = tableID
 	for i, match := range LiveMatches {
-		if match.M.TableID == c.table.ID {
+		if match.M.TableID == c.Table.ID {
 			LiveMatches = append(LiveMatches[:i], LiveMatches[i+1:]...)
 		}
 	}
 	match := newMatch(tableID)
 	go match.runMatch()
 	LiveMatches = append(LiveMatches, match)
-	c.liveMatch = match
-	c.liveMatch.Register <- c
+	c.LiveMatch = match
+	c.LiveMatch.Register <- c
 }
 
 func newMatch(tableID string) *LiveMatch {
@@ -60,11 +60,11 @@ func newMatch(tableID string) *LiveMatch {
 // If match is finished it is send to matches-service and stored their
 // sending data still needs implementation
 func closeMatch(c *Client) {
-	SendMatch(*c.liveMatch)
-	for cl, _ := range c.liveMatch.Clients {
+	SendMatch(c.LiveMatch)
+	for cl, _ := range c.LiveMatch.Clients {
 		closeUser(cl)
 	}
-	id := c.liveMatch.M.TableID
+	id := c.LiveMatch.M.TableID
 	for i, l := range LiveMatches {
 		if l.M.TableID == id {
 			LiveMatches = append(LiveMatches[:i], LiveMatches[i+1:]...)
