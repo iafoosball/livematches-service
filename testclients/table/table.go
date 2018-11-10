@@ -14,7 +14,7 @@ var (
 	Stop      bool = false
 )
 
-func Start(tableID string, scenario string, addr string, end chan string) {
+func Start(tableID string, scenario string, addr string, end chan bool) {
 	log.SetFlags(log.Ltime | log.Lshortfile)
 	log.Println("start ws table")
 	//var addr = flag.String("addr", "192.168.1.107:9003", "http service address")
@@ -100,10 +100,8 @@ func Start(tableID string, scenario string, addr string, end chan string) {
 			case <-time.After(time.Second):
 			}
 			return
-		case msg := <-end:
-			if msg == "quit" {
-				return
-			}
+		case _ = <-end:
+
 		}
 	}
 

@@ -1,8 +1,30 @@
 package impl
 
 import (
+	"log"
 	"time"
 )
+
+func closeUser(c *Client) {
+	var table *Client
+	// reset position and delete from users
+	for u, _ := range c.liveMatch.Clients {
+		if !u.isUser {
+			table = u
+		}
+	}
+	for i, u := range c.liveMatch.M.Users {
+		if u.ID == c.user.ID {
+			resetPosition(c)
+			c.liveMatch.M.Users = append(c.liveMatch.M.Users[:i], c.liveMatch.M.Users[i+1:]...)
+			break
+		}
+	}
+	c.liveMatch.Unregister <- c
+	c.hub.unregister <- c
+	c.end <- true
+	sendMatchData(table)
+}
 
 func setusername(c *Client, username string) {
 	c.user.Username = username
@@ -12,70 +34,84 @@ func setusername(c *Client, username string) {
 func setposition(c *Client, position string, side string) {
 	resetPosition(c)
 	if position == "attack" && side == "blue" {
-		if c.liveMatch.Positions.BlueAttack == "" {
-			c.liveMatch.Positions.BlueAttack = c.user.ID
+		if c.liveMatch.M.Positions.BlueAttack == "" {
+			c.liveMatch.M.Positions.BlueAttack = c.user.ID
 		}
 	} else if position == "defense" && side == "blue" {
-		if c.liveMatch.Positions.BlueDefense == "" {
-			c.liveMatch.Positions.BlueDefense = c.user.ID
+		if c.liveMatch.M.Positions.BlueDefense == "" {
+			c.liveMatch.M.Positions.BlueDefense = c.user.ID
 		}
 	} else if position == "attack" && side == "red" {
-		if c.liveMatch.Positions.RedAttack == "" {
-			c.liveMatch.Positions.RedAttack = c.user.ID
+		if c.liveMatch.M.Positions.RedAttack == "" {
+			c.liveMatch.M.Positions.RedAttack = c.user.ID
 		}
 	} else if position == "defense" && side == "red" {
-		if c.liveMatch.Positions.RedDefense == "" {
-			c.liveMatch.Positions.RedDefense = c.user.ID
+		if c.liveMatch.M.Positions.RedDefense == "" {
+			c.liveMatch.M.Positions.RedDefense = c.user.ID
 		}
 	}
 	sendMatchData(c)
 }
 
 func resetPosition(c *Client) {
-	if c.liveMatch.Positions.RedDefense == c.user.ID {
-		c.liveMatch.Positions.RedDefense = ""
-	} else if c.liveMatch.Positions.RedAttack == c.user.ID {
-		c.liveMatch.Positions.RedAttack = ""
-	} else if c.liveMatch.Positions.BlueDefense == c.user.ID {
-		c.liveMatch.Positions.BlueDefense = ""
-	} else if c.liveMatch.Positions.BlueAttack == c.user.ID {
-		c.liveMatch.Positions.BlueAttack = ""
+	if c.liveMatch.M.Positions.RedDefense == c.user.ID {
+		c.liveMatch.M.Positions.RedDefense = ""
+	} else if c.liveMatch.M.Positions.RedAttack == c.user.ID {
+		c.liveMatch.M.Positions.RedAttack = ""
+	} else if c.liveMatch.M.Positions.BlueDefense == c.user.ID {
+		c.liveMatch.M.Positions.BlueDefense = ""
+	} else if c.liveMatch.M.Positions.BlueAttack == c.user.ID {
+		c.liveMatch.M.Positions.BlueAttack = ""
 	}
 }
 
-// startMatch writes everything to the Match object.
-// Before users etc. is stored on the livematch
+func joinMatch(c *Client, id string) {
+	for _, match := range LiveMatches {
+		if match.M.TableID == id {
+			if len(match.M.Users) == 0 {
+				c.user.Admin = true
+			}
+			c.liveMatch = match
+			c.liveMatch.M.Users = append(c.liveMatch.M.Users, c.user)
+			c.liveMatch.Register <- c
+		}
+		return
+	}
+	handleErr(err)
+}
+
+// Start: Admin settings
 func startmatch(c *Client) {
-	c.liveMatch.StartTime = time.Now().Format(time.RFC3339)
-	c.liveMatch.Started = true
+	c.liveMatch.M.StartTime = time.Now().Format(time.RFC3339)
+	c.liveMatch.M.Settings.StartMatch = true
 	sendMatchData(c)
 }
 
 func switchpositions(c *Client, b bool) {
-	c.liveMatch.Settings.SwitchPosition = b
+	c.liveMatch.M.Settings.SwitchPositions = b
 	sendMatchData(c)
 }
 
 func twoontwo(c *Client, b bool) {
 	resetPlayOption(c)
-	c.liveMatch.Settings.TwoOnOne = b
+	c.liveMatch.M.Settings.TwoOnTwo = b
 	sendMatchData(c)
 }
 func twoonone(c *Client, b bool) {
 	resetPlayOption(c)
-	c.liveMatch.Settings.TwoOnOne = b
+	c.liveMatch.M.Settings.TwoOnOne = b
 	sendMatchData(c)
 }
 func oneonone(c *Client, b bool) {
 	resetPlayOption(c)
-	c.liveMatch.Settings.OneOnOne = b
+	c.liveMatch.M.Settings.OneOnOne = b
 	sendMatchData(c)
 }
 
 func resetPlayOption(c *Client) {
-	c.liveMatch.Settings.OneOnOne = false
-	c.liveMatch.Settings.TwoOnTwo = false
-	c.liveMatch.Settings.TwoOnOne = false
+	c.liveMatch.M.Settings.OneOnOne = false
+	c.liveMatch.M.Settings.TwoOnTwo = false
+	c.liveMatch.M.Settings.TwoOnOne = false
 }
 
 func setcolor(c *Client, color string) {
@@ -84,24 +120,24 @@ func setcolor(c *Client, color string) {
 }
 
 func isBet(c *Client, b bool) {
-	c.liveMatch.Settings.Bet = b
+	c.liveMatch.M.Settings.Bet = b
 	sendMatchData(c)
 }
 func isTournament(c *Client, b bool) {
-	c.liveMatch.Settings.Tournament = b
+	c.liveMatch.M.Settings.Tournament = b
 	sendMatchData(c)
 }
 func isDrunk(c *Client, b bool) {
-	c.liveMatch.Settings.Drunk = b
+	c.liveMatch.M.Settings.Drunk = b
 	sendMatchData(c)
 }
 func isPayed(c *Client, b bool) {
-	c.liveMatch.Settings.Payed = b
+	c.liveMatch.M.Settings.Payed = b
 	sendMatchData(c)
 }
 
 func freegame(c *Client, b bool) {
-	c.liveMatch.Settings.FreeGame = b
+	c.liveMatch.M.Settings.FreeGame = b
 	sendMatchData(c)
 }
 
@@ -116,25 +152,37 @@ func setbet(c *Client, bet int64) {
 }
 
 func setRated(c *Client, rated bool) {
-	c.liveMatch.Settings.RatedMatch = rated
+	c.liveMatch.M.Settings.Rated = rated
 	sendMatchData(c)
 }
 
-func maxtime(c *Client, goals int64) {
-	c.liveMatch.Settings.MaxTime = goals
+func maxtime(c *Client, time int64) {
+	c.liveMatch.M.Settings.MaxTime = time
 	sendMatchData(c)
 }
 
+func kickuser(c *Client, id string) {
+	for c, _ := range c.liveMatch.Clients {
+		if c.isUser && c.user.ID == id {
+			closeUser(c)
+			return
+		}
+	}
+}
+
+// End: Admin M.Settings
+
+// For Admin and table
 func maxgoals(c *Client, maxTime int64) {
-	c.liveMatch.Settings.MaxGoals = maxTime
+	c.liveMatch.M.Settings.MaxGoals = maxTime
 	sendMatchData(c)
 }
 
 func removegoal(c *Client, side string) {
 	if side == "blue" {
-		c.liveMatch.ScoreBlue--
+		c.liveMatch.M.ScoreBlue--
 	} else {
-		c.liveMatch.ScoreRed--
+		c.liveMatch.M.ScoreRed--
 	}
 	sendMatchData(c)
 }

@@ -15,13 +15,13 @@ var LiveMatches = []*LiveMatch{}
 func createMatch(c *Client, tableID string) bool {
 	c.table.ID = tableID
 	for i, match := range LiveMatches {
-		if match.TableID == c.table.ID {
-			LiveMatches[i] = LiveMatches[len(LiveMatches)-1]
-			LiveMatches = LiveMatches[:len(LiveMatches)-1]
+		if match.M.TableID == c.table.ID {
+			LiveMatches = append(LiveMatches[:i], LiveMatches[i+1:]...)
+			//LiveMatches[i] = LiveMatches[len(LiveMatches)-1]
+			//LiveMatches = LiveMatches[:len(LiveMatches)-1]
 		}
 	}
-	match := newMatch()
-	match.TableID = tableID
+	match := newMatch(tableID)
 	go match.runMatch()
 	LiveMatches = append(LiveMatches, match)
 	c.liveMatch = match
@@ -29,91 +29,51 @@ func createMatch(c *Client, tableID string) bool {
 	return true
 }
 
-func newMatch() *LiveMatch {
+func newMatch(tableID string) *LiveMatch {
 	return &LiveMatch{
 		Clients:    make(map[*Client]bool),
 		Register:   make(chan *Client),
 		Unregister: make(chan *Client),
 		MatchCast:  make(chan []byte),
-		MatchData:  &models.Match{},
-		Positions:  &models.MatchPositions{},
-		Settings: &models.MatchSettings{
-			Bet:            false,
-			Drunk:          false,
-			FreeGame:       false,
-			MaxGoals:       10,
-			MaxTime:        0,
-			OneOnOne:       true,
-			Payed:          false,
-			RatedMatch:     false,
-			Started:        false,
-			SwitchPosition: false,
-			Tournament:     false,
-			TwoOnOne:       false,
-			TwoOnTwo:       false,
+		M: &models.Match{
+			Positions: &models.MatchPositions{},
+			Settings: &models.MatchSettings{
+				Bet:             false,
+				Drunk:           false,
+				FreeGame:        false,
+				MaxGoals:        10,
+				MaxTime:         0,
+				OneOnOne:        true,
+				Payed:           false,
+				Rated:           false,
+				StartMatch:      false,
+				SwitchPositions: false,
+				Tournament:      false,
+				TwoOnOne:        false,
+				TwoOnTwo:        false,
+			},
+			Users:     []*models.MatchUsersItems0{},
+			TableID:   tableID,
+			ScoreBlue: 0,
+			ScoreRed:  0,
 		},
-		Users:     []*models.MatchUsersItems0{},
-		ScoreBlue: 0,
-		ScoreRed:  0,
 	}
 }
 
-func joinMatch(c *Client, id string) {
-	for _, match := range LiveMatches {
-		if match.TableID == id {
-			if len(match.Users) > 3 {
-				closeClient(c)
-				return
-			}
-			if len(match.Users) == 0 {
-				c.user.Admin = true
-			}
-			c.liveMatch = match
-			c.liveMatch.Users = append(c.liveMatch.Users, c.user)
-			c.liveMatch.Register <- c
-		}
-		return
-	}
-	handleErr(err)
-	closeClient(c)
-}
-
-// Used by pi to finish a Match
 // If match is finished it is send to matches-service and stored their
+// sending data still needs implementation
 func closeMatch(c *Client) {
 	for cl, _ := range c.liveMatch.Clients {
-		leavematch(cl)
+		closeUser(cl)
 	}
-	id := c.liveMatch.TableID
+	id := c.liveMatch.M.TableID
 	for i, l := range LiveMatches {
-		if l.TableID == id {
+		if l.M.TableID == id {
 			SendMatch(*l)
 			LiveMatches[i] = LiveMatches[len(LiveMatches)-1]
 			LiveMatches = LiveMatches[:len(LiveMatches)-1]
 		}
 	}
-}
-
-func kickuser(c *Client, id string) {
-	for _, u := range c.liveMatch.Users {
-		if u.ID == id {
-			leavematch(c)
-			return
-		}
-	}
-}
-
-// leavematch is used by users to leave a Match
-func leavematch(c *Client) {
-	c.liveMatch.Unregister <- c
-	for i, p := range c.liveMatch.Users {
-		if p.ID == c.user.ID {
-			resetPosition(c)
-			c.liveMatch.Users[i] = c.liveMatch.Users[len(c.liveMatch.Users)-1]
-			c.liveMatch.Users = c.liveMatch.Users[:len(c.liveMatch.Users)-1]
-		}
-	}
-	sendMatchData(c)
 }
 
 type LiveMatch struct {
@@ -130,44 +90,13 @@ type LiveMatch struct {
 	Unregister chan *Client `json:"-"`
 
 	// holds the data of the LiveMatch
-	MatchData *models.Match `json:"-"`
+	M *models.Match `json:"-"`
 
 	// started indicates if the match started
 	Started bool `json:"started,omitempty"`
 
 	// holds the data of the Goals for a LiveMatch
-	Goals []*models.Goal `json:"-"`
-
-	//Start auto generated stuff
-	// Was the game completed.
-	Completed bool `json:"completed,omitempty"`
-
-	// the datetime when the match ends
-	EndTime string `json:"endTime,omitempty"`
-
-	// positions
-	Positions *models.MatchPositions `json:"positions,omitempty"`
-
-	// score blue
-	ScoreBlue int64 `json:"scoreBlue"`
-
-	// score red
-	ScoreRed int64 `json:"scoreRed"`
-
-	// settings
-	Settings *models.MatchSettings `json:"settings,omitempty"`
-
-	// the datetime when the game ends
-	StartTime string `json:"startTime,omitempty"`
-
-	// the id of table
-	TableID string `json:"tableID,omitempty"`
-
-	// users
-	Users []*models.MatchUsersItems0 `json:"users"`
-
-	// Can be either "red" or "blue"
-	Winner string `json:"winner,omitempty"`
+	Goals []*models.Goal `json:"goals"`
 }
 
 func (m *LiveMatch) runMatch() {

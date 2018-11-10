@@ -43,7 +43,7 @@ func sendMatch(c *Client, msg string) {
 }
 
 func sendMatchData(c *Client) {
-	b, err := json.Marshal(*c.liveMatch)
+	b, err := json.Marshal(*c.liveMatch.M)
 	handleErr(err)
 	c.liveMatch.MatchCast <- b
 }
@@ -52,40 +52,9 @@ func sendPrivate(c *Client, msg string) {
 	c.send <- []byte(msg)
 }
 
-func closeClient(c *Client) {
-	if c.isUser {
-		closeUser(c)
-	} else {
-		closeTable(c)
-	}
-}
-
-func closeUser(c *Client) {
-	var table *Client
-	for i, u := range c.liveMatch.Users {
-		if u.ID == c.user.ID {
-			c.liveMatch.Users[i] = c.liveMatch.Users[len(c.liveMatch.Users)-1]
-			c.liveMatch.Users = c.liveMatch.Users[:len(c.liveMatch.Users)-1]
-			break
-		}
-	}
-	for c, _ := range c.liveMatch.Clients {
-		if !c.isUser {
-			table = c
-			break
-		}
-	}
-	setposition(c, "", "")
-	c.liveMatch.Unregister <- c
-	c.hub.unregister <- c
-	c.conn.Close()
-	sendMatchData(table)
-}
-
 // Opens: If table closes, kick all clients, if full kick
-
 func closeTable(c *Client) {
-	log.Println("called close")
+	log.Println("called close table")
 	for u, _ := range c.liveMatch.Clients {
 		if u.isUser {
 			log.Println(u.user.ID)
@@ -93,7 +62,6 @@ func closeTable(c *Client) {
 		}
 	}
 	c.liveMatch = nil
-	c.hub.unregister <- c
 	c.conn.Close()
 }
 
@@ -104,11 +72,11 @@ func closeTable(c *Client) {
 // reads from this goroutine.
 func (c *Client) readPump() {
 	defer func() {
-		if c.isUser {
-			closeClient(c)
-		} else {
-			closeTable(c)
-		}
+		//if c.isUser {
+		//	closeUser(c)
+		//} else {
+		//	closeTable(c)
+		//}
 	}()
 	c.conn.SetReadLimit(maxMessageSize)
 	c.conn.SetReadDeadline(time.Now().Add(pongWait))
@@ -139,6 +107,12 @@ func (c *Client) writePump() {
 	}()
 	for {
 		select {
+		case ok := <-c.end:
+			if ok {
+				c.conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+				time.Sleep(1 * time.Second)
+				c.conn.Close()
+			}
 		case message, ok := <-c.send:
 			c.conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if !ok {
@@ -208,6 +182,9 @@ type Client struct {
 
 	// Buffered channel of outbound messages.
 	send chan []byte
+
+	// dicsonnects the client gracefully
+	end chan bool
 
 	// The LiveMatch which the user joins
 	liveMatch *LiveMatch

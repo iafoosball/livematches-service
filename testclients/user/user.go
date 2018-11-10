@@ -17,7 +17,7 @@ var (
 	next      = "setPosition"
 )
 
-func Start(userID string, tableID, scenario string, addr string, end chan string) {
+func Start(userID string, tableID, scenario string, addr string, end chan bool) {
 	log.SetFlags(log.Ltime | log.Lshortfile)
 	log.Println("start ws client")
 	//var addr = flag.String("addr", "iafoosball.aau.dk:9003", "http service address")
@@ -30,18 +30,15 @@ func Start(userID string, tableID, scenario string, addr string, end chan string
 	u := url.URL{Scheme: "ws", Host: addr, Path: "/users/" + tableID + "/" + userID}
 	log.Printf("connecting to %s", u.String())
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
-	if err != nil {
-		log.Fatal("dial:", err)
-	}
-	defer c.Close()
+	handleErr(err, "making websocket connection")
+	//defer c.Close()
 
-	done := make(chan struct{})
 	client := &client{
 		send: make(chan []byte, 256),
 	}
 	//handle input here. Is send to the server
 	go func() {
-		defer close(done)
+		defer c.Close()
 		for {
 			path := "../testclients/" + scenario + "/" + userID
 			file, err := os.Open(path)
@@ -51,9 +48,8 @@ func Start(userID string, tableID, scenario string, addr string, end chan string
 			for scanner.Scan() {
 				line := scanner.Text()
 				if line == "quit" || stop {
-					stop = true
-					end <- "quit"
-					break
+					end <- true
+					return
 				}
 				// Read and send command
 				scanner.Scan()
@@ -68,56 +64,41 @@ func Start(userID string, tableID, scenario string, addr string, end chan string
 				time.Sleep(1 * time.Second)
 				checkResponse(line)
 			}
-			log.Println(err)
+			handleErr(err, "Read commands from file")
 		}
 	}()
 
 	go func() {
-		defer close(done)
+		defer c.Close()
 		for {
-			if stop {
-				break
-			}
-
 			_, message, err := c.ReadMessage()
 			serverMsg = string(message)
-			log.Println(serverMsg)
-			if err != nil {
-				log.Println("read:", err)
+			if err != nil || stop {
+				log.Println(userID+" ReadPump :", err)
+				end <- true
+				return
 			}
 		}
 	}()
 
-	ticker := time.NewTicker(time.Second)
-	defer ticker.Stop()
-
 	for {
 		select {
-		case <-done:
-			return
 		case message, ok := <-client.send:
 			if !ok {
 				c.WriteMessage(websocket.CloseMessage, []byte{})
 			}
 			c.WriteMessage(websocket.TextMessage, message)
-		case <-interrupt:
-			log.Println("interrupt")
-
+		case _ = <-end:
+			defer c.Close()
 			// Cleanly close the connection by sending a close message and then
 			// waiting (with timeout) for the server to close the connection.
 			err := c.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 			if err != nil {
 				log.Println("write close:", err)
-				return
 			}
-		case msg := <-end:
-			if msg == "quit" {
-				c.Close()
-				return
-			}
+			return
 		}
 	}
-
 }
 
 func checkResponse(msg string) {
@@ -133,4 +114,11 @@ type client struct {
 	conn *websocket.Conn
 	// Buffered channel of outbound messages.
 	send chan []byte
+}
+
+func handleErr(err error, customMsg string) {
+	if err != nil {
+		log.Println(customMsg)
+		log.Fatalln(err)
+	}
 }

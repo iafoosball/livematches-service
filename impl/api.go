@@ -14,51 +14,50 @@ var (
 )
 
 const (
-	// Start: For Users
 	setPosition = "setPosition"
-	// { \"command\": \"setPosition\", \"values\": { \"side\": \"red\", \"setposition\": \"attack\" }}
+	// { "command": "setPosition", "values": { "side": "red", "position": "attack" }}
 	setColor = "setColor"
-	// { \"command\": \"setColor\", \"values\": { \"color\": \"green\" }}
+	// { "command": "setColor", "values": { "color": "green" }}
 	setUsername = "setUsername"
-	// { \"command\": \"setUsername\", \"values\": { \"setusername\": \"joe\" }}
+	// { "command": "setUsername", "values": { "username": "joe" }}
 	setBet = "setBet"
-	// { \"command\": \"setBet\", \"values\": { \"bet\": 123 }}
+	// { "command": "setBet", "values": { "bet": 123 }}
 	ready = "ready"
-	// { \"command\": \"ready\", \"values\": { \"ready\": true }}
+	// { "command": "ready", "values": { "ready": true }}
 	leaveMatch = "leaveMatch"
-	// { \"command\": \"ready\", \"values\": { \"ready\": true }}
+	// { \"command\": \"leaveMatch\", \"values\": { }}
 
 	// Start: For Admin
 	twoOnTwo = "twoOnTwo"
-	// { \"command\": \"twoOnTwo\", \"values\": { \"twoOnTwo\": true }}
+	// { "command": "settings", "values": { "twoOnTwo": true }}
 	twoOnOne = "twoOnOne"
-	// { \"command\": \"oneOnTwo\", \"values\": { \"oneOnTwo\": true }}
+	// { "command": "settings", "values": { "oneOnTwo": true }}
 	oneOnOne = "oneOnOne"
-	// { \"command\": \"oneOnOne\", \"values\": { \"oneOnOne\": true }}
+	// { "command": "settings", "values": { "oneOnOne": true }}
 	switchPositions = "switchPositions"
-	// { \"command\": \"switchPositions\", \"values\": { \"switchPositions\": true }}
+	// { "command": "settings", "values": { "switchPositions": true }}
 	bet = "bet"
-	// { \"command\": \"bet\", \"values\": { \"bet\": true }}
+	// { "command": "settings", "values": { "bet": true }}
 	maxGoals = "maxGoals"
-	// { \"command\": \"maxGoals\", \"values\": { \"maxGoals\": 10 }}
+	// { "command": "settings", "values": { "maxGoals": 10 }}
 	tournament = "tournament"
-	// { \"command\": \"tournament\", \"values\": { \"tournament\": true }}
+	// { "command": "settings", "values": { "tournament": true }}
 	startMatch = "startMatch"
-	// { \"command\": \"startMatch\", \"values\": { }}
+	// { "command": "settings", "values": { }}
 	drunk = "drunk"
-	// { \"command\": \"drunk\", \"values\": { \"drunk\": true }}
+	// { "command": "settings", "values": { "drunk": true }}
 	freeGame = "freeGame"
-	// { \"command\": \"freeGame\", \"values\": { \"freeGame\": true }}
+	// { "command": "settings", "values": { "freeGame": true }}
 	payed = "payed"
-	// { \"command\": \"payed\", \"values\": { \"payed\": true }}
+	// { "command": "settings", "values": { "payed": true }}
 	maxTime = "maxTime"
-	// { \"command\": \"maxTime\", \"values\": { \"maxTime\": 600 }}
+	// { "command": "settings", "values": { "maxTime": 600 }}
 	rated = "rated"
-	// { \"command\": \"rated\", \"values\": { \"rated\": true }}
+	// { "command": "settings", "values": { "rated": true }}
 	cancelMatch = "cancelMatch"
-	// { \"command\": \"candelMatch\", \"values\": { }}
+	// { "command": "cancelMatch", "values": { }}
 	kickUser = "kickUser"
-	// { \"command\": \"kickUser\", \"values\": { \"kickUser\": "userID" }}
+	// { "command": "settings", "values": { "kickUser": "userID" }}
 
 	// Start: For Table, possible by admin as well
 	addGoal = "addGoal"
@@ -78,7 +77,6 @@ func handleCommunication(c *Client, message []byte) {
 	} else {
 		handleTable(c, m)
 	}
-
 }
 
 func handleUsers(c *Client, m *message) {
@@ -94,54 +92,64 @@ func handleUsers(c *Client, m *message) {
 	case ready:
 		setReady(c, boolFromMap(m.Values, ready))
 	case leaveMatch:
-		leavematch(c)
+		//closeUser(c)
 	}
 }
 
 func handleAdmin(c *Client, m *message) {
 	handleTable(c, m)
 	handleUsers(c, m)
-	switch m.Command {
-	case startMatch:
-		startmatch(c)
-	case rated:
-		setRated(c, boolFromMap(m.Values, rated))
-	case maxTime:
-		maxtime(c, intFromMap(m.Values, maxTime))
-	case maxGoals:
-		maxgoals(c, intFromMap(m.Values, maxGoals))
-	case switchPositions:
-		switchpositions(c, boolFromMap(m.Values, switchPositions))
-	case twoOnTwo:
-		twoontwo(c, boolFromMap(m.Values, twoOnTwo))
-	case twoOnOne:
-		twoonone(c, boolFromMap(m.Values, twoOnOne))
-	case oneOnOne:
-		oneonone(c, boolFromMap(m.Values, oneOnOne))
-	case bet:
-		isBet(c, boolFromMap(m.Values, bet))
-	case tournament:
-		isTournament(c, boolFromMap(m.Values, tournament))
-	case drunk:
-		isDrunk(c, boolFromMap(m.Values, drunk))
-	case payed:
-		isPayed(c, boolFromMap(m.Values, drunk))
-	case kickUser:
-		kickuser(c, stringFromMap(m.Values, kickUser))
+	if m.Command == "settings" {
+		for k, v := range m.Values {
+			switch k {
+			case startMatch:
+				startmatch(c)
+			case rated:
+				setRated(c, v.(bool))
+			case maxTime:
+				maxtime(c, int64(v.(float64)))
+			case maxGoals:
+				maxgoals(c, int64(v.(float64)))
+			case switchPositions:
+				switchpositions(c, v.(bool))
+			case twoOnTwo:
+				twoontwo(c, v.(bool))
+			case twoOnOne:
+				twoonone(c, v.(bool))
+			case oneOnOne:
+				oneonone(c, v.(bool))
+			case bet:
+				isBet(c, v.(bool))
+			case tournament:
+				isTournament(c, v.(bool))
+			case drunk:
+				isDrunk(c, v.(bool))
+			case payed:
+				isPayed(c, v.(bool))
+			case kickUser:
+				kickuser(c, v.(string))
+			}
+			break
+		}
 	}
+
 }
 
 func handleTable(c *Client, m *message) {
-	//log.Println("Hanlde table " + c.table.ID + " with cmd: " + m.Command)
-	switch m.Command {
-	case cancelMatch:
-		closeMatch(c)
-	case addGoal:
-		addgoal(c, stringFromMap(m.Values, "side"), numberFromMap(m.Values, "speed"))
-	case removeGoal:
-		removegoal(c, stringFromMap(m.Values, "side"))
-	case freeGame:
-		freegame(c, boolFromMap(m.Values, freeGame))
+	for k, v := range m.Values {
+		switch m.Command {
+		case cancelMatch:
+			closeMatch(c)
+		case addGoal:
+			addgoal(c, stringFromMap(m.Values, "side"), numberFromMap(m.Values, "speed"))
+		case removeGoal:
+			removegoal(c, v.(string))
+		case "settings":
+			if k == freeGame {
+				freegame(c, v.(bool))
+			}
+		}
+		break
 	}
 }
 
@@ -152,9 +160,9 @@ func addgoal(c *Client, side string, speed float64) {
 		DateTime: time.Now().Format(time.RFC3339),
 	})
 	if side == "red" {
-		c.liveMatch.ScoreRed++
+		c.liveMatch.M.ScoreRed++
 	} else if side == "blue" {
-		c.liveMatch.ScoreBlue++
+		c.liveMatch.M.ScoreBlue++
 	}
 	sendMatchData(c)
 }

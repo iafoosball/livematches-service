@@ -54,49 +54,49 @@ leaveMatch = "leaveMatch"
 #### For Admin
 ```
 twoOnTwo        = "twoOnTwo"
-// { "command": "twoOnTwo", "values": { "twoOnTwo": true }}
+// { "command": "settings", "values": { "twoOnTwo": true }}
 
 twoOnOne        = "twoOnOne"
-// { "command": "oneOnTwo", "values": { "oneOnTwo": true }}
+// { "command": "settings", "values": { "oneOnTwo": true }}
 
 oneOnOne        = "oneOnOne"
-// { "command": "oneOnOne", "values": { "oneOnOne": true }}
+// { "command": "settings", "values": { "oneOnOne": true }}
 
 switchPositions = "switchPositions"
-// { "command": "switchPositions", "values": { "switchPositions": true }}
+// { "command": "settings", "values": { "switchPositions": true }}
 
 bet             = "bet"
-// { "command": "bet", "values": { "bet": true }}
+// { "command": "settings", "values": { "bet": true }}
 
 maxGoals        = "maxGoals"
-// { "command": "maxGoals", "values": { "maxGoals": 10 }}
+// { "command": "settings", "values": { "maxGoals": 10 }}
 
 tournament      = "tournament"
-// { "command": "tournament", "values": { "tournament": true }}
+// { "command": "settings", "values": { "tournament": true }}
 
 startMatch      = "startMatch"
-// { "command": "startMatch", "values": { }}
+// { "command": "settings", "values": { }}
 
 drunk           = "drunk"
-// { "command": "drunk", "values": { "drunk": true }}
+// { "command": "settings", "values": { "drunk": true }}
 
 freeGame        = "freeGame"
-// { "command": "freeGame", "values": { "freeGame": true }}
+// { "command": "settings", "values": { "freeGame": true }}
 
 payed           = "payed"
-// { "command": "payed", "values": { "payed": true }}
+// { "command": "settings", "values": { "payed": true }}
 
 maxTime         = "maxTime"
-// { "command": "maxTime", "values": { "maxTime": 600 }}
+// { "command": "settings", "values": { "maxTime": 600 }}
 
 rated           = "rated"
-// { "command": "rated", "values": { "rated": true }}
+// { "command": "settings", "values": { "rated": true }}
 
 cancelMatch     = "cancelMatch"
-// { "command": "candelMatch", "values": { }}
+// { "command": "cancelMatch", "values": { }}
 
 kickUser        = "kickUser"
-// { "command": "kickUser", "values": { "kickUser": "userID" }}
+// { "command": "settings", "values": { "kickUser": "userID" }}
 ```
 
 #### For Table, possible by admin as well

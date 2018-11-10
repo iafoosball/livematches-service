@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"sync"
 	"testing"
 	"time"
 )
@@ -19,6 +18,8 @@ var (
 
 func init() {
 	log.SetFlags(log.Ltime | log.Lshortfile)
+	go main()
+
 	//f, err := os.OpenFile("livematches.log", os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
 	//if err != nil {
 	//	log.Fatalf("error opening file: %v", err)
@@ -27,35 +28,44 @@ func init() {
 	//log.Print("hallo")
 }
 
-func TestRunTestClient(*testing.T) {
-	end := make(chan string)
+func TetRunTestClient(*testing.T) {
+	end := make(chan bool)
 	go user.Start("user1", "table2", scenario, addr, end)
 }
 
-func TestIntegrationScenario1(*testing.T) {
-	scenario = "scenario1"
-	end := make(chan string)
-	var wg sync.WaitGroup
-
-	log.Print("123")
-	wg.Add(3)
-	go main()
-	time.Sleep(1 * time.Second)
+func TestUser(*testing.T) {
+	log.Println("TestUser")
+	scenario = "testUser"
+	end := make(chan bool)
 	go table.Start("table2", scenario, addr, end)
-	time.Sleep(2 * time.Second)
+	time.Sleep(1 * time.Second)
 	go user.Start("user1", "table2", scenario, addr, end)
-	//go user.Start("user2", scenario, addr)
 
-	exit()
-	//wg.Wait()
+	for {
 
-	// Test logic inside here
-	for table.Stop != true {
-
+		select {
+		case _ = <-end:
+			return
+		}
 	}
+}
 
-	log.Println("Exit now!")
-	os.Exit(3)
+func TestAdmin(t *testing.T) {
+	log.Println("testAdmin")
+	scenario = "testAdmin"
+	end := make(chan bool)
+	go table.Start("table2", scenario, addr, end)
+	time.Sleep(1 * time.Second)
+	go user.Start("user1", "table2", scenario, addr, end)
+	time.Sleep(1 * time.Second)
+	go user.Start("user2", "table2", scenario, addr, end)
+
+	for {
+		select {
+		case _ = <-end:
+			return
+		}
+	}
 }
 
 // exit the program if Ctrl-C is pressed
