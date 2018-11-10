@@ -86,13 +86,13 @@ type LiveMatch struct {
 	Unregister chan *Client `json:"-"`
 
 	// holds the data of the LiveMatch
-	M *models.Match `json:"MatchData"`
+	M *models.Match `json:"-"`
 
 	// started indicates if the match started
 	Started bool `json:"started,omitempty"`
 
 	// holds the data of the Goals for a LiveMatch
-	Goals []*models.Goal `json:"goals"`
+	Goals []*models.Goal `json:"-"`
 }
 
 func (m *LiveMatch) runMatch() {

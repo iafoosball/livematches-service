@@ -4,6 +4,7 @@ import (
 	"flag"
 	"github.com/go-openapi/swag"
 	"github.com/iafoosball/livematches-service/impl"
+	"github.com/iafoosball/livematches-service/models"
 	"log"
 	"net/http"
 	"strings"
@@ -29,7 +30,11 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 
 func listMatches(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		b, err := swag.WriteJSON(impl.LiveMatches)
+		var m []*models.Match
+		for _, n := range impl.LiveMatches {
+			m = append(m, n.M)
+		}
+		b, err := swag.WriteJSON(m)
 		if err != nil {
 			log.Println(err)
 			return
