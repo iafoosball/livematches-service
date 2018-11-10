@@ -14,42 +14,45 @@ import (
 
 func TestEndMatch(t *testing.T) {
 	match := LiveMatch{
-		Users: []*models.MatchUsersItems0{
-			&models.MatchUsersItems0{
-				Admin:    true,
-				Bet:      123,
-				Color:    "gree",
-				ID:       "3333",
-				Position: "attack",
-				Username: "kickAss",
-			}, &models.MatchUsersItems0{
-				Admin:    false,
-				Bet:      2,
-				Color:    "blue",
-				ID:       "4444",
-				Position: "defense",
-				Username: "kickme",
+		M: &models.Match{
+			Users: []*models.MatchUsersItems0{
+				&models.MatchUsersItems0{
+					Admin:    true,
+					Bet:      123,
+					Color:    "gree",
+					ID:       "3333",
+					Position: "attack",
+					Username: "kickAss",
+				}, &models.MatchUsersItems0{
+					Admin:    false,
+					Bet:      2,
+					Color:    "blue",
+					ID:       "4444",
+					Position: "defense",
+					Username: "kickme",
+				},
+			},
+			ScoreBlue: 2,
+			ScoreRed:  10,
+			StartTime: time.Now().Format(time.RFC3339),
+			EndTime:   time.Now().Format(time.RFC3339),
+			TableID:   "123",
+			Winner:    "red",
+			Settings: &models.MatchSettings{
+				Bet:             true,
+				Drunk:           false,
+				FreeGame:        true,
+				MaxGoals:        10,
+				MaxTime:         10,
+				OneOnOne:        true,
+				Payed:           false,
+				Rated:           true,
+				SwitchPositions: false,
+				Tournament:      false,
+				TwoOnOne:        false,
+				TwoOnTwo:        false,
 			},
 		},
-		Bet:            true,
-		Completed:      true,
-		Drunk:          false,
-		EndTime:        time.Now().Format(time.RFC3339),
-		FreeGame:       true,
-		MaxGoals:       10,
-		MaxTime:        10,
-		OneOnOne:       true,
-		Payed:          false,
-		RatedMatch:     true,
-		ScoreBlue:      2,
-		ScoreRed:       10,
-		StartTime:      time.Now().Format(time.RFC3339),
-		SwitchPosition: false,
-		TableID:        "123",
-		Tournament:     false,
-		TwoOnOne:       false,
-		TwoOnTwo:       false,
-		Winner:         "red",
 		Goals: []*models.Goal{
 			&models.Goal{
 				DateTime: time.Now().Format(time.RFC3339),
@@ -68,7 +71,7 @@ func TestEndMatch(t *testing.T) {
 			},
 		},
 	}
-	js, _ := json.Marshal(match)
+	js, _ := json.Marshal(match.M)
 	resp, err := http.Post("http://localhost:8000/"+"matches/", "application/json", bytes.NewReader(js))
 	handleErr(err)
 	defer resp.Body.Close()
