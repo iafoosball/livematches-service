@@ -86,7 +86,7 @@ type LiveMatch struct {
 	Unregister chan *Client `json:"-"`
 
 	// holds the data of the LiveMatch
-	M *models.Match `json:"-"`
+	M *models.Match `json:"MatchData"`
 
 	// started indicates if the match started
 	Started bool `json:"started,omitempty"`
