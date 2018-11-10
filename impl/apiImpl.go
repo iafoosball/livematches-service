@@ -79,9 +79,9 @@ func joinMatch(c *Client, id string) {
 }
 
 // Start: Admin settings
-func startmatch(c *Client) {
+func start(c *Client) {
 	c.liveMatch.M.StartTime = time.Now().Format(time.RFC3339)
-	c.liveMatch.M.Settings.StartMatch = true
+	c.liveMatch.M.Started = true
 	sendMatchData(c)
 }
 

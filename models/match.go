@@ -45,6 +45,9 @@ type Match struct {
 	// the datetime when the game ends
 	StartTime string `json:"startTime,"`
 
+	// started
+	Started bool `json:"started,"`
+
 	// the id of table
 	TableID string `json:"tableID,"`
 
@@ -223,9 +226,6 @@ type MatchSettings struct {
 
 	// A match can be rated, ie a ranked game with points, or without.
 	Rated bool `json:"rated,"`
-
-	// start match
-	StartMatch bool `json:"startMatch,"`
 
 	// Switch the position after 50% of the goal (time or goals) is reached.
 	SwitchPositions bool `json:"switchPositions,"`

@@ -38,8 +38,8 @@
  { "command": "settings", "values": { "tournament": true }}
 "tournament":true
 
- { "command": "settings", "values": { "startMatch": true }}
-"startMatch":true
+ { "command": "started", "values": { "startMatch": true }}
+"started":true
 
  { "command": "settings", "values": { "drunk": true }}
 "drunk":true

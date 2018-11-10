@@ -42,8 +42,8 @@ const (
 	// { "command": "settings", "values": { "maxGoals": 10 }}
 	tournament = "tournament"
 	// { "command": "settings", "values": { "tournament": true }}
-	startMatch = "startMatch"
-	// { "command": "settings", "values": { }}
+	started = "started"
+	// { "command": "started", "values": { }}
 	drunk = "drunk"
 	// { "command": "settings", "values": { "drunk": true }}
 	freeGame = "freeGame"
@@ -102,8 +102,6 @@ func handleAdmin(c *Client, m *message) {
 	if m.Command == "settings" {
 		for k, v := range m.Values {
 			switch k {
-			case startMatch:
-				startmatch(c)
 			case rated:
 				setRated(c, v.(bool))
 			case maxTime:
@@ -138,6 +136,8 @@ func handleAdmin(c *Client, m *message) {
 func handleTable(c *Client, m *message) {
 	for k, v := range m.Values {
 		switch m.Command {
+		case started:
+			start(c)
 		case cancelMatch:
 			closeMatch(c)
 		case addGoal:
