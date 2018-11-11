@@ -1,12 +1,15 @@
 pipeline {
+    set +x
     agent any
-    environment {
-        COMPOSE_FILE = "docker-compose.yml"
-    }
 
     stages {
         stage ("Build") {
+        environment {
+                    PORT = 8003
+                }
             steps{
+                sh "echo $PORT"
+                sh "echo \"My secret is $MY_SECRET\""
                 sh "docker-compose build --pull"
             }
         }
