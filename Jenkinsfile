@@ -1,5 +1,4 @@
 pipeline {
-    set +x
     agent any
 
     stages {
@@ -9,7 +8,7 @@ pipeline {
                 }
             steps{
                 sh "echo $PORT"
-                sh "echo \"My secret is $MY_SECRET\""
+                sh "echo $arangoMatchesProd"
                 sh "docker-compose build --pull"
             }
         }
