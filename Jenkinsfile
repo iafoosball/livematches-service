@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage ("Build") {
         environment {
-                    PORT = 8000
+                    PORT = 9004
                 }
             steps{
                 sh "echo $PORT"
