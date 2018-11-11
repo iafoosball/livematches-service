@@ -8,7 +8,6 @@ pipeline {
                 }
             steps{
                 sh "echo $PORT"
-                sh "echo $arangoMatchesProd"
                 sh "docker-compose build --pull"
             }
         }
