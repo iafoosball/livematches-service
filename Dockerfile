@@ -29,4 +29,5 @@ WORKDIR /root/
 
 # Copy our static executable
 COPY --from=builder /go/src/github.com/iafoosball/livematches-service/main/livematches .
-CMD ["./livematches"]
+#CMD ["./livematches"]
+CMD ["./livematches","--port","${PORT}"]
