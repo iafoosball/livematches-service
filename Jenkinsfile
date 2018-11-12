@@ -4,8 +4,8 @@ pipeline {
     stages {
         stage ("Build") {
             environment {
-                    PORT = 9004
-                    DB_KEY = credentials('arangoMatchesProd')
+                    PORT='9004'
+                    DB_KEY=credentials('arangoMatchesProd')
             }
             steps{
                 sh 'printenv'
