@@ -8,11 +8,11 @@ pipeline {
         stage ("Build") {
         environment {
                     PORT = 9004
-                    DB-KEY = credentials('arangoMatchesProd')
+                    DB_KEY = credentials('arangoMatchesProd')
                 }
             steps{
                 echo $PORT
-                echo $DB-KEY
+                echo $DB_KEY
 
 
                 sh "docker-compose build --pull"
