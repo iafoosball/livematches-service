@@ -8,7 +8,8 @@ pipeline {
                     DB_KEY=credentials('arangoMatchesProd')
             }
             steps{
-                sh 'export SERVICE_PORT=9006'
+                sh 'export -x SERVICE_PORT=9006'
+                sh 'export -x SERVICE_POR=9007'
                 sh 'printenv'
                 sh "docker-compose build --pull"
             }
