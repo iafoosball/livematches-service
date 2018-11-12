@@ -9,8 +9,6 @@ pipeline {
             }
             steps{
                 sh 'printenv'
-
-
                 sh "docker-compose build --pull"
             }
         }
