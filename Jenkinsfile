@@ -1,13 +1,20 @@
 pipeline {
     agent any
+    docker{
+
+    }
 
     stages {
         stage ("Build") {
         environment {
                     PORT = 9004
+                    DB-KEY = credentials('arangoMatchesProd')
                 }
             steps{
-                sh "echo $PORT"
+                echo $PORT
+                echo $DB-KEY
+
+
                 sh "docker-compose build --pull"
             }
         }
