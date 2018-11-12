@@ -4,5 +4,5 @@ services:
     container_name: "livematches-service"
     build: './'
     ports:
-      - "9004:${PORT}"
+      - "9003:${PORT}"
 

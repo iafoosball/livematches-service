@@ -4,10 +4,11 @@ pipeline {
     stages {
         stage ("Build") {
             environment {
-                    PORT='9004'
+                    PORT='9005'
                     DB_KEY=credentials('arangoMatchesProd')
             }
             steps{
+                sh 'export $PORT'
                 sh 'printenv'
                 sh "docker-compose build --pull"
             }
