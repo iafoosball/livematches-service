@@ -3,8 +3,8 @@ pipeline {
 
     stages {
         stage ("Build") {
-            environment {
-                DB_KEY_PROD=credentials('arangoMatchesProd')
+            steps{
+                sh "docker-compose build --pull"
             }
         }
         stage ("Remove old") {
