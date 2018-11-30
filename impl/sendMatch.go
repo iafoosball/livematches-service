@@ -9,11 +9,15 @@ import (
 	"strings"
 )
 
+var (
+	MatchesAddr string
+)
+
 func SendMatch(liveMatch *LiveMatch) {
 	js, err := json.Marshal(*liveMatch.M)
 	handleErr(err)
 	//resp, err := http.Post("http://0.0.0.0:8000/"+"matches/", "application/json", bytes.NewReader(js))
-	resp, err := http.Post("http://iafoosball.aau.dk:8000/"+"matches/", "application/json", bytes.NewReader(js))
+	resp, err := http.Post(MatchesAddr+"/matches/", "application/json", bytes.NewReader(js))
 	handleErr(err)
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)

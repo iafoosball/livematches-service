@@ -11,8 +11,10 @@ import (
 )
 
 var (
-	host = flag.String("host", "0.0.0.0", "the host to listen for connections")
-	port = flag.String("port", "9003", "the port to listen for new clients")
+	host        = flag.String("host", "0.0.0.0", "the host to listen for connections")
+	port        = flag.String("port", "8003", "the port to listen for new clients")
+	matchesHost = flag.String("matchesHost", "0.0.0.0", "the host for sending match data to")
+	matchesPort = flag.String("matchesPort", "8000", "the host port for sending match data to")
 )
 
 func serveHome(w http.ResponseWriter, r *http.Request) {
@@ -47,6 +49,7 @@ func main() {
 	flag.Parse()
 	log.SetFlags(log.Ltime | log.Lshortfile)
 	log.Println("V1: Open for clients on: " + *host + ":" + *port)
+	impl.MatchesAddr = *matchesHost + *matchesPort
 	hub := impl.NewHub()
 	go hub.Run()
 	http.HandleFunc("/", serveHome)

@@ -1,7 +1,0 @@
-version: '3'
-services:
-  livematches-service:
-    container_name: "livematches-service"
-    build: './'
-    ports:
-      - ${servicePortProd}:9003

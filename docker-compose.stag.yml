@@ -1,0 +1,12 @@
+version: '3'
+services:
+  livematches-service:
+    image: "livematches-service-stag"
+    container_name: "livematches-service-stag"
+    build:
+      context: .
+      args:
+        - mHost=iafoosball.me
+        - mPort=8000
+    ports:
+      - 8003:8003

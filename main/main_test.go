@@ -13,8 +13,8 @@ import (
 // used by all test classes in package matches
 var (
 	scenario string
-	addr     = "0.0.0.0:9003"
-	//addr     = "iafoosball.aau.dk:9003"
+	addr     = "0.0.0.0:8003"
+	//addr     = "iafoosball.me:8003"
 )
 
 func init() {
