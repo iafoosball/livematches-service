@@ -16,7 +16,6 @@ var (
 func SendMatch(liveMatch *LiveMatch) {
 	js, err := json.Marshal(*liveMatch.M)
 	handleErr(err)
-	//resp, err := http.Post("http://0.0.0.0:8000/"+"matches/", "application/json", bytes.NewReader(js))
 	resp, err := http.Post(MatchesAddr+"/matches/", "application/json", bytes.NewReader(js))
 	handleErr(err)
 	defer resp.Body.Close()
@@ -30,8 +29,13 @@ func SendMatch(liveMatch *LiveMatch) {
 		g.From = m.ID
 		g.To = m.ID
 		js, _ = json.Marshal(g)
-		//resp, err = http.Post("http://0.0.0.0:8000/"+"goals/", "application/json", bytes.NewReader(js))
-		resp, err = http.Post("http://iafoosball.aau.dk:8000/"+"goals/", "application/json", bytes.NewReader(js))
+		resp, err = http.Post(MatchesAddr+"goals/", "application/json", bytes.NewReader(js))
 	}
 
 }
+
+//Start with big picture of system
+//What is the solution from us for millions of users
+//Market research (target group)
+//Note down our ideas
+//People drink listen music, multiple lasers,

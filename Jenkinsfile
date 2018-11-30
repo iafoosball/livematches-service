@@ -4,25 +4,25 @@ pipeline {
     stages {
         stage ("Build") {
             steps{
-                sh "docker-compose build --pull"
+                sh "docker-compose -f docker-compose.prod.yml build --pull"
             }
         }
         stage ("Remove old") {
             steps {
-               sh "docker stop livematches-service &"
-               sh "docker rm livematches-service &"
+               sh "docker stop livematches-service-prod &"
+               sh "docker rm livematches-service-prod &"
                sh "sleep 15s"
             }
         }
         stage ("Production") {
             steps {
-                sh "docker-compose up"
+                sh "docker-compose -f docker-compose.prod.yml up"
             }
         }
     }
     post {
         always {
-            sh "docker-compose down -v --rmi 'all'"
+            sh "docker-compose -f docker-compose.prod.yml  down -v --rmi 'all'"
         }
     }
 }
