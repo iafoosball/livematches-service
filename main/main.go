@@ -50,6 +50,7 @@ func main() {
 	log.SetFlags(log.Ltime | log.Lshortfile)
 	log.Println("V1: Open for clients on: " + *host + ":" + *port)
 	impl.MatchesAddr = *matchesHost + *matchesPort
+	log.Println("Database is on " + impl.MatchesAddr)
 	hub := impl.NewHub()
 	go hub.Run()
 	http.HandleFunc("/", serveHome)

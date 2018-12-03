@@ -29,7 +29,7 @@ func SendMatch(liveMatch *LiveMatch) {
 		g.From = m.ID
 		g.To = m.ID
 		js, _ = json.Marshal(g)
-		resp, err = http.Post(MatchesAddr+"goals/", "application/json", bytes.NewReader(js))
+		resp, err = http.Post(MatchesAddr+"/goals/", "application/json", bytes.NewReader(js))
 	}
 
 }

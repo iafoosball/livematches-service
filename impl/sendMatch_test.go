@@ -70,7 +70,7 @@ func TestEndMatch(t *testing.T) {
 		},
 	}
 	SendMatch(match)
-	query := MatchesAddr + "matches/?filter=settings.maxTime==1000"
+	query := MatchesAddr + "/matches/?filter=settings.maxTime==1000"
 	resp, err := http.Get(query)
 	handleTesterr(t, err)
 	if http.StatusOK != resp.StatusCode {
