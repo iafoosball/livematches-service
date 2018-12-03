@@ -5,6 +5,7 @@ services:
     container_name: "livematches-service-stag"
     build:
       context: .
+      dockerfile: DockerfileDev
       args:
         - mHost=iafoosball.me
         - mPort=8000
