@@ -128,6 +128,7 @@ func isTournament(c *Client, b bool) {
 }
 func tournamentmode(c *Client, b bool) {
 	c.LiveMatch.M.Settings.TournamentMode = b
+	c.LiveMatch.M.Settings.TwoOnOne = true
 	setMaxGoals(c, 3)
 	sendMatchData(c)
 }
