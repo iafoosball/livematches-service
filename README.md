@@ -1,9 +1,11 @@
 # livematches-service
 
 ## TODO:
+End game at 10 Goals <br />
+
+
+## Future:
 Add database and synch every important event. <br />
-Hanlde erros, don't exit. <br />
-Send livematch data to server <br />
 
 ## Important:
 Position have to omitted when no empty.
