@@ -25,7 +25,7 @@ pipeline {
                 sh "docker-compose-f docker-compose.prod.yml build --pull"
             }
         }
-        stage ("Remove old") {
+        stage ("Remove old Production") {
             steps {
                sh "docker stop livematches-service-prod &"
                sh "docker rm livematches-service-prod &"
