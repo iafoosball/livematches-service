@@ -21,11 +21,12 @@ RUN CGO_ENABLED=0 GOOS=linux go build -ldflags "-s -w" -a -installsuffix cgo -o 
 # STEP 2 build a small image
 # start from scratch
 # FROM scratch
-ARG mHost
-ARG mPort
+
 
 FROM alpine:latest
 RUN apk --no-cache add ca-certificates
+ARG mHost
+ARG mPort
 
 # Copy our static executable
 COPY --from=builder /go/src/github.com/iafoosball/livematches-service/main/livematches .
