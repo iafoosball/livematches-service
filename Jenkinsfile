@@ -7,7 +7,7 @@ pipeline {
                     sh "docker-compose -f docker-compose.stag.yml build --pull"
                 }
             }
-            stage ("Remove old" Stag) {
+            stage ("Remove old Stag") {
                 steps {
                    sh "docker stop livematches-service-stag &"
                    sh "docker rm livematches-service-stag &"
