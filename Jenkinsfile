@@ -3,7 +3,6 @@ pipeline {
 
     stages {
 
-            
         stage ("Build Production") {
             steps{
                 sh "docker-compose -f docker-compose.stag.yml build --pull"
