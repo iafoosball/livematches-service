@@ -2,13 +2,11 @@ pipeline {
     agent any
 
     stages {
-    /*
         stage ("Build Stag") {
                 steps{
                     sh "docker-compose -f docker-compose.stag.yml build --pull"
                 }
             }
-            */
             stage ("Remove old Stag") {
                 steps {
                    sh "docker stop livematches-service-stag &"
@@ -16,17 +14,15 @@ pipeline {
                    sh "sleep 15s"
                 }
             }
-            /*
             stage ("Deploy Stag") {
                 steps {
-                    sh "docker-compose -f docker-compose.stag.yml up"
+                    sh "docker-compose -p livematches-stag -f docker-compose.stag.yml up"
                 }
             }
-            */
 
         stage ("Build Production") {
             steps{
-                sh "docker-compose -f docker-compose.prod.yml build --pull"
+                sh "docker-compose-f docker-compose.prod.yml build --pull"
             }
         }
         stage ("Remove old") {
@@ -38,7 +34,7 @@ pipeline {
         }
         stage ("Production") {
             steps {
-                sh "docker-compose -f docker-compose.prod.yml up"
+                sh "docker-compose  -p livematches-prod -f docker-compose.prod.yml up"
             }
         }
     }

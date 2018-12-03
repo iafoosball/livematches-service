@@ -1,8 +1,8 @@
 version: '3'
 services:
   livematches-service:
-    image: "livematches-service-stag"
-    container_name: "livematches-service-stag"
+    image: "livematches-service-prod"
+    container_name: "livematches-service-prod"
     build:
       context: .
       args:

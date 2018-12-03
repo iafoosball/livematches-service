@@ -1,8 +1,8 @@
 version: '3'
 services:
   livematches-service:
-    image: "livematches-service-stag"
-    container_name: "livematches-service-stag"
+    image: "livematches-service-dev"
+    container_name: "livematches-service-dev"
     build:
       context: .
       dockerfile: DockerfileDev
