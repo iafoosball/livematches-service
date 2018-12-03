@@ -16,7 +16,7 @@ pipeline {
             }
             stage ("Deploy Stag") {
                 steps {
-                    sh "docker-compose -p livematches-stag -f docker-compose.stag.yml up"
+                    sh "docker-compose -d -p livematches-stag -f docker-compose.stag.yml up"
                 }
             }
 
