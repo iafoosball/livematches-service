@@ -209,6 +209,7 @@ func addgoal(c *Client, side string, speed float64) {
 		// Implement reset game function (score kick players)
 		c.LiveMatch.M.ScoreRed = 0
 		c.LiveMatch.M.ScoreBlue = 0
+		SendMatch(c.LiveMatch)
 		sendMatchData(c)
 	} else {
 		sendMatchData(c)
