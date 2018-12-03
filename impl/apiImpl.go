@@ -128,6 +128,7 @@ func isTournament(c *Client, b bool) {
 }
 func tournamentmode(c *Client, b bool) {
 	c.LiveMatch.M.Settings.TournamentMode = b
+	resetPlayOption(c)
 	c.LiveMatch.M.Settings.TwoOnOne = true
 	setMaxGoals(c, 3)
 	sendMatchData(c)
@@ -205,6 +206,9 @@ func addgoal(c *Client, side string, speed float64) {
 	}
 	if checkGameCompleted(c) {
 		c.LiveMatch.M.Started = false
+		// Implement reset game function (score kick players)
+		c.LiveMatch.M.ScoreRed = 0
+		c.LiveMatch.M.ScoreBlue = 0
 		sendMatchData(c)
 	} else {
 		sendMatchData(c)
