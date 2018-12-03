@@ -2,9 +2,7 @@ package impl
 
 import (
 	"encoding/json"
-	"github.com/iafoosball/livematches-service/models"
 	"log"
-	"time"
 )
 
 var (
@@ -152,20 +150,6 @@ func handleTable(c *Client, m *message) {
 			freegame(c, boolFromMap(m.Values, "freeGame"))
 		}
 	}
-}
-
-func addgoal(c *Client, side string, speed float64) {
-	c.LiveMatch.Goals = append(c.LiveMatch.Goals, &models.Goal{
-		Side:     side,
-		Speed:    speed,
-		DateTime: time.Now().Format(time.RFC3339),
-	})
-	if side == "red" {
-		c.LiveMatch.M.ScoreRed++
-	} else if side == "blue" {
-		c.LiveMatch.M.ScoreBlue++
-	}
-	sendMatchData(c)
 }
 
 //stringFromMap returns a string for a certain id from a map

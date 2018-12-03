@@ -1,6 +1,7 @@
 package impl
 
 import (
+	"github.com/iafoosball/livematches-service/models"
 	"time"
 )
 
@@ -127,6 +128,7 @@ func isTournament(c *Client, b bool) {
 }
 func tournamentmode(c *Client, b bool) {
 	c.LiveMatch.M.Settings.TournamentMode = b
+	setMaxGoals(c, 3)
 	sendMatchData(c)
 }
 func isDrunk(c *Client, b bool) {
@@ -187,4 +189,44 @@ func removegoal(c *Client, side string) {
 		c.LiveMatch.M.ScoreRed--
 	}
 	sendMatchData(c)
+}
+
+func addgoal(c *Client, side string, speed float64) {
+	c.LiveMatch.Goals = append(c.LiveMatch.Goals, &models.Goal{
+		Side:     side,
+		Speed:    speed,
+		DateTime: time.Now().Format(time.RFC3339),
+	})
+	if side == "red" {
+		c.LiveMatch.M.ScoreRed++
+	} else if side == "blue" {
+		c.LiveMatch.M.ScoreBlue++
+	}
+	if checkGameCompleted(c) {
+		c.LiveMatch.M.Started = false
+		sendMatchData(c)
+	} else {
+		sendMatchData(c)
+	}
+}
+
+func checkGameCompleted(c *Client) bool {
+	m := c.LiveMatch.M
+	if m.Settings.MaxGoals > 0 {
+		if m.Settings.MaxGoals <= m.ScoreRed || m.Settings.MaxGoals <= m.ScoreBlue {
+			return true
+		}
+	} else {
+		// TODO: Implement in GoRoutine where it keeps track of time
+		//if m.Settings.MaxTime <= m.ScoreRed ||m.Settings.MaxGoals <= m.ScoreBlue {
+		//	return true
+		//}
+		return false
+	}
+	return false
+}
+
+func setMaxGoals(c *Client, i int64) {
+	c.LiveMatch.M.Settings.MaxGoals = i
+	c.LiveMatch.M.Settings.MaxTime = 0
 }

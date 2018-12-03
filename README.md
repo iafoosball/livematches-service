@@ -2,6 +2,10 @@
 
 ## TODO:
 End game at 10 Goals <br />
+Logic for MaxTime to end game <br />
+Multiple IDs on one Table <br />
+Multiple IDs on mu.tiple Tables, kick older connection <br />
+Multiple IDs on mutiple Table (kick from table which he does not connect <br />
 
 
 ## Future:
