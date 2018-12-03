@@ -22,7 +22,7 @@ pipeline {
 
         stage ("Build Production") {
             steps{
-                sh "docker-compose-f docker-compose.prod.yml build --pull"
+                sh "docker-compose -f docker-compose.prod.yml build --pull"
             }
         }
         stage ("Remove old Production") {
