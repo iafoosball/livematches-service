@@ -27,6 +27,8 @@ FROM alpine:latest
 RUN apk --no-cache add ca-certificates
 ARG mHost
 ARG mPort
+ENV mHost $mHost
+ENV mPort $mPort
 
 # Copy our static executable
 COPY --from=builder /go/src/github.com/iafoosball/livematches-service/main/livematches .

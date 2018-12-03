@@ -15,7 +15,7 @@
   name = "github.com/globalsign/mgo"
   packages = [
     "bson",
-    "internal/json"
+    "internal/json",
   ]
   pruneopts = ""
   revision = "eeefdecb41b842af6dc652aaea4026e8403e62df"
@@ -59,7 +59,7 @@
   packages = [
     "buffer",
     "jlexer",
-    "jwriter"
+    "jwriter",
   ]
   pruneopts = ""
   revision = "60711f1a8329503b04e1c88535f419d0bb440bff"
@@ -87,7 +87,7 @@
     "github.com/go-openapi/errors",
     "github.com/go-openapi/strfmt",
     "github.com/go-openapi/swag",
-    "github.com/gorilla/websocket"
+    "github.com/gorilla/websocket",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
