@@ -23,7 +23,6 @@ func closeUser(c *Client) {
 	c.LiveMatch.Unregister <- c
 	c.Hub.unregister <- c
 	c.End <- true
-	c.End <- true
 }
 
 func setusername(c *Client, username string) {
