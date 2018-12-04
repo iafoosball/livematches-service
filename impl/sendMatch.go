@@ -33,9 +33,3 @@ func SendMatch(liveMatch *LiveMatch) {
 	}
 
 }
-
-//Start with big picture of system
-//What is the solution from us for millions of users
-//Market research (target group)
-//Note down our ideas
-//People drink listen music, multiple lasers,

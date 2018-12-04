@@ -206,10 +206,13 @@ func addgoal(c *Client, side string, speed float64) {
 	}
 	if checkGameCompleted(c) {
 		c.LiveMatch.M.Started = false
-		// Implement reset game function (score kick players)
+		// Implement reset game function (score, kick players)
 		c.LiveMatch.M.ScoreRed = 0
 		c.LiveMatch.M.ScoreBlue = 0
 		SendMatch(c.LiveMatch)
+		if c.LiveMatch.M.Settings.TournamentMode {
+			rotatePeople(c.LiveMatch.M.Positions)
+		}
 		sendMatchData(c)
 	} else {
 		sendMatchData(c)
@@ -235,4 +238,29 @@ func checkGameCompleted(c *Client) bool {
 func setMaxGoals(c *Client, i int64) {
 	c.LiveMatch.M.Settings.MaxGoals = i
 	c.LiveMatch.M.Settings.MaxTime = 0
+}
+
+func rotatePeople(positions *models.MatchPositions) {
+	var p1 string
+	if positions.RedAttack != "" && positions.RedDefense != "" {
+		if positions.BlueAttack != "" {
+			p1 = positions.BlueAttack
+			positions.BlueAttack = positions.RedAttack
+		} else {
+			p1 = positions.BlueDefense
+			positions.BlueDefense = positions.RedAttack
+		}
+		positions.RedAttack = positions.RedDefense
+		positions.RedDefense = p1
+	} else {
+		if positions.RedAttack != "" {
+			p1 = positions.RedAttack
+			positions.RedAttack = positions.BlueAttack
+		} else {
+			p1 = positions.RedDefense
+			positions.RedDefense = positions.BlueAttack
+		}
+		positions.BlueAttack = positions.BlueDefense
+		positions.BlueDefense = p1
+	}
 }
