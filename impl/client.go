@@ -72,7 +72,7 @@ func closeTable(c *Client) {
 // reads from this goroutine.
 func (c *Client) readPump() {
 	defer func() {
-		c.End <- true
+		closeUser(c)
 	}()
 	c.Conn.SetReadLimit(maxMessageSize)
 	c.Conn.SetReadDeadline(time.Now().Add(pongWait))
