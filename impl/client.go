@@ -35,7 +35,7 @@ var upgrader = websocket.Upgrader{
 }
 
 func sendAll(c *Client, msg string) {
-	c.hub.broadcast <- []byte(msg)
+	c.Hub.broadcast <- []byte(msg)
 }
 
 func sendMatch(c *Client, msg string) {
@@ -49,7 +49,7 @@ func sendMatchData(c *Client) {
 }
 
 func sendPrivate(c *Client, msg string) {
-	c.send <- []byte(msg)
+	c.Send <- []byte(msg)
 }
 
 // Opens: If Table closes, kick all clients, if full kick
@@ -62,7 +62,7 @@ func closeTable(c *Client) {
 		}
 	}
 	c.LiveMatch = nil
-	c.conn.Close()
+	c.Conn.Close()
 }
 
 // readPump pumps messages from the websocket connection to the hub.
@@ -72,13 +72,13 @@ func closeTable(c *Client) {
 // reads from this goroutine.
 func (c *Client) readPump() {
 	defer func() {
-		c.end <- true
+		c.End <- true
 	}()
-	c.conn.SetReadLimit(maxMessageSize)
-	c.conn.SetReadDeadline(time.Now().Add(pongWait))
-	c.conn.SetPongHandler(func(string) error { c.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
+	c.Conn.SetReadLimit(maxMessageSize)
+	c.Conn.SetReadDeadline(time.Now().Add(pongWait))
+	c.Conn.SetPongHandler(func(string) error { c.Conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 	for {
-		_, message, err := c.conn.ReadMessage()
+		_, message, err := c.Conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				log.Printf("error: %v", err)
@@ -99,46 +99,46 @@ func (c *Client) writePump() {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()
-		c.conn.Close()
+		c.Conn.Close()
 	}()
 	for {
 		select {
-		case ok := <-c.end:
+		case ok := <-c.End:
 			if ok {
 				if c.IsUser {
 					log.Println(c.User.ID)
 				}
-				c.conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+				c.Conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 				time.Sleep(1 * time.Second)
-				c.conn.Close()
+				c.Conn.Close()
 			}
-		case message, ok := <-c.send:
-			c.conn.SetWriteDeadline(time.Now().Add(writeWait))
+		case message, ok := <-c.Send:
+			c.Conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if !ok {
 				// The hub closed the channel.
-				c.conn.WriteMessage(websocket.CloseMessage, []byte{})
+				c.Conn.WriteMessage(websocket.CloseMessage, []byte{})
 				return
 			}
 
-			w, err := c.conn.NextWriter(websocket.TextMessage)
+			w, err := c.Conn.NextWriter(websocket.TextMessage)
 			if err != nil {
 				return
 			}
 			w.Write(message)
 
 			// Add queued chat messages to the current websocket broadcast.
-			n := len(c.send)
+			n := len(c.Send)
 			for i := 0; i < n; i++ {
 				w.Write(newline)
-				w.Write(<-c.send)
+				w.Write(<-c.Send)
 			}
 
 			if err := w.Close(); err != nil {
 				return
 			}
 		case <-ticker.C:
-			c.conn.SetWriteDeadline(time.Now().Add(writeWait))
-			if err := c.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+			c.Conn.SetWriteDeadline(time.Now().Add(writeWait))
+			if err := c.Conn.WriteMessage(websocket.PingMessage, nil); err != nil {
 				return
 			}
 		}
@@ -156,17 +156,20 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 		return
 	}
 	var client *Client
-	client = &Client{hub: hub, conn: conn, send: make(chan []byte, 256), IsUser: false}
-	client.hub.register <- client
+	client = &Client{Hub: hub, Conn: conn, Send: make(chan []byte, 256), IsUser: false}
+	client.Hub.register <- client
 	// Allow collection of memory referenced by the caller by doing all work in
 	go client.writePump()
 	go client.readPump()
 	if isUser {
+		checkUser(userID)
 		client.IsUser = true
+		client.ID = userID
 		client.User = &models.MatchUsersItems0{ID: userID}
 		joinMatch(client, tableID)
 		sendMatchData(client)
 	} else {
+		client.ID = userID
 		client.Table = &models.Table{ID: tableID}
 		createMatch(client, tableID)
 	}
@@ -174,19 +177,22 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 
 // MatchUsersItems0 is a middleman between the websocket connection and the LiveMatch.
 type Client struct {
-	hub *Hub
+	Hub *Hub
 
 	// The websocket connection.
-	conn *websocket.Conn
+	Conn *websocket.Conn
 
 	// Buffered channel of outbound messages.
-	send chan []byte
+	Send chan []byte
 
 	// dicsonnects the client gracefully
-	end chan bool
+	End chan bool
 
 	// The LiveMatch which the User joins
 	LiveMatch *LiveMatch
+
+	// Is the client id -- > username
+	ID string
 
 	// IsUser is true for a User. False for a Table.
 	IsUser bool

@@ -28,7 +28,7 @@ func createMatch(c *Client, tableID string) {
 
 func newMatch(tableID string) *LiveMatch {
 	return &LiveMatch{
-		Clients:    make(map[*Client]bool),
+		Clients:    make(map[*Client]string),
 		Register:   make(chan *Client),
 		Unregister: make(chan *Client),
 		MatchCast:  make(chan []byte),
@@ -74,7 +74,7 @@ func closeMatch(c *Client) {
 
 type LiveMatch struct {
 	// Registered Clients.
-	Clients map[*Client]bool `json:"-"`
+	Clients map[*Client]string `json:"-"`
 
 	// Outbound messages for all users inside a LiveMatch
 	MatchCast chan []byte `json:"-"`
@@ -105,7 +105,7 @@ func (m *LiveMatch) runMatch() {
 	for {
 		select {
 		case client := <-m.Register:
-			m.Clients[client] = true
+			m.Clients[client] = client.ID
 		case client := <-m.Unregister:
 			if _, ok := m.Clients[client]; ok {
 				delete(m.Clients, client)
@@ -113,9 +113,9 @@ func (m *LiveMatch) runMatch() {
 		case message := <-m.MatchCast:
 			for client := range m.Clients {
 				select {
-				case client.send <- message:
+				case client.Send <- message:
 				default:
-					close(client.send)
+					close(client.Send)
 					delete(m.Clients, client)
 				}
 			}
