@@ -209,7 +209,10 @@ func addgoal(c *Client, side string, speed float64) {
 		// Implement reset game function (score, kick players)
 		c.LiveMatch.M.ScoreRed = 0
 		c.LiveMatch.M.ScoreBlue = 0
-		SendMatch(c.LiveMatch)
+
+		defer func() {
+			SendMatch(c.LiveMatch)
+		}()
 		if c.LiveMatch.M.Settings.TournamentMode {
 			rotatePeople(c.LiveMatch.M.Positions)
 		}

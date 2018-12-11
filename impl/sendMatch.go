@@ -16,24 +16,21 @@ var (
 func SendMatch(liveMatch *LiveMatch) {
 	js, err := json.Marshal(*liveMatch.M)
 	handleErr(err)
-	defer func() {
-		resp, err := http.Post(MatchesAddr+"/matches/", "application/json", bytes.NewReader(js))
-		defer resp.Body.Close()
+	resp, err := http.Post(MatchesAddr+"/matches/", "application/json", bytes.NewReader(js))
+	defer resp.Body.Close()
+	handleErr(err)
+	if err != nil {
+		body, err := ioutil.ReadAll(resp.Body)
 		handleErr(err)
-		if err != nil {
-
-			body, err := ioutil.ReadAll(resp.Body)
-			handleErr(err)
-			m := models.DocumentMeta{}
-			err = json.NewDecoder(strings.NewReader(string(body))).Decode(&m)
-			handleErr(err)
-			goals := liveMatch.Goals
-			for _, g := range goals {
-				g.From = m.ID
-				g.To = m.ID
-				js, _ = json.Marshal(g)
-				resp, err = http.Post(MatchesAddr+"/goals/", "application/json", bytes.NewReader(js))
-			}
+		m := models.DocumentMeta{}
+		err = json.NewDecoder(strings.NewReader(string(body))).Decode(&m)
+		handleErr(err)
+		goals := liveMatch.Goals
+		for _, g := range goals {
+			g.From = m.ID
+			g.To = m.ID
+			js, _ = json.Marshal(g)
+			resp, err = http.Post(MatchesAddr+"/goals/", "application/json", bytes.NewReader(js))
 		}
-	}()
+	}
 }
