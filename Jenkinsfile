@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     stages {
+    /*
         stage ("Build Stag") {
                 steps{
                     sh "docker-compose -f docker-compose.stag.yml build --pull"
@@ -19,7 +20,7 @@ pipeline {
                     sh "docker-compose -p livematches-stag -f docker-compose.stag.yml up -d"
                 }
             }
-
+*/
         stage ("Build Production") {
             steps{
                 sh "docker-compose -f docker-compose.prod.yml build --pull"
