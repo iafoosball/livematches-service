@@ -17,9 +17,9 @@ func SendMatch(liveMatch *LiveMatch) {
 	js, err := json.Marshal(*liveMatch.M)
 	handleErr(err)
 	resp, err := http.Post(MatchesAddr+"/matches/", "application/json", bytes.NewReader(js))
-	defer resp.Body.Close()
 	handleErr(err)
 	if err != nil {
+		defer resp.Body.Close()
 		body, err := ioutil.ReadAll(resp.Body)
 		handleErr(err)
 		m := models.DocumentMeta{}
