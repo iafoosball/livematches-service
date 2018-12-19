@@ -151,7 +151,7 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 	defer r.Body.Close()
 	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 	conn, err := upgrader.Upgrade(w, r, nil)
-	conn.SetWriteDeadline(time.Now().Add(1 * time.Second))
+	conn.SetWriteDeadline(time.Now().Add(3 * time.Second))
 	handleErr(err)
 	if err != nil {
 		return

@@ -16,21 +16,18 @@ var (
 )
 
 func TestMultiClient(t *testing.T) {
-
+	c := 0
 	for i := 1; i < 100; i++ {
-		for c := 0; c < 100; c++ {
+		for c = 0; c < 100; c++ {
 			go connect()
-			time.Sleep(100 * time.Millisecond)
+			time.Sleep(10 * time.Millisecond)
 		}
-		time.Sleep(500 * time.Millisecond)
+		//time.Sleep(500 * time.Millisecond)
 		log.Println(time.Now())
 		log.Println("Number of running clients: " + strconv.Itoa(i*100))
 	}
+	t.Error(i*100 + c)
 
-}
-
-func BenchmarkMultiClient(b *testing.B) {
-	go connect()
 }
 
 func connect() {
