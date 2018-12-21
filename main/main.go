@@ -66,7 +66,7 @@ func main() {
 		s := strings.Split(r.URL.Path, "/")
 		impl.ServeWs(hub, w, r, true, s[2], s[3])
 	})
-	err := http.ListenAndServeTLS(*host+":"+*port, "./certs/cert.pem", "./certs/key.pem", nil)
+	err := http.ListenAndServeTLS(*host+":"+*port, "../certs/cert.pem", "../certs/key.pem", nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
