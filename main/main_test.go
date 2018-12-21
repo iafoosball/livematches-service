@@ -13,13 +13,13 @@ import (
 // used by all test classes in package matches
 var (
 	scenario string
-	addr     = "0.0.0.0:8003"
+	addr     = "localhost:8003"
 	//addr     = "iafoosball.me:8003"
 )
 
 func init() {
 	log.SetFlags(log.Ltime | log.Lshortfile)
-	go main()
+	//go main()
 
 	//f, err := os.OpenFile("livematches.log", os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
 	//if err != nil {
@@ -39,15 +39,16 @@ func TestUser(*testing.T) {
 	scenario = "testUser"
 	end := make(chan bool)
 	go table.Start("table1", scenario, addr, end)
-	time.Sleep(1 * time.Second)
-	go user.Start("user1", "table1", scenario, addr, end)
-	for {
-
-		select {
-		case _ = <-end:
-			return
-		}
-	}
+	exit()
+	//time.Sleep(1 * time.Second)
+	//go user.Start("user1", "table1", scenario, addr, end)
+	//for {
+	//
+	//	select {
+	//	case _ = <-end:
+	//		return
+	//	}
+	//}
 }
 
 func TestAdmin(t *testing.T) {

@@ -20,12 +20,13 @@ func Start(tableID string, scenario string, addr string, end chan bool) {
 	log.Println("start ws client")
 	//var addr = flag.String("addr", "iafoosball.aau.dk:9003", "http service address")
 	if addr == "" {
-		addr = "0.0.0.0:9003"
+		addr = "localhost:9003"
 	}
+	log.Println(addr)
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 
-	u := url.URL{Scheme: "ws", Host: addr, Path: "/tables/" + tableID}
+	u := url.URL{Scheme: "wss", Host: addr, Path: "/tables/" + tableID}
 	log.Printf("connecting to %s", u.String())
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	handleErr(err, "making websocket connection")
