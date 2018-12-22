@@ -66,8 +66,8 @@ func main() {
 		s := strings.Split(r.URL.Path, "/")
 		impl.ServeWs(hub, w, r, true, s[2], s[3])
 	})
-	err := http.ListenAndServe(*host+":"+*port, nil)
-	//err := http.ListenAndServeTLS(*host+":"+*port, "../certs/cert.pem", "../certs/key.unencrypted.pem", nil)
+	//err := http.ListenAndServe(*host+":"+*port, nil)
+	err := http.ListenAndServeTLS(*host+":"+*port, "cert.pem", "key.pem", nil)
 	//openssl rsa -in key.pem -out key.unencrypted.pem -passin pass:TYPE_YOUR_PASS
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
