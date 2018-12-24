@@ -11,4 +11,4 @@ services:
     ports:
       - 9003:8003
     volumes:
-      - /var/lib/iafoosball/certs:/certs
+      - /var/lib/iafoosball/certs:/crt
