@@ -67,7 +67,7 @@ func main() {
 		impl.ServeWs(hub, w, r, true, s[2], s[3])
 	})
 	//err := http.ListenAndServe(*host+":"+*port, nil)
-	err := http.ListenAndServeTLS(*host+":"+*port, "/certs/iaf.cert", "/certs/iaf.key", nil)
+	err := http.ListenAndServeTLS(*host+":"+*port, "/certs/cert.pem", "/certs/cert.key", nil)
 	//err := http.ListenAndServeTLS(*host+":"+*port, "/certs/localhost.crt", "/certs/localhost.key", nil)
 	//openssl rsa -in key.pem -out key.unencrypted.pem -passin pass:TYPE_YOUR_PASS
 	if err != nil {
