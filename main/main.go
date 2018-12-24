@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/tls"
 	"flag"
 	"github.com/go-openapi/swag"
 	"github.com/iafoosball/livematches-service/impl"
@@ -68,7 +67,7 @@ func main() {
 		impl.ServeWs(hub, w, r, true, s[2], s[3])
 	})
 	//err := http.ListenAndServe(*host+":"+*port, nil)
-	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+	//http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	err := http.ListenAndServeTLS(":"+*port, "/certs/server.crt", "/certs/server.key", nil)
 	//err := http.ListenAndServeTLS(*host+":"+*port, "/certs/localhost.crt", "/certs/localhost.key", nil)
 	//openssl rsa -in key.pem -out key.unencrypted.pem -passin pass:TYPE_YOUR_PASS
