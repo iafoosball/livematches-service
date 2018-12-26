@@ -1,12 +1,10 @@
 package main
 
 import (
-	"crypto/tls"
 	"flag"
 	"github.com/go-openapi/swag"
 	"github.com/iafoosball/livematches-service/impl"
 	"github.com/iafoosball/livematches-service/models"
-	"golang.org/x/crypto/acme/autocert"
 	"log"
 	"net/http"
 	"strings"
@@ -48,12 +46,6 @@ func listMatches(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	certManager := autocert.Manager{
-		Prompt:     autocert.AcceptTOS,
-		HostPolicy: autocert.HostWhitelist("iafoosball.me"), //Your domain here
-		Cache:      autocert.DirCache("certs"),              //Folder for storing certificates
-	}
-
 	flag.Parse()
 	log.SetFlags(log.Ltime | log.Lshortfile)
 	log.Println("V1: Open for clients on: " + *host + ":" + *port)
@@ -75,19 +67,12 @@ func main() {
 		impl.ServeWs(hub, w, r, true, s[2], s[3])
 	})
 
-	server := &http.Server{
-		Addr: ":https",
-		TLSConfig: &tls.Config{
-			GetCertificate: certManager.GetCertificate,
-		},
-	}
-	err := http.ListenAndServe(*host+":"+*port, certManager.HTTPHandler(nil))
+	//err := http.ListenAndServe(*host+":"+*port, certManager.HTTPHandler(nil))
 	//http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-	//err := http.ListenAndServeTLS(":"+*port, "/certs/server.crt", "/certs/server.key", nil)
+	err := http.ListenAndServeTLS(":"+*port, "/newcert/cert.pem", "/newcert/privkey.pem", nil)
 	//err := http.ListenAndServeTLS(*host+":"+*port, "/certs/localhost.crt", "/certs/localhost.key", nil)
 	//openssl rsa -in key.pem -out key.unencrypted.pem -passin pass:TYPE_YOUR_PASS
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
-		log.Fatal(server.ListenAndServeTLS("", "")) //Key and cert are coming from Let's Encrypt
 	}
 }
