@@ -2,6 +2,7 @@ package user
 
 import (
 	"bufio"
+	"crypto/tls"
 	"github.com/gorilla/websocket"
 	"log"
 	"net/url"
@@ -25,9 +26,11 @@ func Start(userID string, tableID, scenario string, addr string, end chan bool) 
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 
-	u := url.URL{Scheme: "ws", Host: addr, Path: "/users/" + tableID + "/" + userID}
+	u := url.URL{Scheme: "wss", Host: addr, Path: "/users/" + tableID + "/" + userID}
 	log.Printf("connecting to %s", u.String())
-	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
+	d := websocket.Dialer{}
+	d.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+	c, _, err := d.Dial(u.String(), nil)
 	handleErr(err, "making websocket connection")
 	//defer c.Close()
 

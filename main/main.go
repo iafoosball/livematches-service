@@ -46,6 +46,7 @@ func listMatches(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	// init everything
 	flag.Parse()
 	log.SetFlags(log.Ltime | log.Lshortfile)
 	log.Println("V1: Open for clients on: " + *host + ":" + *port)
@@ -53,6 +54,9 @@ func main() {
 	log.Println("Database is on " + impl.MatchesAddr)
 	hub := impl.NewHub()
 	go hub.Run()
+
+	go http.ListenAndServe(":"+*port, http.HandlerFunc(redirect))
+
 	http.HandleFunc("/", serveHome)
 	http.HandleFunc("/matches", listMatches)
 	http.HandleFunc("/tables/", func(w http.ResponseWriter, r *http.Request) {
@@ -75,4 +79,14 @@ func main() {
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
+}
+
+func redirect(w http.ResponseWriter, req *http.Request) {
+	target := "https://" + req.Host + req.URL.Path
+	if len(req.URL.RawQuery) > 0 {
+		target += "?" + req.URL.RawQuery
+	}
+	log.Printf("redirect to: %s", target)
+	http.Redirect(w, req, target,
+		http.StatusTemporaryRedirect)
 }

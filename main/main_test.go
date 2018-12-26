@@ -38,17 +38,17 @@ func TestUser(*testing.T) {
 	log.Println("TestUser")
 	scenario = "testUser"
 	end := make(chan bool)
-	go table.Start("table1", scenario, addr, end)
-	exit()
-	//time.Sleep(1 * time.Second)
-	//go user.Start("user1", "table1", scenario, addr, end)
-	//for {
-	//
-	//	select {
-	//	case _ = <-end:
-	//		return
-	//	}
-	//}
+	go table.Start("table-1", scenario, addr, end)
+	//exit()
+	time.Sleep(1 * time.Second)
+	go user.Start("user1", "table-1", scenario, addr, end)
+	for {
+
+		select {
+		case _ = <-end:
+			return
+		}
+	}
 }
 
 func TestAdmin(t *testing.T) {
