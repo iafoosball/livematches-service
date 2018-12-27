@@ -57,10 +57,10 @@ func main() {
 	log.Println("Database is on " + impl.MatchesAddr)
 	hub := impl.NewHub()
 	go hub.Run()
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", serveHome)
-	mux.HandleFunc("/matches", listMatches)
-	mux.HandleFunc("/tables/", func(w http.ResponseWriter, r *http.Request) {
+
+	http.HandleFunc("/", serveHome)
+	http.HandleFunc("/matches", listMatches)
+	http.HandleFunc("/tables/", func(w http.ResponseWriter, r *http.Request) {
 		log.Println("connected")
 		s := strings.Split(r.URL.Path, "/")
 		// 2 and 3 are hardedcoded so it fails, if id is not specified.
@@ -74,21 +74,10 @@ func main() {
 	if *DevMode {
 		http.ListenAndServe(":"+*port, nil)
 	} else {
-		go http.ListenAndServe(":9010", http.HandlerFunc(redirect))
 		log.Println("http server running")
-		err = http.ListenAndServeTLS(":"+*port, "/certs/cert.pem", "/certs/privkey.pem", mux)
+		err = http.ListenAndServeTLS(":"+*port, "/certs/cert.pem", "/certs/privkey.pem", nil)
 	}
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
-}
-
-func redirect(w http.ResponseWriter, req *http.Request) {
-	target := "https://" + req.Host + req.URL.Path
-	if len(req.URL.RawQuery) > 0 {
-		target += "?" + req.URL.RawQuery
-	}
-	log.Printf("redirect to: %s", target)
-	http.Redirect(w, req, target,
-		http.StatusTemporaryRedirect)
 }
