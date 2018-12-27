@@ -13,7 +13,7 @@ func TestStartWssTable(t *testing.T) {
 	log.Println("start ws client")
 	//var addr = flag.String("addr", "iafoosball.aau.dk:9003", "http service address")
 	addr := "iafoosball.me:9003"
-	tableID := "table-test"
+	tableID := "table-1"
 
 	u := url.URL{Scheme: "wss", Host: addr, Path: "/tables/" + tableID}
 	log.Println(u.Path)

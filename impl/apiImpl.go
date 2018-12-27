@@ -35,6 +35,11 @@ func setposition(c *Client, position string, side string) {
 	if position == "attack" && side == "blue" {
 		if c.LiveMatch.M.Positions.BlueAttack == "" {
 			c.LiveMatch.M.Positions.BlueAttack = c.User.ID
+			for _, u := range c.LiveMatch.M.Users {
+				if u.ID == c.ID {
+					u.Position = "blueAttack"
+				}
+			}
 		}
 	} else if position == "defense" && side == "blue" {
 		if c.LiveMatch.M.Positions.BlueDefense == "" {
