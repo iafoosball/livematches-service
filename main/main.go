@@ -74,7 +74,8 @@ func main() {
 	if *DevMode {
 		http.ListenAndServe(":"+*port, nil)
 	} else {
-		go http.ListenAndServe(":"+*port, http.HandlerFunc(redirect))
+		go http.ListenAndServe(":9010", http.HandlerFunc(redirect))
+		log.Println("http server running")
 		err = http.ListenAndServeTLS(":"+*port, "/certs/cert.pem", "/certs/privkey.pem", mux)
 	}
 	if err != nil {
