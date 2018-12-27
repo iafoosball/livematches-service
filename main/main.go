@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/http"
 	"strings"
-	"time"
 )
 
 var (
@@ -58,10 +57,10 @@ func main() {
 	log.Println("Database is on " + impl.MatchesAddr)
 	hub := impl.NewHub()
 	go hub.Run()
-
-	http.HandleFunc("/", serveHome)
-	http.HandleFunc("/matches", listMatches)
-	http.HandleFunc("/tables/", func(w http.ResponseWriter, r *http.Request) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", serveHome)
+	mux.HandleFunc("/matches", listMatches)
+	mux.HandleFunc("/tables/", func(w http.ResponseWriter, r *http.Request) {
 		log.Println("connected")
 		s := strings.Split(r.URL.Path, "/")
 		// 2 and 3 are hardedcoded so it fails, if id is not specified.
@@ -73,13 +72,7 @@ func main() {
 		impl.ServeWs(hub, w, r, true, s[2], s[3])
 	})
 	if *DevMode {
-		log.Println("DevMode on!")
-		//err = http.ListenAndServe(*host+":"+*port, nil)
-		go http.ListenAndServe(":"+*port, http.HandlerFunc(redirect))
-		for 1 > 0 {
-			time.Sleep(100 * time.Second)
-			log.Println("cho;ll")
-		}
+		http.ListenAndServe(":"+*port, nil)
 	} else {
 		go http.ListenAndServe(":"+*port, http.HandlerFunc(redirect))
 		err = http.ListenAndServeTLS(":"+*port, "/certs/cert.pem", "/certs/privkey.pem", nil)
