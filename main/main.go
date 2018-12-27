@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"time"
 )
 
 var (
@@ -73,10 +74,14 @@ func main() {
 	})
 	if *DevMode {
 		log.Println("DevMode on!")
-		err = http.ListenAndServe(*host+":"+*port, nil)
+		//err = http.ListenAndServe(*host+":"+*port, nil)
+		go http.ListenAndServe(":"+*port, http.HandlerFunc(redirect))
+		for 1 > 0 {
+			time.Sleep(100 * time.Second)
+			log.Println("cho;ll")
+		}
 	} else {
-		go http.ListenAndServe(*host+":"+*port, http.HandlerFunc(redirect))
-		//http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+		go http.ListenAndServe(":"+*port, http.HandlerFunc(redirect))
 		err = http.ListenAndServeTLS(":"+*port, "/certs/cert.pem", "/certs/privkey.pem", nil)
 	}
 	if err != nil {
