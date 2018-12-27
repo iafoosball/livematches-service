@@ -74,6 +74,7 @@ func main() {
 	if *DevMode {
 		http.ListenAndServe(":"+*port, nil)
 	} else {
+		log.Println("Not DevMode")
 		go http.ListenAndServe(":"+*port, http.HandlerFunc(redirect))
 		err = http.ListenAndServeTLS(":"+*port, "/certs/cert.pem", "/certs/privkey.pem", nil)
 	}
