@@ -19,14 +19,15 @@ var (
 
 func init() {
 	log.SetFlags(log.Ltime | log.Lshortfile)
-	//go main()
+	*DevMode = true
+	go main()
 
-	//f, err := os.OpenFile("livematches.log", os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
-	//if err != nil {
-	//	log.Fatalf("error opening file: %v", err)
-	//}
-	//log.SetOutput(f)
-	//log.Print("hallo")
+	f, err := os.OpenFile("livematches.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("error opening file: %v", err)
+	}
+	log.SetOutput(f)
+	log.Print("hallo")
 }
 
 func TetRunTestClient(*testing.T) {

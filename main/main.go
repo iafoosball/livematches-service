@@ -15,6 +15,9 @@ var (
 	port        = flag.String("port", "8003", "the port to listen for new clients")
 	matchesHost = flag.String("matchesHost", "0.0.0.0", "the host for sending match data to")
 	matchesPort = flag.String("matchesPort", "8000", "the host port for sending match data to")
+	DevMode     = flag.Bool("dev", false, "enable if used as Developer. Serves over http.")
+
+	err error
 )
 
 func serveHome(w http.ResponseWriter, r *http.Request) {
@@ -55,8 +58,6 @@ func main() {
 	hub := impl.NewHub()
 	go hub.Run()
 
-	go http.ListenAndServe(":"+*port, http.HandlerFunc(redirect))
-
 	http.HandleFunc("/", serveHome)
 	http.HandleFunc("/matches", listMatches)
 	http.HandleFunc("/tables/", func(w http.ResponseWriter, r *http.Request) {
@@ -70,12 +71,14 @@ func main() {
 		s := strings.Split(r.URL.Path, "/")
 		impl.ServeWs(hub, w, r, true, s[2], s[3])
 	})
-
-	//err := http.ListenAndServe(*host+":"+*port, certManager.HTTPHandler(nil))
-	//http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-	err := http.ListenAndServeTLS(":"+*port, "/certs/cert.pem", "/certs/privkey.pem", nil)
-	//err := http.ListenAndServeTLS(*host+":"+*port, "/certs/localhost.crt", "/certs/localhost.key", nil)
-	//openssl rsa -in key.pem -out key.unencrypted.pem -passin pass:TYPE_YOUR_PASS
+	if *DevMode {
+		log.Println("DevMode on!")
+		err = http.ListenAndServe(*host+":"+*port, nil)
+	} else {
+		go http.ListenAndServe(*host+":"+*port, http.HandlerFunc(redirect))
+		//http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+		err = http.ListenAndServeTLS(":"+*port, "/certs/cert.pem", "/certs/privkey.pem", nil)
+	}
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
