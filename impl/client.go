@@ -172,13 +172,13 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 					c.End <- true
 					close(c.Send)
 
-					//c.Conn = conn
-					//c.Send = make(chan []byte, 256)
-					//go c.writePump()
-					//go c.readPump()
-					//joinMatch(c, userID)
-					//log.Println("old User")
-					//newU = false
+					c.Conn = conn
+					c.Send = make(chan []byte, 256)
+					go c.writePump()
+					go c.readPump()
+					joinMatch(c, userID)
+					log.Println("old User")
+					newU = false
 				}
 			}
 			if newU {
