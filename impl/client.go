@@ -104,8 +104,8 @@ func (c *Client) writePump() {
 	for {
 		select {
 		case ok := <-c.End:
+			log.Println("close write pump")
 			if ok {
-				log.Println("close write pump")
 				if c.IsUser {
 					log.Println(c.User.ID)
 				}
