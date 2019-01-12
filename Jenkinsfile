@@ -30,7 +30,6 @@ pipeline {
             steps {
                sh "docker stop livematches-service-prod &"
                sh "docker rm livematches-service-prod &"
-               sh "sleep 15s"
             }
         }
         stage ("Production") {

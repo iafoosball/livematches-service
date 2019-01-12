@@ -105,6 +105,7 @@ func (c *Client) writePump() {
 		select {
 		case ok := <-c.End:
 			if ok {
+				log.Println("close write pump")
 				if c.IsUser {
 					log.Println(c.User.ID)
 				}
@@ -154,36 +155,52 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 	conn.SetWriteDeadline(time.Now().Add(30 * time.Second))
 	handleErr(err)
 	new := true
-	for c := range hub.clients {
-		if c.ID == userID {
-			hub.unregister <- c
-			c.Conn = conn
-			c.Send = make(chan []byte, 256)
-			go c.writePump()
-			go c.readPump()
-			log.Println("new User")
-			new = false
+	if isUser {
+		if !tableExists(tableID, hub) {
+			conn.Close()
 		}
-	}
-	if new {
-		var client *Client
-		client = &Client{Hub: hub, Conn: conn, Send: make(chan []byte, 256), IsUser: false}
-		client.Hub.register <- client
-		// Allow collection of memory referenced by the caller by doing all work in
-		go client.writePump()
-		go client.readPump()
-		if isUser {
-			client.IsUser = true
-			client.ID = userID
+		for c := range hub.clients {
+			if c.ID == userID {
+				hub.unregister <- c
+				c.Conn = conn
+				c.Send = make(chan []byte, 256)
+				go c.writePump()
+				go c.readPump()
+				log.Println("new User")
+				new = false
+			}
+		}
+		if new {
+			client := newClient(userID, hub, conn, true)
 			client.User = &models.MatchUsersItems0{ID: userID}
 			joinMatch(client, tableID)
 			sendMatchData(client)
-		} else {
-			client.ID = userID
-			client.Table = &models.Table{ID: tableID}
-			createMatch(client, tableID)
+		}
+	} else {
+		client := newClient(userID, hub, conn, false)
+		client.Table = &models.Table{ID: tableID}
+		createMatch(client, tableID)
+	}
+}
+
+func newClient(id string, hub *Hub, conn *websocket.Conn, isUser bool) *Client {
+	var client *Client
+	client = &Client{Hub: hub, Conn: conn, Send: make(chan []byte, 256), IsUser: false}
+	client.ID = id
+	client.Hub.register <- client
+	// Allow collection of memory referenced by the caller by doing all work in
+	go client.writePump()
+	go client.readPump()
+	return client
+}
+
+func tableExists(tableID string, hub *Hub) bool {
+	for c := range hub.clients {
+		if !c.IsUser && c.Table.ID == tableID {
+			return true
 		}
 	}
+	return false
 }
 
 // MatchUsersItems0 is a middleman between the websocket connection and the LiveMatch.
