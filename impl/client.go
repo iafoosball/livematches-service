@@ -88,6 +88,10 @@ func (c *Client) readPump() {
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
 		handleCommunication(c, message)
 	}
+	select {
+	case _ = <-c.End:
+		return
+	}
 }
 
 // writePump pumps messages from the hub to the websocket connection.
@@ -112,6 +116,7 @@ func (c *Client) writePump() {
 				c.Conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 				time.Sleep(1 * time.Second)
 				c.Conn.Close()
+				return
 			}
 		case message, ok := <-c.Send:
 			c.Conn.SetWriteDeadline(time.Now().Add(writeWait))
