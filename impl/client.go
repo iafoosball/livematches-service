@@ -208,6 +208,7 @@ func newClient(id string, hub *Hub, conn *websocket.Conn, isUser bool) *Client {
 
 func tableExists(tableID string, hub *Hub) bool {
 	for c := range hub.clients {
+		log.Println(c.ID)
 		if !c.IsUser && c.Table.ID == tableID {
 			log.Println("table exists")
 			return true
