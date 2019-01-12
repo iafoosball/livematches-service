@@ -157,6 +157,7 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 	for h := range hub.clients {
 		if h.ID == userID {
 			h.Conn = conn
+			h.Send = make(chan []byte, 256)
 			new = false
 		}
 	}
