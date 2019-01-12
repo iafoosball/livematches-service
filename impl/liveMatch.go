@@ -3,6 +3,7 @@ package impl
 import (
 	"errors"
 	"github.com/iafoosball/livematches-service/models"
+	"log"
 )
 
 // operations for live LiveMatches
@@ -107,7 +108,9 @@ func (m *LiveMatch) runMatch() {
 		case client := <-m.Register:
 			m.Clients[client] = client.ID
 		case client := <-m.Unregister:
+			log.Println("unregister")
 			if _, ok := m.Clients[client]; ok {
+				log.Println("unregistered")
 				delete(m.Clients, client)
 			}
 		case message := <-m.MatchCast:

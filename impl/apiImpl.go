@@ -95,9 +95,7 @@ func printSlice(s string, x []*models.MatchUsersItems0) {
 func joinMatch(c *Client, id string) {
 	for _, match := range LiveMatches {
 		if match.M.TableID == id {
-			//if len(match.M.Users) == 0 {
 			c.User.Admin = true
-			//}
 			c.LiveMatch = match
 			c.LiveMatch.M.Users = append(c.LiveMatch.M.Users, c.User)
 			c.LiveMatch.Register <- c

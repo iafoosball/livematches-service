@@ -177,7 +177,7 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 					c.Send = make(chan []byte, 256)
 					go c.writePump()
 					go c.readPump()
-					joinMatch(c, userID)
+					joinMatch(c, tableID)
 					log.Println("old User")
 					newU = false
 					break
