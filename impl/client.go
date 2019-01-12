@@ -210,6 +210,9 @@ func tableExists(tableID string, hub *Hub) bool {
 	for c := range hub.clients {
 		log.Println(c.ID)
 		if !c.IsUser {
+			log.Println(tableID)
+			log.Println(c.ID)
+
 			if c.Table.ID == tableID {
 				log.Println("table exists")
 				return true
