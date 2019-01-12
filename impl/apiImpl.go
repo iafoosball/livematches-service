@@ -87,6 +87,11 @@ func leavematch(c *Client) {
 	c.LiveMatch.Unregister <- c
 }
 
+func printSlice(s string, x []*models.MatchUsersItems0) {
+	fmt.Printf("%s len=%d cap=%d %v\n",
+		s, len(x), cap(x), x)
+}
+
 func joinMatch(c *Client, id string) {
 	for _, match := range LiveMatches {
 		if match.M.TableID == id {
