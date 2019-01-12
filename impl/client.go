@@ -189,7 +189,7 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 			}
 		}
 	} else {
-		client := newClient(userID, hub, conn, false)
+		client := newClient(tableID, hub, conn, false)
 		client.Table = &models.Table{ID: tableID}
 		createMatch(client, tableID)
 	}
