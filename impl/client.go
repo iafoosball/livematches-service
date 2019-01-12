@@ -166,6 +166,7 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 			newU := true
 			for c := range hub.clients {
 				log.Println(c.ID)
+				log.Println(c.IsUser)
 				if c.IsUser && c.ID == userID {
 					log.Println("match of ids")
 					leavematch(c)
@@ -179,6 +180,7 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 					joinMatch(c, userID)
 					log.Println("old User")
 					newU = false
+					break
 				}
 			}
 			if newU {
@@ -208,7 +210,6 @@ func newClient(id string, hub *Hub, conn *websocket.Conn, isUser bool) *Client {
 
 func tableExists(tableID string, hub *Hub) bool {
 	for c := range hub.clients {
-		log.Println(c.IsUser)
 		if !c.IsUser && c.ID == tableID {
 			return true
 		}
