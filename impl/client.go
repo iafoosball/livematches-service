@@ -159,13 +159,14 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 	conn, err := upgrader.Upgrade(w, r, nil)
 	conn.SetWriteDeadline(time.Now().Add(30 * time.Second))
 	handleErr(err)
-	new := true
 	if isUser {
 		if !tableExists(tableID, hub) {
 			conn.Close()
 		}
+		newU := true
 		for c := range hub.clients {
 			if c.ID == userID {
+				leavematch(c)
 				c.End <- true
 				close(c.Send)
 
@@ -173,11 +174,12 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 				c.Send = make(chan []byte, 256)
 				go c.writePump()
 				go c.readPump()
+				joinMatch(c, userID)
 				log.Println("new User")
-				new = false
+				newU = false
 			}
 		}
-		if new {
+		if newU {
 			client := newClient(userID, hub, conn, true)
 			client.User = &models.MatchUsersItems0{ID: userID}
 			joinMatch(client, tableID)

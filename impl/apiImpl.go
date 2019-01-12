@@ -69,6 +69,17 @@ func resetPosition(c *Client) {
 	}
 }
 
+func leavematch(c *Client) {
+	for i, u := range c.LiveMatch.M.Users {
+		if u.ID == c.User.ID {
+			resetPosition(c)
+			c.LiveMatch.M.Users = append(c.LiveMatch.M.Users[:i], c.LiveMatch.M.Users[i+1:]...)
+			break
+		}
+	}
+	c.LiveMatch.Unregister <- c
+}
+
 func joinMatch(c *Client, id string) {
 	for _, match := range LiveMatches {
 		if match.M.TableID == id {
