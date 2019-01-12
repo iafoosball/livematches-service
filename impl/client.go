@@ -161,7 +161,7 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 	handleErr(err)
 	if isUser {
 		if !tableExists(tableID, hub) {
-			conn.Close()
+			conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 		}
 		newU := true
 		for c := range hub.clients {
