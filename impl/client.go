@@ -158,6 +158,7 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 		if h.ID == userID {
 			h.Conn = conn
 			h.Send = make(chan []byte, 256)
+			log.Println("new User")
 			new = false
 		}
 	}
