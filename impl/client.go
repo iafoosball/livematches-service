@@ -154,10 +154,12 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 	conn.SetWriteDeadline(time.Now().Add(30 * time.Second))
 	handleErr(err)
 	new := true
-	for h := range hub.clients {
-		if h.ID == userID {
-			h.Conn = conn
-			h.Send = make(chan []byte, 256)
+	for c := range hub.clients {
+		if c.ID == userID {
+			c.Conn = conn
+			c.Send = make(chan []byte, 256)
+			go c.writePump()
+			go c.readPump()
 			log.Println("new User")
 			new = false
 		}
