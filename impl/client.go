@@ -199,7 +199,7 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 
 func newClient(id string, hub *Hub, conn *websocket.Conn, isUser bool) *Client {
 	var client *Client
-	client = &Client{Hub: hub, Conn: conn, Send: make(chan []byte, 256), IsUser: false}
+	client = &Client{Hub: hub, Conn: conn, Send: make(chan []byte, 256), IsUser: isUser}
 	client.ID = id
 	client.Hub.register <- client
 	// Allow collection of memory referenced by the caller by doing all work in
