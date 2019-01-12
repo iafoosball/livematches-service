@@ -151,28 +151,33 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 	defer r.Body.Close()
 	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 	conn, err := upgrader.Upgrade(w, r, nil)
-	conn.SetWriteDeadline(time.Now().Add(3 * time.Second))
+	conn.SetWriteDeadline(time.Now().Add(30 * time.Second))
 	handleErr(err)
-	if err != nil {
-		return
+	new := true
+	for h := range hub.clients {
+		if h.ID == userID {
+			h.Conn = conn
+			new = false
+		}
 	}
-	var client *Client
-	client = &Client{Hub: hub, Conn: conn, Send: make(chan []byte, 256), IsUser: false}
-	client.Hub.register <- client
-	// Allow collection of memory referenced by the caller by doing all work in
-	go client.writePump()
-	go client.readPump()
-	if isUser {
-		checkUser(userID)
-		client.IsUser = true
-		client.ID = userID
-		client.User = &models.MatchUsersItems0{ID: userID}
-		joinMatch(client, tableID)
-		sendMatchData(client)
-	} else {
-		client.ID = userID
-		client.Table = &models.Table{ID: tableID}
-		createMatch(client, tableID)
+	if new {
+		var client *Client
+		client = &Client{Hub: hub, Conn: conn, Send: make(chan []byte, 256), IsUser: false}
+		client.Hub.register <- client
+		// Allow collection of memory referenced by the caller by doing all work in
+		go client.writePump()
+		go client.readPump()
+		if isUser {
+			client.IsUser = true
+			client.ID = userID
+			client.User = &models.MatchUsersItems0{ID: userID}
+			joinMatch(client, tableID)
+			sendMatchData(client)
+		} else {
+			client.ID = userID
+			client.Table = &models.Table{ID: tableID}
+			createMatch(client, tableID)
+		}
 	}
 }
 
