@@ -162,28 +162,29 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 	if isUser {
 		if !tableExists(tableID, hub) {
 			conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
-		}
-		newU := true
-		for c := range hub.clients {
-			if c.ID == userID {
-				leavematch(c)
-				c.End <- true
-				close(c.Send)
+		} else {
+			newU := true
+			for c := range hub.clients {
+				if c.ID == userID {
+					leavematch(c)
+					c.End <- true
+					close(c.Send)
 
-				c.Conn = conn
-				c.Send = make(chan []byte, 256)
-				go c.writePump()
-				go c.readPump()
-				joinMatch(c, userID)
-				log.Println("new User")
-				newU = false
+					c.Conn = conn
+					c.Send = make(chan []byte, 256)
+					go c.writePump()
+					go c.readPump()
+					joinMatch(c, userID)
+					log.Println("new User")
+					newU = false
+				}
 			}
-		}
-		if newU {
-			client := newClient(userID, hub, conn, true)
-			client.User = &models.MatchUsersItems0{ID: userID}
-			joinMatch(client, tableID)
-			sendMatchData(client)
+			if newU {
+				client := newClient(userID, hub, conn, true)
+				client.User = &models.MatchUsersItems0{ID: userID}
+				joinMatch(client, tableID)
+				sendMatchData(client)
+			}
 		}
 	} else {
 		client := newClient(userID, hub, conn, false)
