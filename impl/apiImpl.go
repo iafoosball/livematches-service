@@ -1,7 +1,9 @@
 package impl
 
 import (
+	"fmt"
 	"github.com/iafoosball/livematches-service/models"
+	"log"
 	"time"
 )
 
@@ -70,12 +72,17 @@ func resetPosition(c *Client) {
 }
 
 func leavematch(c *Client) {
+	printSlice("liveM", c.LiveMatch.M.Users)
 	for i, u := range c.LiveMatch.M.Users {
+		log.Println(u.ID)
 		if u.ID == c.User.ID {
 			resetPosition(c)
 			c.LiveMatch.M.Users = append(c.LiveMatch.M.Users[:i], c.LiveMatch.M.Users[i+1:]...)
 			break
 		}
+	}
+	for _, u := range c.LiveMatch.M.Users {
+		log.Println(u.ID)
 	}
 	c.LiveMatch.Unregister <- c
 }
