@@ -166,7 +166,6 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 		}
 		for c := range hub.clients {
 			if c.ID == userID {
-				hub.unregister <- c
 				c.End <- true
 				close(c.Send)
 
