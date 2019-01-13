@@ -172,11 +172,15 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 					leavematch(c)
 					c.End <- true
 					close(c.Send)
+					log.Println("closed")
 
 					c.Conn = conn
 					c.Send = make(chan []byte, 256)
+					log.Println("before join")
 					go c.writePump()
 					go c.readPump()
+					log.Println("join")
+
 					joinMatch(c, tableID)
 					log.Println("old User")
 					newU = false
