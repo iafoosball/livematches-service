@@ -188,6 +188,7 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 					log.Println("join")
 
 					joinMatch(c, tableID)
+					sendMatchData(c)
 					log.Println("old User")
 					newU = false
 					break
