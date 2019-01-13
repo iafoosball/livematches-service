@@ -170,25 +170,12 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 				log.Println(c.ID)
 				log.Println(c.IsUser)
 				if c.IsUser && c.ID == userID {
-					log.Println("match of ids")
 					leavematch(c)
-					log.Println("match of ids2")
-					//c.End <- true
-					log.Println("match of ids3")
-					//close(c.Send)
-					//c.Conn.Close()
-					log.Println("closed")
-
 					c.Conn = conn
-					log.Println("befodre join")
 					c.Send = make(chan []byte, 256)
-					log.Println("befoddssd1212re join")
 					go c.writePump()
 					go c.readPump()
-					log.Println("join")
-
 					joinMatch(c, tableID)
-					log.Println("old User")
 					newU = false
 					break
 				}
