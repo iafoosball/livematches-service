@@ -87,11 +87,11 @@ func (c *Client) readPump() {
 		}
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
 		handleCommunication(c, message)
-		select {
-		case _ = <-c.End:
-			log.Println("read close")
-			return
-		}
+		//select {
+		//case _ = <-c.End:
+		//	log.Println("read close")
+		//	return
+		//}
 	}
 
 }
