@@ -77,11 +77,7 @@ func (c *Client) readPump() {
 	c.Conn.SetReadLimit(maxMessageSize)
 	c.Conn.SetReadDeadline(time.Now().Add(pongWait))
 	c.Conn.SetPongHandler(func(string) error { c.Conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
-	select {
-	case _ = <-c.End:
-		log.Println("read close")
-		return
-	default:
+	for {
 		_, message, err := c.Conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
@@ -91,7 +87,13 @@ func (c *Client) readPump() {
 		}
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
 		handleCommunication(c, message)
+		select {
+		case _ = <-c.End:
+			log.Println("read close")
+			return
+		}
 	}
+
 }
 
 // writePump pumps messages from the hub to the websocket connection.
