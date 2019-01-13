@@ -77,7 +77,11 @@ func (c *Client) readPump() {
 	c.Conn.SetReadLimit(maxMessageSize)
 	c.Conn.SetReadDeadline(time.Now().Add(pongWait))
 	c.Conn.SetPongHandler(func(string) error { c.Conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
-	for {
+	select {
+	case _ = <-c.End:
+		log.Println("read close")
+		return
+	default:
 		_, message, err := c.Conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
@@ -87,11 +91,6 @@ func (c *Client) readPump() {
 		}
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
 		handleCommunication(c, message)
-	}
-	select {
-	case _ = <-c.End:
-		log.Println("read close")
-		return
 	}
 }
 
@@ -172,7 +171,7 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 					log.Println("match of ids")
 					leavematch(c)
 					log.Println("match of ids2")
-					//c.End <- true
+					c.End <- true
 					log.Println("match of ids3")
 					close(c.Send)
 					log.Println("closed")
