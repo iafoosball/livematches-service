@@ -176,6 +176,7 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 					//c.End <- true
 					log.Println("match of ids3")
 					close(c.Send)
+					c.Conn.Close()
 					log.Println("closed")
 
 					c.Conn = conn
