@@ -72,9 +72,10 @@ func main() {
 		impl.ServeWs(hub, w, r, true, s[2], s[3])
 	})
 	if *DevMode {
+		log.Println("DEV MODE!!! Unecrypted service")
 		http.ListenAndServe(":"+*port, nil)
 	} else {
-		log.Println("http server running")
+		log.Println("TSL MODE! Encrypted service")
 		err = http.ListenAndServeTLS(":"+*port, "/certs/cert.pem", "/certs/privkey.pem", nil)
 	}
 	if err != nil {

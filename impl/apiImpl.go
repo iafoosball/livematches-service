@@ -91,6 +91,7 @@ func joinMatch(c *Client, tableID string) {
 			c.LiveMatch = match
 			c.LiveMatch.M.Users = append(c.LiveMatch.M.Users, c.User)
 			c.LiveMatch.Register <- c
+			sendMatchData(c)
 		}
 		return
 	}

@@ -175,8 +175,8 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 					log.Println("match of ids2")
 					//c.End <- true
 					log.Println("match of ids3")
-					close(c.Send)
-					c.Conn.Close()
+					//close(c.Send)
+					//c.Conn.Close()
 					log.Println("closed")
 
 					c.Conn = conn
@@ -188,7 +188,6 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 					log.Println("join")
 
 					joinMatch(c, tableID)
-					sendMatchData(c)
 					log.Println("old User")
 					newU = false
 					break
@@ -198,7 +197,6 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 				client := newClient(userID, hub, conn, true)
 				client.User = &models.MatchUsersItems0{ID: userID}
 				joinMatch(client, tableID)
-				sendMatchData(client)
 			}
 		}
 	} else {
