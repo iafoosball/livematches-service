@@ -90,6 +90,7 @@ func (c *Client) readPump() {
 	}
 	select {
 	case _ = <-c.End:
+		log.Println("read close")
 		return
 	}
 }
@@ -171,7 +172,7 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 					log.Println("match of ids")
 					leavematch(c)
 					log.Println("match of ids2")
-					c.End <- true
+					//c.End <- true
 					log.Println("match of ids3")
 					close(c.Send)
 					log.Println("closed")
