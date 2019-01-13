@@ -1,7 +1,6 @@
 package impl
 
 import (
-	"fmt"
 	"github.com/iafoosball/livematches-service/models"
 	"log"
 	"time"
@@ -72,24 +71,16 @@ func resetPosition(c *Client) {
 }
 
 func leavematch(c *Client) {
-	printSlice("liveM", c.LiveMatch.M.Users)
 	for i, u := range c.LiveMatch.M.Users {
-		log.Println(u.ID)
+		log.Println(u.ID + "leave  ")
 		if u.ID == c.User.ID {
 			resetPosition(c)
 			c.LiveMatch.M.Users = append(c.LiveMatch.M.Users[:i], c.LiveMatch.M.Users[i+1:]...)
 			break
 		}
 	}
-	for _, u := range c.LiveMatch.M.Users {
-		log.Println(u.ID)
-	}
-	c.LiveMatch.Unregister <- c
-}
-
-func printSlice(s string, x []*models.MatchUsersItems0) {
-	fmt.Printf("%s len=%d cap=%d %v\n",
-		s, len(x), cap(x), x)
+	delete(c.LiveMatch.Clients, c)
+	log.Println("leavetttt  ")
 }
 
 func joinMatch(c *Client, tableID string) {
