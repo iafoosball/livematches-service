@@ -167,8 +167,6 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 		} else {
 			newU := true
 			for c := range hub.clients {
-				log.Println(c.ID)
-				log.Println(c.IsUser)
 				if c.IsUser && c.ID == userID {
 					leavematch(c)
 					c.Conn = conn
@@ -176,6 +174,7 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 					go c.writePump()
 					go c.readPump()
 					joinMatch(c, tableID)
+					log.Println(c.ID + " old client joins " + tableID)
 					newU = false
 					break
 				}
@@ -184,6 +183,7 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, isUser bool, tabl
 				client := newClient(userID, hub, conn, true)
 				client.User = &models.MatchUsersItems0{ID: userID}
 				joinMatch(client, tableID)
+				log.Println(client.ID + " new client joins " + tableID)
 			}
 		}
 	} else {
