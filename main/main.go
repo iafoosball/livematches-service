@@ -72,8 +72,7 @@ func main() {
 	go func() {
 		p, _ := strconv.Atoi(*port)
 		log.Println("DEV MODE!!! Unecrypted service")
-		errHttp := http.ListenAndServe(":"+strconv.Itoa(p+10), nil)
-		if errHttp != nil {
+		if errHttp := http.ListenAndServe(":"+strconv.Itoa(p+10), nil); errHttp != nil {
 			log.Fatal("Web server (HTTP): ", errHttp)
 		}
 	}()

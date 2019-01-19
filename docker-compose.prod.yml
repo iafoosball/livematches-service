@@ -10,5 +10,6 @@ services:
         - mPort=9000
     ports:
       - 9003:8003
+      - 9013:8013
     volumes:
       - /var/lib/iafoosball/cert:/certs
