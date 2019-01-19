@@ -72,7 +72,7 @@ func main() {
 	log.Println("DEV MODE!!! Unecrypted service")
 	p, _ := strconv.Atoi(*port)
 	go http.ListenAndServe(":"+strconv.Itoa(p+10), nil)
-	if *DevMode {
+	if !*DevMode {
 		log.Println("TSL MODE! Encrypted service")
 		err = http.ListenAndServeTLS(":"+*port, "/certs/cert.pem", "/certs/privkey.pem", nil)
 	}
