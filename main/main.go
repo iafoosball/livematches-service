@@ -69,12 +69,19 @@ func main() {
 		impl.ServeWs(hub, w, r, true, r.URL.Query().Get("tableID"), r.URL.Query().Get("userID"))
 	})
 
-	log.Println("DEV MODE!!! Unecrypted service")
-	p, _ := strconv.Atoi(*port)
-	go http.ListenAndServe(":"+strconv.Itoa(p+10), nil)
+	go func() {
+		p, _ := strconv.Atoi(*port)
+		log.Println("DEV MODE!!! Unecrypted service")
+		errHttp := http.ListenAndServe(":"+strconv.Itoa(p+10), nil)
+		if errHttp != nil {
+			log.Fatal("Web server (HTTP): ", errHttp)
+		}
+	}()
 	if !*DevMode {
 		log.Println("TSL MODE! Encrypted service")
 		err = http.ListenAndServeTLS(":"+*port, "/certs/cert.pem", "/certs/privkey.pem", nil)
+	} else {
+		select {}
 	}
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
