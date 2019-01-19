@@ -7,7 +7,7 @@ import (
 	"github.com/iafoosball/livematches-service/models"
 	"log"
 	"net/http"
-	"strings"
+	"strconv"
 )
 
 var (
@@ -59,22 +59,20 @@ func main() {
 	go hub.Run()
 
 	http.HandleFunc("/", serveHome)
-	http.HandleFunc("/matches", listMatches)
+	http.HandleFunc("/matches/", listMatches)
 	http.HandleFunc("/tables/", func(w http.ResponseWriter, r *http.Request) {
-		log.Println("connected")
-		s := strings.Split(r.URL.Path, "/")
-		// 2 and 3 are hardedcoded so it fails, if id is not specified.
-		impl.ServeWs(hub, w, r, false, s[2], "")
+		log.Println("connected table " + r.URL.Query().Get("tableID"))
+		impl.ServeWs(hub, w, r, false, r.URL.Query().Get("tableID"), "")
 	})
 	http.HandleFunc("/users/", func(w http.ResponseWriter, r *http.Request) {
-		log.Println(r.URL.Path)
-		s := strings.Split(r.URL.Path, "/")
-		impl.ServeWs(hub, w, r, true, s[2], s[3])
+		log.Println("connected user " + r.URL.Query().Get("userID") + " connected to table " + r.URL.Query().Get("tableID"))
+		impl.ServeWs(hub, w, r, true, r.URL.Query().Get("tableID"), r.URL.Query().Get("userID"))
 	})
+
+	log.Println("DEV MODE!!! Unecrypted service")
+	p, _ := strconv.Atoi(*port)
+	go http.ListenAndServe(":"+strconv.Itoa(p+10), nil)
 	if *DevMode {
-		log.Println("DEV MODE!!! Unecrypted service")
-		http.ListenAndServe(":"+*port, nil)
-	} else {
 		log.Println("TSL MODE! Encrypted service")
 		err = http.ListenAndServeTLS(":"+*port, "/certs/cert.pem", "/certs/privkey.pem", nil)
 	}

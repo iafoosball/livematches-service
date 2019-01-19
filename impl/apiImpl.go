@@ -80,7 +80,7 @@ func leavematch(c *Client) {
 		}
 	}
 	delete(c.LiveMatch.Clients, c)
-	log.Println("leavetttt  ")
+	log.Println("leave")
 }
 
 func joinMatch(c *Client, tableID string) {
