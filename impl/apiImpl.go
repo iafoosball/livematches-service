@@ -226,9 +226,8 @@ func addgoal(c *Client, side string, speed float64) {
 	if checkGameCompleted(c) {
 		c.LiveMatch.M.Started = false
 		// Implement reset game function (score, kick players)
-		defer func() {
-			go SendMatch(*c.LiveMatch.M, c.LiveMatch.Goals)
-		}()
+		log.Println(c.LiveMatch.M.ScoreRed)
+		go SendMatch(*c.LiveMatch.M, c.LiveMatch.Goals)
 		setSpectatorAll(c)
 		c.LiveMatch.M.ScoreRed = 0
 		c.LiveMatch.M.ScoreBlue = 0

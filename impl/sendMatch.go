@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"github.com/iafoosball/livematches-service/models"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strings"
 )
@@ -14,9 +13,8 @@ var (
 	MatchesAddr string
 )
 
-func SendMatch(match models.Match, goals []*models.Goal) {
-	log.Println(match.ScoreRed)
-	js, err := json.Marshal(match)
+func SendMatch(Match models.Match, goals []*models.Goal) {
+	js, err := json.Marshal(Match)
 	handleErr(err)
 	resp, err := http.Post(MatchesAddr+"/matches/", "application/json", bytes.NewReader(js))
 	handleErr(err)
