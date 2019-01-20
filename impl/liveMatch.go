@@ -61,7 +61,7 @@ func newMatch(tableID string) *LiveMatch {
 // If match is finished it is send to matches-service and stored their
 // sending data still needs implementation
 func closeMatch(c *Client) {
-	go SendMatch(*c.LiveMatch.M, c.LiveMatch.Goals)
+	go SendMatch(c.LiveMatch)
 	for cl, _ := range c.LiveMatch.Clients {
 		closeUser(cl)
 	}
