@@ -227,7 +227,7 @@ func addgoal(c *Client, side string, speed float64) {
 		c.LiveMatch.M.Started = false
 		// Implement reset game function (score, kick players)
 		log.Println(c.LiveMatch.M.ScoreRed)
-		go SendMatch(*c.LiveMatch.M, c.LiveMatch.Goals)
+		SendMatch(*c.LiveMatch.M, c.LiveMatch.Goals)
 
 		c.LiveMatch.M.ScoreRed = 0
 		c.LiveMatch.M.ScoreBlue = 0
