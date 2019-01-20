@@ -70,11 +70,13 @@ func resetPosition(c *Client) {
 	}
 }
 
-func leavematch(c *Client) {
+func leavematch(c *Client, resetPos bool) {
 	for i, u := range c.LiveMatch.M.Users {
 		log.Println(u.ID + "leave  ")
 		if u.ID == c.User.ID {
-			resetPosition(c)
+			if resetPos {
+				resetPosition(c)
+			}
 			c.LiveMatch.M.Users = append(c.LiveMatch.M.Users[:i], c.LiveMatch.M.Users[i+1:]...)
 			break
 		}
