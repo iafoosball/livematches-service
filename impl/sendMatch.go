@@ -13,7 +13,7 @@ var (
 	MatchesAddr string
 )
 
-func SendMatch(liveMatch *LiveMatch) {
+func SendMatch(liveMatch LiveMatch) {
 	js, err := json.Marshal(*liveMatch.M)
 	handleErr(err)
 	resp, err := http.Post(MatchesAddr+"/matches/", "application/json", bytes.NewReader(js))

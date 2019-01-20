@@ -226,12 +226,13 @@ func addgoal(c *Client, side string, speed float64) {
 	if checkGameCompleted(c) {
 		c.LiveMatch.M.Started = false
 		// Implement reset game function (score, kick players)
+		defer func() {
+			go SendMatch(*c.LiveMatch)
+		}()
+		setSpectatorAll(c)
 		c.LiveMatch.M.ScoreRed = 0
 		c.LiveMatch.M.ScoreBlue = 0
 
-		defer func() {
-			SendMatch(c.LiveMatch)
-		}()
 		if c.LiveMatch.M.Settings.TournamentMode {
 			rotatePeople(c.LiveMatch.M.Positions)
 		}
@@ -239,6 +240,13 @@ func addgoal(c *Client, side string, speed float64) {
 	} else {
 		sendMatchData(c)
 	}
+}
+
+func setSpectatorAll(c *Client) {
+	c.LiveMatch.M.Positions.RedDefense = ""
+	c.LiveMatch.M.Positions.BlueDefense = ""
+	c.LiveMatch.M.Positions.RedAttack = ""
+	c.LiveMatch.M.Positions.BlueAttack = ""
 }
 
 func checkGameCompleted(c *Client) bool {
