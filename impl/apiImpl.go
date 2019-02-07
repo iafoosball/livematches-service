@@ -131,7 +131,7 @@ func oneonone(c *Client, b bool) {
 func resetPlayOption(c *Client) {
 	c.LiveMatch.M.Settings.OneOnOne = false
 	c.LiveMatch.M.Settings.TwoOnTwo = false
-	c.LiveMatch.M.Settings.TwoOnOne = false
+	c.LiveMatch.M.Settings.TournamentMode = false
 }
 
 func setcolor(c *Client, color string) {
