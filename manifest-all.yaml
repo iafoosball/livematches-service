@@ -1,0 +1,70 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: livematches
+  name: livematches
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: livematches
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: livematches
+    spec:
+      containers:
+        - name: livematches
+          image: localhost:32000/livematches:latest
+          command: ['sh', '-c', './main --dev=true']
+      restartPolicy: Always
+status: {}
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: livematches
+  namespace: default
+spec:
+  containers:
+    - name: livematches
+      image: localhost:32000/livematches:latest
+      command: ['sh', '-c', './main --dev=true']
+      livenessProbe:
+        httpGet:
+          path: /
+          port: 8013
+        initialDelaySeconds: 5
+        timeoutSeconds: 30
+  restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: livematches
+  namespace: default
+spec:
+  selector:
+    app: livematches
+  ports:
+    - name: http
+      port: 8013
+      targetPort: http
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: livematches-ingress
+spec:
+  rules:
+    - host: livematches.127.0.0.1.xip.io
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: livematches
+              servicePort: 8013

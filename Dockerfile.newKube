@@ -1,0 +1,7 @@
+FROM golang:1.10
+
+EXPOSE 8013:8013
+EXPOSE 8003
+COPY main/main .
+#ENTRYPOINT ["sh", "-c", "./main --dev=true"]
+CMD ./main --dev=true

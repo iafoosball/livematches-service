@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: livematches
+  namespace: default
+spec:
+  containers:
+    - name: livematches
+      image: localhost:32000/livematches:latest
+      command: ['sh', '-c', './main --dev=true']
+  restartPolicy: Always

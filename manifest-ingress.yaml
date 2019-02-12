@@ -1,0 +1,13 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: livematches-ingress
+spec:
+  rules:
+    - host: livematches.127.0.0.1.xip.io
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: livematches
+              servicePort: 8013
