@@ -23,7 +23,7 @@ pipeline {
 */
         stage ("Build Production") {
             steps{
-                sh "docker-compose -f docker-compose.prod.yml build --pull"
+                sh "docker build . -t iafoosball/livematches:v2 --pull"
             }
         }
         stage ("Remove old Production") {
@@ -34,7 +34,7 @@ pipeline {
         }
         stage ("Production") {
             steps {
-                /* sh "docker-compose  -p livematches-prod -f docker-compose.prod.yml up" */
+                sh"sudo docker push iafoosball/livematches:v2"
             }
         }
     }
