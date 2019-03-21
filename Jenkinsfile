@@ -34,7 +34,7 @@ pipeline {
         }
         stage ("Production") {
             steps {
-                sh "docker-compose  -p livematches-prod -f docker-compose.prod.yml up"
+                /* sh "docker-compose  -p livematches-prod -f docker-compose.prod.yml up" */
             }
         }
     }

@@ -12,7 +12,7 @@ func TestStartWssTable(t *testing.T) {
 	log.Println("start ws client")
 	//var addr = flag.String("addr", "iafoosball.aau.dk:9003", "http service address")
 	//addr := "iafoosball.me:9003"
-	addr := "localhost:8013"
+	addr := "burster.fun:31380"
 	tableID := "table-1"
 
 	u := "ws://" + addr + "/tables/?tableID=" + tableID
