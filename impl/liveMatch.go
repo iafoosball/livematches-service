@@ -68,6 +68,7 @@ func stopmatch(c *Client) {
 	c.LiveMatch.M.Started = false
 	c.LiveMatch.M.ScoreBlue = 0
 	c.LiveMatch.M.ScoreRed = 0
+	sendMatchData(c)
 }
 
 type LiveMatch struct {
