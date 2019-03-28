@@ -62,18 +62,12 @@ func newMatch(tableID string) *LiveMatch {
 // sending data still needs implementation
 func stopmatch(c *Client) {
 	go SendMatch(c.LiveMatch)
-	for cl, _ := range c.LiveMatch.Clients {
-		closeUser(cl)
-	}
+	//for cl, _ := range c.LiveMatch.Clients {
+	//	closeUser(cl)
+	//}
 	c.LiveMatch.M.Started = false
 	c.LiveMatch.M.ScoreBlue = 0
 	c.LiveMatch.M.ScoreRed = 0
-	//id := c.LiveMatch.M.TableID
-	//for i, l := range LiveMatches {
-	//if l.M.TableID == id {
-	//	LiveMatches = append(LiveMatches[:i], LiveMatches[i+1:]...)
-	//}
-	//}
 }
 
 type LiveMatch struct {
