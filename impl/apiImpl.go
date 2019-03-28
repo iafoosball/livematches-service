@@ -8,9 +8,9 @@ import (
 
 func closeUser(c *Client) {
 	// reset position and delete from users
+	resetPosition(c)
 	for i, u := range c.LiveMatch.M.Users {
 		if u.ID == c.User.ID {
-			resetPosition(c)
 			c.LiveMatch.M.Users = append(c.LiveMatch.M.Users[:i], c.LiveMatch.M.Users[i+1:]...)
 			break
 		}
@@ -19,11 +19,7 @@ func closeUser(c *Client) {
 		if !u.IsUser {
 			sendMatchData(u)
 		}
-
 	}
-	c.LiveMatch.Unregister <- c
-	c.Hub.unregister <- c
-	c.End <- true
 }
 
 func setusername(c *Client, username string) {

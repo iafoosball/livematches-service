@@ -34,7 +34,7 @@ pipeline {
         }
         stage ("Production") {
             steps {
-                sh"sudo docker push iafoosball/livematches:v2"
+                sh"sudo docker push iafoosball/livematches:v2   "
             }
         }
     }

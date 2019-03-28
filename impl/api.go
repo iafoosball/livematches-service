@@ -54,12 +54,12 @@ const (
 	// { "command": "settings", "values": { "maxTime": 600 }}
 	rated = "rated"
 	// { "command": "settings", "values": { "rated": true }}
-	cancelMatch = "cancelMatch"
-	// { "command": "cancelMatch", "values": { }}
 	kickUser = "kickUser"
 	// { "command": "settings", "values": { "kickUser": "userID" }}
 
 	// Start: For Table, possible by admin as well
+	stopMatch = "cancelMatch"
+	// { "command": "cancelMatch", "values": { }}
 	addGoal = "addGoal"
 	// { \"command\": \"addGoal\", \"values\": { \"speed\": 12, \"side\": \"blue\", \"setposition\": \"attack\"  }}
 	removeGoal = "removeGoal"
@@ -139,8 +139,8 @@ func handleTable(c *Client, m *message) {
 	switch m.Command {
 	case started:
 		start(c)
-	case cancelMatch:
-		closeMatch(c)
+	case stopMatch:
+		stopmatch(c)
 	case addGoal:
 		addgoal(c, stringFromMap(m.Values, "side"), numberFromMap(m.Values, "speed"))
 	case removeGoal:
