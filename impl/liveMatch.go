@@ -59,7 +59,6 @@ func newMatch(tableID string) *LiveMatch {
 }
 
 // If match is finished it is send to matches-service and stored their
-// sending data still needs implementation
 func stopmatch(c *Client) {
 	go SendMatch(c.LiveMatch)
 	//for cl, _ := range c.LiveMatch.Clients {

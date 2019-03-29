@@ -127,6 +127,7 @@ func oneonone(c *Client, b bool) {
 func resetPlayOption(c *Client) {
 	c.LiveMatch.M.Settings.OneOnOne = false
 	c.LiveMatch.M.Settings.TwoOnTwo = false
+	c.LiveMatch.M.Settings.TwoOnOne = false
 	c.LiveMatch.M.Settings.TournamentMode = false
 }
 
@@ -144,7 +145,7 @@ func isTournament(c *Client, b bool) {
 	sendMatchData(c)
 }
 func tournamentmode(c *Client, b bool) {
-	c.LiveMatch.M.Settings.TournamentMode = b
+	c.LiveMatch.M.Settings.TournamentMode = true
 	resetPlayOption(c)
 	c.LiveMatch.M.Settings.TwoOnOne = true
 	setMaxGoals(c, 3)
@@ -223,7 +224,6 @@ func addgoal(c *Client, side string, speed float64) {
 	}
 	if checkGameCompleted(c) {
 		c.LiveMatch.M.Started = false
-		// Implement reset game function (score, kick players)
 		SendMatch(c.LiveMatch)
 
 		c.LiveMatch.M.ScoreRed = 0
