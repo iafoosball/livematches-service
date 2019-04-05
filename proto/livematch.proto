@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+package proto;
+
+service Livematch {
+    rpc Send (stream Command) returns (stream Match) {
+    };
+}
+
+message Match {
+    string _id = 1;
+    string _key = 2;
+    string tableID = 3;
+    bool started = 4;
+    repeated User users = 5;
+    Settings settings = 6;
+    string startTime = 7;
+    int32 scoreBlue = 8;
+    int32 scoreRed = 9;
+    string endTime = 10;
+    bool completed = 11;
+    string winner = 12;
+    map<string, string> labels = 14;
+}
+
+
+message User {
+    string id = 1;
+    string username = 2;
+    bool admin = 3;
+    bool ready = 4;
+    Position position = 5;
+    int64 bet = 6;
+    string color = 7;
+}
+
+message Settings {
+    bool tournament = 1;
+    bool drunk = 2;
+    bool payed = 3;
+    bool bet = 4;
+    int32 maxGoals = 5;
+    int32 maxTime = 6;
+    bool rated = 7;
+    bool switchPositions = 8;
+    Mode mode = 9;
+}
+
+message Command {
+    Settings settings = 1;
+    Position position = 2;
+    User user = 3;
+    bool addGoalBlue = 4;
+    bool addGoalRed = 5;
+    string kickUser = 6;
+}
+
+enum Mode {
+    defaultMode=0;
+    oneOnOne = 1;
+    twoOnOne = 2;
+    twoOneTwo = 3;
+    tournamentModeTwoRed = 4;
+    tournamentModeTwoBlue = 5;
+}
+
+enum Position {
+    defaultPosition=0;
+    blueAttack = 1;
+    blueDefense = 2;
+    redAttach = 3;
+    redDefense = 4;
+    spectator = 5;
+}
