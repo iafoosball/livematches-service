@@ -32,6 +32,7 @@ message User {
     Position position = 5;
     int64 bet = 6;
     string color = 7;
+    string currentTable = 8;
 }
 
 message Settings {
@@ -53,6 +54,16 @@ message Command {
     bool addGoalBlue = 4;
     bool addGoalRed = 5;
     string kickUser = 6;
+    string join = 7;
+    Table table = 8;
+}
+
+message Table {
+    string id = 1;
+    string location = 2;
+    string lastMaintenance = 3;
+    bool ready = 4;
+    bool inGame = 5;
 }
 
 enum Mode {

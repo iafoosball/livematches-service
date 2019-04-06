@@ -4,6 +4,8 @@ import (
 	"context"
 	pb "github.com/iafoosball/livematches-service/proto"
 	"log"
+	"math/rand"
+	"strconv"
 	"testing"
 	"time"
 
@@ -16,42 +18,37 @@ func init() {
 	go main()
 	time.Sleep(time.Second * 1)
 
-	// dail server
-	//conn, err := grpc.Dial(*port, grpc.WithInsecure())
-	//if err != nil {
-	//	log.Fatalf("can not connect with server %v", err)
-	//}
-	//
-	//// create stream
-	//client := pb.NewLivematchesClient(conn)
-	//stream, err := client.Send(context.Background())
-	//if err != nil {
-	//	log.Fatalf("openn stream error %v", err)
-	//}
-	//
-	//log.Println(stream.Recv())
-
-	//ctx := stream.Context()
-	//done := make(chan bool)
-
-	//ctx.
-
 }
 
-func TestStream(t *testing.T) {
-	// dail server
+// newUser creates a new user struct
+func newUser(tableID string) *pb.User {
+	return &pb.User{
+		Id:           strconv.Itoa(rand.Int()),
+		CurrentTable: tableID,
+	}
+}
+
+// newClient opens a new client connection to the server
+func newClient() pb.LivematchClient {
 	conn, err := grpc.Dial(*port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("can not connect with server %v", err)
 	}
+	return pb.NewLivematchClient(conn)
+}
 
-	// create stream
-	client := pb.NewLivematchClient(conn)
+func TestStream(t *testing.T) {
+	client := newClient()
 	stream, err := client.Send(context.Background())
 	if err != nil {
-		log.Fatalf("openn stream error %v", err)
+		log.Fatalf("open stream error %v", err)
 	}
 	match := &pb.Match{}
+	user := newUser("1")
+
+	stream.Send(&pb.Command{User: user})
+	match, _ = stream.Recv()
+	log.Println(match)
 
 	stream.Send(&pb.Command{AddGoalBlue: true})
 	match, _ = stream.Recv()
@@ -65,6 +62,11 @@ func TestStream(t *testing.T) {
 	time.Sleep(time.Second * 1)
 	s := &pb.Settings{Mode: pb.Mode_twoOnOne}
 	stream.Send(&pb.Command{Settings: s})
+
+	match, _ = stream.Recv()
+	log.Println(match)
+
+	stream.Send(&pb.Command{Join: "id"})
 
 	match, _ = stream.Recv()
 	log.Println(match)
