@@ -67,19 +67,17 @@ message Table {
 }
 
 enum Mode {
-    defaultMode=0;
-    oneOnOne = 1;
-    twoOnOne = 2;
-    twoOneTwo = 3;
-    tournamentModeTwoRed = 4;
-    tournamentModeTwoBlue = 5;
+    DEFAULT_MODE = 0;
+    NORMAL = 1;
+    TOURNAMENT_MODE_TWO_RED = 2;
+    TOURNAMENT_MODE_TWO_BLUE = 3;
 }
 
 enum Position {
-    defaultPosition=0;
-    blueAttack = 1;
-    blueDefense = 2;
-    redAttach = 3;
-    redDefense = 4;
-    spectator = 5;
+    DEFAULT_POSITION = 0;
+    BLUE_ATTACK = 1;
+    BLUE_DEFENSE = 2;
+    RED_ATTACK = 3;
+    RED_DEFENSE = 4;
+    SPECTATOR = 5;
 }
