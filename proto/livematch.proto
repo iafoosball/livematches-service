@@ -20,7 +20,7 @@ message Match {
     string endTime = 10;
     bool completed = 11;
     string winner = 12;
-    map<string, string> labels = 14;
+    map<string, string> labels = 13;
 }
 
 
@@ -54,8 +54,7 @@ message Command {
     bool addGoalBlue = 4;
     bool addGoalRed = 5;
     string kickUser = 6;
-    string join = 7;
-    Table table = 8;
+    Table table = 7;
 }
 
 message Table {
